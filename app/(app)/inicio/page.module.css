@@ -1,0 +1,740 @@
+/* Dashboard — densidade analítica, tema escuro HOOKO */
+
+.page {
+  max-width: 120rem;
+  margin: 0 auto;
+}
+
+.headerRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.heading {
+  min-width: 0;
+}
+
+.kicker {
+  margin: 0;
+  font-size: 0.62rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: rgba(212, 175, 55, 0.78);
+  font-weight: 600;
+}
+
+.title {
+  margin: 0.45rem 0 0;
+  font-size: clamp(1.25rem, 2.5vw, 1.68rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #fafafa;
+}
+
+.sub {
+  margin: 0.4rem 0 0;
+  font-size: 0.82rem;
+  color: rgba(161, 161, 170, 0.95);
+  max-width: 34rem;
+  line-height: 1.5;
+}
+
+.filtersBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: flex-end;
+}
+
+.filtersDivider {
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.dateCustomRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: flex-end;
+}
+
+.inputDate {
+  padding: 0.48rem 0.72rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #e4e4e7;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color-scheme: dark;
+}
+
+.inputDate:focus-visible {
+  outline: 2px solid rgba(212, 175, 55, 0.42);
+  outline-offset: 1px;
+}
+
+.campaignField {
+  min-width: min(100%, 20rem);
+  position: relative;
+}
+
+.dropWrap {
+  position: relative;
+  width: 100%;
+  max-width: 22rem;
+}
+
+.dropTrigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.52rem 2.35rem 0.52rem 0.82rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #e4e4e7;
+  text-align: left;
+  cursor: pointer;
+  background:
+    rgba(255, 255, 255, 0.05) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a1a1aa' d='M3 4.5L6 8l3-3.5H3z'/%3E%3C/svg%3E") no-repeat right 0.7rem center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.dropTrigger:hover {
+  border-color: rgba(212, 175, 55, 0.28);
+  background-color: rgba(255, 255, 255, 0.07);
+}
+
+.dropTrigger:focus-visible {
+  outline: 2px solid rgba(212, 175, 55, 0.42);
+  outline-offset: 1px;
+}
+
+.dropSummary {
+  display: block;
+  min-width: 0;
+}
+
+.dropSummaryMuted {
+  color: rgba(161, 161, 170, 0.9);
+  font-size: 0.72rem;
+  font-weight: 400;
+}
+
+.dropPanel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 200;
+  padding: 0.5rem 0;
+  border-radius: 11px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(14, 14, 17, 0.98);
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  max-height: 14rem;
+  overflow-y: auto;
+}
+
+.dropPanelFooter {
+  margin-top: 0.35rem;
+  padding: 0.45rem 0.65rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.dropPanelFooter .linkBtn {
+  font-size: 0.74rem;
+}
+
+.checkboxGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.15rem 0.65rem;
+  max-height: 11rem;
+  overflow-y: auto;
+}
+
+.chkLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.8rem;
+  color: #d4d4d8;
+  cursor: pointer;
+  user-select: none;
+}
+
+.chkLabel input {
+  accent-color: #d4af37;
+  width: 0.95rem;
+  height: 0.95rem;
+  flex-shrink: 0;
+}
+
+.linkBtn {
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 0.72rem;
+  color: rgba(212, 175, 55, 0.88);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.linkBtn:hover {
+  color: #f5e6a8;
+}
+
+.widgetPanel {
+  margin-bottom: 0.85rem;
+  padding: 0.72rem 0.92rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.028);
+}
+
+.widgetTitle {
+  margin: 0 0 0.5rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: rgba(161, 161, 170, 0.9);
+}
+
+.widgetToggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 1.25rem;
+}
+
+.widgetLbl {
+  display: flex;
+  align-items: center;
+  gap: 0.42rem;
+  font-size: 0.79rem;
+  color: #d4d4d8;
+  cursor: pointer;
+}
+
+.widgetLbl input {
+  accent-color: #d4af37;
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.fieldLabel {
+  font-size: 0.65rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(161, 161, 170, 0.78);
+  font-weight: 600;
+}
+
+.select {
+  appearance: none;
+  min-width: 11.5rem;
+  padding: 0.52rem 2.35rem 0.52rem 0.82rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #e4e4e7;
+  background:
+    rgba(255, 255, 255, 0.05) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a1a1aa' d='M3 4.5L6 8l3-3.5H3z'/%3E%3C/svg%3E") no-repeat right 0.7rem center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.select:hover {
+  border-color: rgba(212, 175, 55, 0.28);
+  background-color: rgba(255, 255, 255, 0.07);
+}
+
+.select:focus-visible {
+  outline: 2px solid rgba(212, 175, 55, 0.42);
+  outline-offset: 1px;
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.chartCard {
+  position: relative;
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.048) 0%,
+    rgba(255, 255, 255, 0.02) 45%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.082);
+  border-radius: 14px;
+  padding: 1rem 1rem 0.5rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 12px 40px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+.chartCard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(125deg, rgba(212, 175, 55, 0.04) 0%, transparent 42%);
+  opacity: 0.9;
+}
+
+.chartHead {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.35rem;
+  padding: 0 0.15rem;
+}
+
+.chartTitle {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #f4f4f5;
+  letter-spacing: -0.02em;
+}
+
+.chartHint {
+  margin: 0;
+  font-size: 0.72rem;
+  color: rgba(161, 161, 170, 0.88);
+  max-width: 22rem;
+  line-height: 1.45;
+}
+
+.chartBody {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: 320px;
+  height: clamp(300px, 38vh, 420px);
+}
+
+.chartBodyTall {
+  min-height: 340px;
+  height: clamp(320px, 42vh, 440px);
+}
+
+.chartBodyMed {
+  min-height: 280px;
+  height: clamp(260px, 32vh, 360px);
+}
+
+.chartRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 960px) {
+  .chartRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+.videoStack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.videoCampaignsList {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.videoCampaignBlock {
+  width: 100%;
+  max-width: min(56rem, 100%);
+}
+
+.videoCampaignBlock + .videoCampaignBlock {
+  margin-top: 1.2rem;
+  padding-top: 1.35rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.videoCampaignHeading {
+  margin: 0 0 0.75rem;
+  padding-left: 0.65rem;
+  border-left: 4px solid #e8c547;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #f4f4f5;
+  letter-spacing: -0.02em;
+}
+
+.videoHero {
+  width: 100%;
+  max-width: min(56rem, 100%);
+  margin: 0 auto;
+}
+
+.videoStage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(212, 175, 55, 0.28);
+  background: linear-gradient(160deg, rgba(30, 26, 18, 0.98) 0%, #09090b 50%, #060606 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 230, 170, 0.05),
+    0 24px 56px rgba(0, 0, 0, 0.55);
+}
+
+.videoStageInner {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 85% 65% at 50% 42%, rgba(212, 175, 55, 0.07) 0%, transparent 62%);
+  pointer-events: none;
+}
+
+.videoPlayOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.videoPlayBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(4rem, 11vw, 5.25rem);
+  height: clamp(4rem, 11vw, 5.25rem);
+  border-radius: 999px;
+  border: 2px solid rgba(245, 230, 168, 0.55);
+  background: linear-gradient(155deg, rgba(212, 175, 55, 0.35) 0%, rgba(60, 48, 22, 0.85) 100%);
+  color: #fff8e8;
+  cursor: pointer;
+  box-shadow:
+    0 0 0 6px rgba(212, 175, 55, 0.12),
+    0 12px 40px rgba(0, 0, 0, 0.5);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.videoPlayBtn:hover {
+  transform: scale(1.06);
+  border-color: rgba(255, 240, 200, 0.75);
+  box-shadow:
+    0 0 0 8px rgba(212, 175, 55, 0.16),
+    0 16px 48px rgba(0, 0, 0, 0.55);
+}
+
+.videoPlayBtn:focus-visible {
+  outline: 2px solid rgba(212, 175, 55, 0.55);
+  outline-offset: 3px;
+}
+
+.videoPlayBtn svg {
+  margin-left: 4px;
+}
+
+.videoHeroCaption {
+  margin: 0.55rem 0 0;
+  font-size: 0.74rem;
+  text-align: center;
+  color: rgba(161, 161, 170, 0.95);
+}
+
+.videoMetricsCenter {
+  justify-content: center;
+}
+
+.videoRetentionChart {
+  width: 100%;
+  max-width: min(56rem, 100%);
+  margin: 0 auto;
+  min-height: clamp(268px, 32vh, 360px);
+  height: clamp(268px, 32vh, 360px);
+}
+
+.videoDetails {
+  width: 100%;
+  max-width: min(56rem, 100%);
+  margin: 0 auto;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 0 0.75rem;
+}
+
+.videoDetails summary {
+  cursor: pointer;
+  padding: 0.55rem 0;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: rgba(212, 175, 55, 0.88);
+  list-style-position: outside;
+}
+
+.videoDetails summary::-webkit-details-marker {
+  color: rgba(212, 175, 55, 0.55);
+}
+
+.videoDetailsBody {
+  padding-bottom: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.videoMetrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.videoBadge {
+  padding: 0.28rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.24);
+  color: #f5e6a8;
+}
+
+.videoBadgeNeutral {
+  background: rgba(255, 255, 255, 0.045);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #d4d4d8;
+}
+
+.videoNote {
+  margin: 0;
+  font-size: 0.72rem;
+  line-height: 1.55;
+  color: rgba(161, 161, 170, 0.93);
+}
+
+.videoNote strong {
+  color: rgba(232, 197, 71, 0.88);
+  font-weight: 600;
+}
+
+.videoNote code {
+  font-size: 0.69rem;
+  padding: 0.08rem 0.26rem;
+  border-radius: 5px;
+  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid rgba(212, 175, 55, 0.18);
+  color: rgba(253, 230, 168, 0.9);
+}
+
+.legendHint {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  margin-top: 0.45rem;
+  padding: 0 0.2rem;
+  font-size: 0.68rem;
+  color: rgba(161, 161, 170, 0.75);
+}
+
+.legendDot {
+  display: inline-block;
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 999px;
+  margin-right: 0.35rem;
+  vertical-align: 0.05em;
+}
+
+/* —— Shimmer skeletons —— */
+
+@keyframes shimmer {
+  0% {
+    background-position: 220% 0;
+  }
+  100% {
+    background-position: -220% 0;
+  }
+}
+
+.skel {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: linear-gradient(
+    100deg,
+    rgba(255, 255, 255, 0.03) 0%,
+    rgba(255, 255, 255, 0.06) 36%,
+    rgba(212, 175, 55, 0.05) 48%,
+    rgba(255, 255, 255, 0.06) 62%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+  background-size: 240% 100%;
+  animation: shimmer 2.45s ease-in-out infinite;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    inset 0 0 26px rgba(255, 255, 255, 0.02);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skel {
+    animation: none;
+    background: rgba(255, 255, 255, 0.045);
+    background-image: none;
+  }
+}
+
+.skelHead {
+  margin-bottom: 0.85rem;
+}
+
+.skelChartCard {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.skelTitle {
+  height: 0.88rem;
+  width: min(260px, 55%);
+  margin-bottom: 0.42rem;
+  border-radius: 5px;
+}
+
+.skelSubtitle {
+  height: 0.62rem;
+  width: min(340px, 78%);
+  border-radius: 4px;
+}
+
+.skelPlot {
+  border-radius: 10px;
+  width: 100%;
+  margin-top: 0.25rem;
+}
+
+.skelPlotMain {
+  min-height: clamp(320px, 42vh, 440px);
+  height: clamp(320px, 42vh, 440px);
+}
+
+.skelPlotSmall {
+  min-height: clamp(280px, 34vh, 360px);
+  height: clamp(280px, 34vh, 360px);
+}
+
+.skelPlotWide {
+  min-height: clamp(240px, 28vh, 300px);
+  height: clamp(240px, 28vh, 300px);
+}
+
+.recharts-cartesian-axis-tick-value {
+  font-size: 10px !important;
+  fill: #71717a !important;
+}
+
+.recharts-cartesian-axis-line,
+.recharts-cartesian-axis-tick-line {
+  stroke: rgba(255, 255, 255, 0.06) !important;
+}
+
+.tooltipOuter {
+  padding: 0.55rem 0.82rem;
+  background: rgba(10, 10, 13, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  box-shadow:
+    0 8px 28px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.tooltipTitle {
+  margin: 0 0 0.35rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(161, 161, 170, 0.9);
+  font-weight: 600;
+}
+
+.tooltipRows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.22rem;
+}
+
+.tooltipRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.8rem;
+}
+
+.tooltipDatum {
+  color: #fafafa;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.tooltipDot {
+  display: inline-block;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 999px;
+  margin-right: 0.4rem;
+  vertical-align: 0.04em;
+}

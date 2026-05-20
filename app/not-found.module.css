@@ -1,0 +1,265 @@
+.page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1.25rem, 5vw, 2.5rem);
+  background: radial-gradient(
+      ellipse 80% 50% at 50% -20%,
+      rgba(212, 175, 55, 0.07),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 60% 40% at 50% 100%,
+      rgba(212, 175, 55, 0.04),
+      transparent 45%
+    ),
+    var(--hooko-bg-deep);
+  overflow-x: hidden;
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: min(40rem, 100%);
+  width: 100%;
+}
+
+/* Polvo — flutuar + reflexo (PNG com fundo transparente) */
+.octoWrap {
+  position: relative;
+  width: min(98vw, 36rem);
+  margin: 0 auto;
+}
+
+.octoGlow {
+  position: absolute;
+  inset: 18% 8% auto;
+  height: 42%;
+  border-radius: 50%;
+  filter: blur(42px);
+  background: radial-gradient(
+    ellipse closest-side,
+    rgba(212, 175, 55, 0.22),
+    transparent 70%
+  );
+  pointer-events: none;
+  animation: breathe 4s ease-in-out infinite;
+}
+
+.octoPulse {
+  position: absolute;
+  inset: -6%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 38%,
+    rgba(251, 191, 36, 0.12),
+    transparent 42%
+  );
+  pointer-events: none;
+  animation: eyeGlow 3.2s ease-in-out infinite;
+}
+
+.octoFrame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  max-height: min(82dvh, 38rem);
+  animation: float 5s ease-in-out infinite;
+}
+
+.octoImg {
+  object-fit: contain;
+  object-position: center center;
+  filter: drop-shadow(0 16px 48px rgba(0, 0, 0, 0.55));
+}
+
+.message {
+  margin: 1rem 0 0;
+  font-size: clamp(0.88rem, 3.2vw, 0.98rem);
+  line-height: 1.55;
+  color: var(--hooko-text-muted);
+  max-width: 22rem;
+  animation: fadeUp 0.8s ease 0.15s both;
+}
+
+.message strong {
+  color: rgba(250, 250, 250, 0.92);
+  font-weight: 600;
+}
+
+.dots {
+  display: inline-flex;
+  gap: 0.2rem;
+  margin-left: 0.15rem;
+  vertical-align: middle;
+}
+
+.dots span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(212, 175, 55, 0.75);
+  animation: dotBounce 1.2s ease-in-out infinite;
+}
+
+.dots span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.dots span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  justify-content: center;
+  margin-top: 1.75rem;
+  animation: fadeUp 0.85s ease 0.28s both;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.62rem 1.35rem;
+  border-radius: 12px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
+}
+
+.btnPrimary {
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  background: rgba(212, 175, 55, 0.16);
+  color: rgb(251, 245, 216);
+}
+
+.btnPrimary:hover {
+  background: rgba(212, 175, 55, 0.26);
+  border-color: rgba(212, 175, 55, 0.65);
+  transform: translateY(-2px);
+}
+
+.btnGhost {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(228, 228, 231, 0.95);
+}
+
+.btnGhost:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+  transform: translateY(-2px);
+}
+
+.btn:focus-visible {
+  outline: 2px solid rgba(212, 175, 55, 0.45);
+  outline-offset: 3px;
+}
+
+.hookoFoot {
+  margin-top: 2.25rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(212, 175, 55, 0.35);
+  animation: fadeUp 1s ease 0.45s both;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.85;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes eyeGlow {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.75;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dotBounce {
+  0%,
+  80%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+
+  40% {
+    opacity: 1;
+    transform: translateY(-5px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .octoFrame,
+  .octoGlow,
+  .octoPulse,
+  .message,
+  .actions,
+  .hookoFoot,
+  .dots span {
+    animation: none;
+  }
+
+  .message,
+  .actions,
+  .hookoFoot {
+    animation: fadeUp 0.01s ease both;
+    opacity: 1;
+    transform: none;
+  }
+
+  .btnPrimary:hover,
+  .btnGhost:hover {
+    transform: none;
+  }
+}

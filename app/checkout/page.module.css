@@ -1,0 +1,50 @@
+.wrap {
+  min-height: 100dvh;
+  padding: clamp(1.75rem, 5vw, 3rem);
+  background: linear-gradient(195deg, #09090b 0%, #000000 100%);
+  color: #fafafa;
+}
+
+.inner {
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.65rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(212, 175, 55, 0.85);
+  font-weight: 600;
+}
+
+.title {
+  margin: 0.75rem 0 0;
+  font-size: clamp(1.5rem, 3.8vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.sub {
+  margin: 0.85rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #a1a1aa;
+}
+
+.links {
+  margin: 2rem 0 0;
+}
+
+.link {
+  color: #d4af37;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.link:hover {
+  color: #ffd700;
+  border-color: rgba(255, 215, 0, 0.4);
+}

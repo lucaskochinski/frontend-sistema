@@ -1,0 +1,40 @@
+.wrap {
+  max-width: 28rem;
+  margin: 2rem auto;
+  padding: 1.5rem 1.35rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(168deg, rgba(28, 24, 18, 0.95), rgba(10, 10, 12, 0.98));
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fafafa;
+}
+
+.lede {
+  margin: 0.55rem 0 0;
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: rgba(161, 161, 170, 0.98);
+}
+
+.link {
+  display: inline-flex;
+  margin-top: 1rem;
+  padding: 0.55rem 1.05rem;
+  border-radius: 11px;
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  background: rgba(212, 175, 55, 0.14);
+  color: rgb(251, 245, 216);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.link:hover {
+  background: rgba(212, 175, 55, 0.22);
+}

@@ -1,0 +1,63 @@
+.layout {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr);
+  grid-template-areas: "brand form";
+  transition:
+    opacity 0.52s ease,
+    filter 0.52s ease;
+}
+
+.layoutExit {
+  opacity: 0;
+  pointer-events: none;
+  filter: blur(12px);
+}
+
+.brandPanel {
+  grid-area: brand;
+  min-height: 100%;
+}
+
+.formPanel {
+  grid-area: form;
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1.5rem, 4.25vw, 2.85rem) clamp(1.25rem, 4vw, 2.25rem);
+  background:
+    radial-gradient(ellipse 90% 50% at 80% 20%, rgba(212, 175, 55, 0.05), transparent),
+    linear-gradient(195deg, #09090b 0%, #000000 100%);
+}
+
+.formPanel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(ellipse 120% 80% at 50% 100%, rgba(212, 175, 55, 0.04), transparent 55%);
+  pointer-events: none;
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      "brand"
+      "form";
+  }
+
+  .formPanel {
+    padding: clamp(1.5rem, 5.5vw, 2.5rem) clamp(1.05rem, 4vw, 1.65rem)
+      clamp(2.25rem, 6vw, 2.75rem);
+    align-items: flex-start;
+  }
+
+  .brandPanel {
+    min-height: 42vh;
+  }
+}

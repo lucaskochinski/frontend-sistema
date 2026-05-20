@@ -1,0 +1,615 @@
+/* Onboarding wizard — cinematográfico, 3 temas por passo */
+
+.root {
+  position: relative;
+  min-height: 100dvh;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+  isolation: isolate;
+}
+
+/* ─── Temas de fundo (glow por passo) ─── */
+
+.root[data-theme="gold"]::before {
+  content: "";
+  position: absolute;
+  inset: -30%;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% -5%, rgba(212, 175, 55, 0.18), transparent 52%),
+    radial-gradient(ellipse 50% 40% at 85% 75%, rgba(234, 179, 8, 0.08), transparent),
+    radial-gradient(ellipse 45% 45% at 12% 60%, rgba(250, 204, 21, 0.06), transparent);
+  pointer-events: none;
+}
+
+.root[data-theme="meta"]::before {
+  content: "";
+  position: absolute;
+  inset: -35%;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 75% 50% at 45% -8%, rgba(59, 130, 246, 0.22), transparent 54%),
+    radial-gradient(ellipse 55% 45% at 92% 70%, rgba(37, 99, 235, 0.12), transparent),
+    radial-gradient(ellipse 48% 40% at 8% 55%, rgba(96, 165, 250, 0.1), transparent);
+  pointer-events: none;
+}
+
+/* Passo Drive: mesmo desenho do Meta (glow + painel), troca azul → verde */
+.root[data-theme="drive"]::before {
+  content: "";
+  position: absolute;
+  inset: -35%;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 75% 50% at 45% -8%, rgba(34, 197, 94, 0.2), transparent 54%),
+    radial-gradient(ellipse 55% 45% at 92% 70%, rgba(22, 163, 74, 0.12), transparent),
+    radial-gradient(ellipse 48% 40% at 8% 55%, rgba(74, 222, 128, 0.1), transparent);
+  pointer-events: none;
+}
+
+.root::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(180deg, rgba(5, 5, 8, 0.35) 0%, rgba(0, 0, 0, 0.92) 100%);
+  pointer-events: none;
+}
+
+.shell {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 34rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* ─── Progresso ─── */
+
+.progressWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  width: 100%;
+  max-width: 18rem;
+}
+
+.progressLineBg {
+  flex: 1;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.progressLineFill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(212, 175, 55, 0.55), #d4af37, rgba(253, 230, 138, 0.85));
+  box-shadow: 0 0 16px rgba(212, 175, 55, 0.35);
+  transition: width 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dots {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition:
+    transform 0.35s ease,
+    background 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+.dotActive {
+  background: rgba(212, 175, 55, 0.85);
+  border-color: rgba(250, 204, 21, 0.45);
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.55);
+  transform: scale(1.12);
+}
+
+.root[data-theme="meta"] .dotActive {
+  background: rgba(96, 165, 250, 0.9);
+  border-color: rgba(59, 130, 246, 0.55);
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.45);
+}
+
+.root[data-theme="drive"] .dotActive {
+  background: conic-gradient(
+    from -30deg,
+    #4285f4 0deg,
+    #34a853 90deg,
+    #fbbc05 180deg,
+    #ea4335 270deg,
+    #4285f4 360deg
+  );
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow:
+    0 0 10px rgba(66, 133, 244, 0.45),
+    0 0 22px rgba(52, 168, 83, 0.2),
+    0 0 18px rgba(251, 188, 5, 0.12);
+}
+
+.root[data-theme="drive"] .progressLineFill {
+  background: linear-gradient(90deg, #4285f4 0%, #34a853 32%, #fbbc05 64%, #ea4335 100%);
+  box-shadow:
+    0 0 14px rgba(66, 133, 244, 0.45),
+    0 0 24px rgba(251, 188, 5, 0.12);
+}
+
+.progressLabel {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(161, 161, 170, 0.88);
+  text-align: center;
+  margin-bottom: -0.25rem;
+}
+
+/* ─── Card central ─── */
+
+.cardRail {
+  width: 100%;
+  perspective: 1200px;
+}
+
+.stepPane {
+  border-radius: 22px;
+  padding: clamp(1.65rem, 5vw, 2.35rem);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(12, 12, 18, 0.55);
+  backdrop-filter: blur(22px) saturate(1.35);
+  -webkit-backdrop-filter: blur(22px) saturate(1.35);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.45) inset,
+    0 28px 80px rgba(0, 0, 0, 0.52);
+  animation: paneIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes paneIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.root[data-theme="gold"] .stepPane {
+  border-color: rgba(212, 175, 55, 0.18);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.45) inset,
+    0 28px 80px rgba(0, 0, 0, 0.52),
+    0 0 100px rgba(212, 175, 55, 0.08);
+}
+
+.root[data-theme="meta"] .stepPane {
+  border-color: rgba(96, 165, 250, 0.25);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.45) inset,
+    0 28px 80px rgba(0, 0, 0, 0.52),
+    0 0 90px rgba(59, 130, 246, 0.1);
+}
+
+.root[data-theme="drive"] .stepPane {
+  border-color: rgba(74, 222, 128, 0.28);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.45) inset,
+    0 28px 80px rgba(0, 0, 0, 0.52),
+    0 0 90px rgba(34, 197, 94, 0.1);
+}
+
+.eyebrow {
+  margin: 0 0 0.35rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(212, 175, 55, 0.78);
+}
+
+.root[data-theme="meta"] .eyebrow {
+  color: rgba(147, 197, 253, 0.88);
+}
+
+.root[data-theme="drive"] .eyebrow {
+  color: rgba(167, 243, 208, 0.95);
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.45rem, 4.2vw, 1.85rem);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+  color: #fafafa;
+}
+
+.sub {
+  margin: 0.75rem 0 0;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: #a1a1aa;
+}
+
+/* ─── Plano (passo 1) ─── */
+
+.planCard {
+  margin-top: 1.35rem;
+  padding: 1.15rem 1.2rem;
+  border-radius: 16px;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  background: linear-gradient(
+    165deg,
+    rgba(212, 175, 55, 0.08) 0%,
+    rgba(0, 0, 0, 0.28) 100%
+  );
+}
+
+.planName {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: #f5e6b8;
+  letter-spacing: -0.02em;
+}
+
+.planBadge {
+  display: inline-block;
+  margin-top: 0.35rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(34, 197, 94, 0.95);
+}
+
+.features {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: #e4e4e7;
+}
+
+.featureIcon {
+  flex-shrink: 0;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  font-size: 0.75rem;
+}
+
+.featureMuted {
+  color: #a1a1aa;
+  font-size: 0.78rem;
+}
+
+/* ─── Botões ─── */
+
+.actions {
+  margin-top: 1.65rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.btnGold {
+  appearance: none;
+  border: none;
+  border-radius: 14px;
+  padding: 0.85rem 1.25rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  color: #1a1508;
+  background: linear-gradient(135deg, #e8c547 0%, #d4af37 45%, #c9a227 100%);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.35) inset,
+    0 10px 36px rgba(212, 175, 55, 0.28);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+
+.btnGold:hover:not(:disabled) {
+  filter: brightness(1.05);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.35) inset,
+    0 14px 44px rgba(212, 175, 55, 0.38);
+}
+
+.btnGold:active:not(:disabled) {
+  transform: scale(0.99);
+}
+
+.btnGold:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+
+.btnGoldLg {
+  padding: 1.05rem 1.35rem;
+  font-size: 1.02rem;
+}
+
+.btnGhost {
+  appearance: none;
+  border-radius: 12px;
+  padding: 0.72rem 1rem;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #e4e4e7;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.btnGhost:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.btnGhost:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Meta hero button */
+.btnMeta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  width: 100%;
+  appearance: none;
+  border: 1px solid rgba(96, 165, 250, 0.45);
+  border-radius: 16px;
+  padding: 1rem 1.35rem;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #f0f9ff;
+  cursor: pointer;
+  background: linear-gradient(
+    155deg,
+    rgba(59, 130, 246, 0.35) 0%,
+    rgba(37, 99, 235, 0.22) 50%,
+    rgba(30, 64, 175, 0.18) 100%
+  );
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.35) inset,
+    0 16px 48px rgba(37, 99, 235, 0.2);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.btnMeta:hover:not(:disabled) {
+  border-color: rgba(147, 197, 253, 0.55);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.35) inset,
+    0 20px 56px rgba(37, 99, 235, 0.3);
+}
+
+.btnMeta:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.btnMetaLogo {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #050608;
+  display: grid;
+  place-items: center;
+}
+
+.btnMetaLogoImg {
+  width: 88%;
+  height: 88%;
+  object-fit: contain;
+  display: block;
+}
+
+/* Drive: espelha .btnMeta com paleta verde; logo google-drive.png */
+.btnDrive {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  width: 100%;
+  appearance: none;
+  border: 1px solid rgba(74, 222, 128, 0.45);
+  border-radius: 16px;
+  padding: 1rem 1.35rem;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ecfdf5;
+  cursor: pointer;
+  background: linear-gradient(
+    155deg,
+    rgba(34, 197, 94, 0.34) 0%,
+    rgba(22, 163, 74, 0.24) 50%,
+    rgba(21, 128, 61, 0.2) 100%
+  );
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.35) inset,
+    0 16px 48px rgba(22, 163, 74, 0.2);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.btnDrive:hover:not(:disabled) {
+  border-color: rgba(134, 239, 172, 0.55);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.35) inset,
+    0 20px 56px rgba(22, 163, 74, 0.28);
+}
+
+.btnDrive:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.btnDriveLogo {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #050608;
+  display: grid;
+  place-items: center;
+}
+
+.btnDriveLogoImg {
+  width: 88%;
+  height: 88%;
+  object-fit: contain;
+  display: block;
+}
+
+.connectedRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+  min-height: 1.5rem;
+}
+
+.badgeOk {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.72rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid rgba(34, 197, 94, 0.45);
+  background: rgba(34, 197, 94, 0.12);
+  color: rgb(167, 243, 208);
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.15);
+}
+
+.badgeDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgb(74, 222, 128);
+  box-shadow: 0 0 8px rgb(74, 222, 128);
+}
+
+/* ─── Skeleton inicial ─── */
+
+.skShell {
+  width: min(100%, 34rem);
+  border-radius: 22px;
+  padding: clamp(1.65rem, 5vw, 2.35rem);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(12, 12, 18, 0.45);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.skLineSm {
+  width: 42%;
+  min-height: 0.72rem;
+  border-radius: 8px;
+}
+
+.skLineMd {
+  width: 72%;
+  min-height: 1rem;
+  border-radius: 10px;
+}
+
+.skBox {
+  min-height: 7.5rem;
+  border-radius: 16px;
+  width: 100%;
+}
+
+.skBtn {
+  min-height: 3rem;
+  border-radius: 14px;
+  width: 100%;
+}
+
+.skProg {
+  display: flex;
+  gap: 0.35rem;
+  justify-content: center;
+  padding-top: 0.35rem;
+}
+
+.skProg .skDot {
+  width: 9px;
+  height: 9px;
+  min-height: 9px;
+  max-width: 9px;
+  border-radius: 999px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stepPane {
+    animation: none;
+  }
+
+  .progressLineFill {
+    transition: none;
+  }
+
+  .dot {
+    transition: none;
+  }
+}

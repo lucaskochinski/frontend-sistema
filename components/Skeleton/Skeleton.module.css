@@ -1,0 +1,65 @@
+.root {
+  display: block;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(212, 175, 55, 0.14) 45%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeletonSweep 1.45s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root {
+    animation: none;
+    background: rgba(255, 255, 255, 0.07);
+  }
+}
+
+@keyframes skeletonSweep {
+  0% {
+    background-position: 100% 0;
+    opacity: 0.72;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    background-position: -100% 0;
+    opacity: 0.72;
+  }
+}
+
+.grid3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+.card {
+  padding: 1.15rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.chart {
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1.25rem;
+  min-height: 280px;
+}
+
+.tableSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.5rem 0;
+}
+
+.row {
+  display: flex;
+  gap: 0.65rem;
+  align-items: center;
+}

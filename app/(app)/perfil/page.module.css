@@ -1,0 +1,564 @@
+.page {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 3vw, 1.75rem) 3rem;
+}
+
+.header {
+  margin-bottom: clamp(1.5rem, 3vw, 2rem);
+}
+
+.kicker {
+  margin: 0;
+  font-size: 0.65rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(212, 175, 55, 0.82);
+  font-weight: 600;
+}
+
+.title {
+  margin: 0.6rem 0 0;
+  font-size: clamp(1.35rem, 2.8vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #fafafa;
+}
+
+.lede {
+  margin: 0.55rem 0 0;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: rgba(161, 161, 170, 0.98);
+  max-width: 42rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 26rem);
+  gap: clamp(1.35rem, 3vw, 2.25rem);
+  align-items: start;
+}
+
+@media (max-width: 960px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: linear-gradient(168deg, rgba(20, 20, 26, 0.96) 0%, rgba(10, 10, 14, 0.98) 100%);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.42) inset,
+    0 22px 52px rgba(0, 0, 0, 0.42);
+  padding: 1.35rem 1.4rem 1.45rem;
+}
+
+.formCard {
+  padding: 1.45rem 1.5rem 1.55rem;
+}
+
+.planCard {
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+  border-color: rgba(212, 175, 55, 0.14);
+  background:
+    radial-gradient(120% 80% at 100% -20%, rgba(212, 175, 55, 0.12), transparent 52%),
+    linear-gradient(168deg, rgba(22, 22, 30, 0.98) 0%, rgba(10, 10, 14, 0.99) 100%);
+  box-shadow:
+    0 0 0 1px rgba(212, 175, 55, 0.06) inset,
+    0 0 0 1px rgba(0, 0, 0, 0.42) inset,
+    0 26px 56px rgba(0, 0, 0, 0.48);
+}
+
+.cardHead {
+  margin: 0 0 1.1rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(212, 175, 55, 0.78);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.label {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: rgba(228, 228, 231, 0.92);
+}
+
+.input {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  background: rgba(0, 0, 0, 0.35);
+  color: #fafafa;
+  font-family: inherit;
+  font-size: 0.86rem;
+  padding: 0.55rem 0.75rem;
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease;
+}
+
+.input::placeholder {
+  color: rgba(113, 113, 122, 0.82);
+}
+
+.input:hover {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.input:focus {
+  outline: none;
+  border-color: rgba(212, 175, 55, 0.45);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.hint {
+  margin: -0.2rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: rgba(113, 113, 122, 0.95);
+}
+
+.formActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 0.25rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.btnPrimary {
+  appearance: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.55rem 1.15rem;
+  border-radius: 11px;
+  border: 1px solid rgba(212, 175, 55, 0.42);
+  background: rgba(212, 175, 55, 0.16);
+  color: rgba(251, 245, 216, 0.98);
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.btnPrimary:hover:not(:disabled) {
+  background: rgba(212, 175, 55, 0.24);
+  border-color: rgba(212, 175, 55, 0.55);
+}
+
+.btnPrimary:focus-visible {
+  outline: 2px solid rgba(212, 175, 55, 0.45);
+  outline-offset: 2px;
+}
+
+.btnPrimary:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.btnGhost {
+  appearance: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.55rem 1.05rem;
+  border-radius: 11px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent;
+  color: rgba(228, 228, 231, 0.9);
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease;
+}
+
+.btnGhost:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.btnGhost:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.toastSaved {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: rgba(74, 222, 128, 0.95);
+}
+
+/* ─── Plano ─── */
+
+.planAccent {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  border-radius: 4px;
+  background: linear-gradient(
+    180deg,
+    rgba(212, 175, 55, 0.95) 0%,
+    rgba(96, 165, 250, 0.5) 55%,
+    rgba(212, 175, 55, 0.35) 100%
+  );
+  box-shadow: 0 0 18px rgba(212, 175, 55, 0.22);
+}
+
+.planWrap {
+  position: relative;
+  padding: 1.35rem 1.45rem 1.5rem 1.2rem;
+  padding-left: calc(1.2rem + 4px + 0.65rem);
+}
+
+.planTop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.planBadge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(251, 245, 216, 0.95);
+  padding: 0.32rem 0.62rem;
+  border-radius: 999px;
+  border: 1px solid rgba(74, 222, 128, 0.35);
+  background: rgba(74, 222, 128, 0.12);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset;
+}
+
+.planSectionTitle {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(212, 175, 55, 0.82);
+}
+
+.planHero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  padding: 1rem 1.05rem;
+  margin-bottom: 0.85rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.28);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35) inset;
+}
+
+.planHeroMain {
+  min-width: 0;
+  flex: 1 1 9rem;
+}
+
+.planName {
+  margin: 0;
+  font-size: clamp(1.2rem, 2.4vw, 1.42rem);
+  font-weight: 700;
+  color: #fafafa;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.planTagline {
+  margin: 0.35rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: rgba(161, 161, 170, 0.98);
+}
+
+.planPriceTag {
+  flex-shrink: 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: rgba(253, 230, 138, 0.98);
+  padding: 0.45rem 0.75rem;
+  border-radius: 11px;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  background: linear-gradient(145deg, rgba(212, 175, 55, 0.18), rgba(212, 175, 55, 0.06));
+  white-space: nowrap;
+}
+
+.planRenewal {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0 0 1.05rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: rgba(161, 161, 170, 0.98);
+}
+
+.planRenewalDot {
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  margin-top: 0.35rem;
+  border-radius: 50%;
+  background: rgba(96, 165, 250, 0.85);
+  box-shadow: 0 0 10px rgba(96, 165, 250, 0.45);
+}
+
+.usageShell {
+  padding: 0.85rem 0.95rem;
+  margin-bottom: 1.1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.usageHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: rgba(161, 161, 170, 0.95);
+}
+
+.usageFraction {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: rgba(228, 228, 231, 0.98);
+}
+
+.usageOf {
+  font-weight: 600;
+  opacity: 0.55;
+  margin: 0 0.05rem;
+}
+
+.usageBar {
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35) inset;
+}
+
+.usageFill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.9), rgba(212, 175, 55, 0.95));
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.25);
+  transition: width 0.35s ease;
+}
+
+.usageFoot {
+  margin: 0.4rem 0 0;
+  font-size: 0.72rem;
+  color: rgba(113, 113, 122, 0.98);
+}
+
+.featureTitle {
+  margin: 0 0 0.55rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: rgba(228, 228, 231, 0.78);
+}
+
+.featureBoard {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.featureLi {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  font-size: 0.82rem;
+  line-height: 1.48;
+  color: rgba(212, 212, 218, 0.96);
+}
+
+.featureCheck {
+  flex-shrink: 0;
+  width: 1.12rem;
+  height: 1.12rem;
+  margin-top: 0.1rem;
+  border-radius: 5px;
+  background: rgba(74, 222, 128, 0.14);
+  border: 1px solid rgba(74, 222, 128, 0.36);
+  display: grid;
+  place-items: center;
+  color: rgb(167, 243, 208);
+}
+
+.featureCheck svg {
+  display: block;
+}
+
+.featureText {
+  min-width: 0;
+}
+
+.planActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin-top: 1.35rem;
+  padding-top: 1.15rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.btnUpgrade {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  text-decoration: none;
+  font-family: inherit;
+  font-size: 0.84rem;
+  font-weight: 700;
+  padding: 0.68rem 1.05rem;
+  border-radius: 12px;
+  border: 1px solid rgba(212, 175, 55, 0.52);
+  background: rgba(212, 175, 55, 0.22);
+  color: rgb(251, 245, 216);
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.18s ease;
+}
+
+.btnUpgrade:hover {
+  background: rgba(212, 175, 55, 0.32);
+  border-color: rgba(212, 175, 55, 0.68);
+  transform: translateY(-1px);
+}
+
+.btnUpgrade:focus-visible {
+  outline: 2px solid rgba(212, 175, 55, 0.45);
+  outline-offset: 2px;
+}
+
+.btnCancelSub {
+  appearance: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.55rem 0.95rem;
+  border-radius: 11px;
+  border: 1px solid rgba(248, 113, 113, 0.32);
+  background: rgba(239, 68, 68, 0.1);
+  color: rgba(254, 202, 202, 0.95);
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease;
+}
+
+.btnCancelSub:hover {
+  border-color: rgba(248, 113, 113, 0.48);
+  background: rgba(239, 68, 68, 0.16);
+}
+
+.subNote {
+  margin: 0.25rem 0 0;
+  font-size: 0.7rem;
+  line-height: 1.5;
+  color: rgba(113, 113, 122, 0.95);
+}
+
+/* Modal stubs */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 5, 8, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.dialog {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 24rem);
+  padding: 1.25rem 1.3rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(18, 18, 22, 0.96);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.5) inset,
+    0 24px 60px rgba(0, 0, 0, 0.5);
+}
+
+.dialogTitle {
+  margin: 0 0 0.6rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fafafa;
+}
+
+.dialogBody {
+  margin: 0 0 1rem;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: rgba(161, 161, 170, 0.98);
+}
+
+.dialogActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btnUpgrade:hover {
+    transform: none;
+  }
+
+  .usageFill {
+    transition: none;
+  }
+}

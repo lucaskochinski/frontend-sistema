@@ -1,0 +1,116 @@
+.formPage {
+  max-width: 30rem;
+}
+
+.card {
+  margin-top: 0.5rem;
+  padding: 1.45rem 1.4rem 1.55rem;
+  border-radius: 18px;
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  background:
+    radial-gradient(90% 80% at 12% 0%, rgba(212, 175, 55, 0.14), transparent 52%),
+    linear-gradient(168deg, rgba(20, 20, 26, 0.98), rgba(10, 10, 12, 0.99));
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.45) inset,
+    0 22px 56px rgba(0, 0, 0, 0.45);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.label {
+  font-size: 0.74rem;
+  font-weight: 650;
+  color: rgba(228, 228, 231, 0.92);
+}
+
+.hint {
+  margin: 0;
+  font-size: 0.74rem;
+  line-height: 1.5;
+  color: rgba(161, 161, 170, 0.95);
+}
+
+.timeInput {
+  appearance: none;
+  border-radius: 12px;
+  border: 1px solid rgba(212, 175, 55, 0.32);
+  background: rgba(0, 0, 0, 0.45);
+  color: #fafafa;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 0.75rem 1rem;
+  max-width: 11rem;
+}
+
+.timeInput:focus {
+  outline: none;
+  border-color: rgba(212, 175, 55, 0.55);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+}
+
+.btnPlatinum {
+  appearance: none;
+  cursor: pointer;
+  margin-top: 1.35rem;
+  width: 100%;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.78rem 1.2rem;
+  border-radius: 13px;
+  border: 1px solid rgba(212, 175, 55, 0.48);
+  color: rgb(251, 245, 216);
+  background: linear-gradient(145deg, rgba(245, 224, 160, 0.28) 0%, rgba(212, 175, 55, 0.35) 35%, rgba(148, 120, 45, 0.55) 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.12) inset,
+    0 14px 36px rgba(0, 0, 0, 0.4);
+  transition:
+    transform 0.16s ease,
+    filter 0.16s ease;
+}
+
+.btnPlatinum:hover:not(:disabled) {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.btnPlatinum:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.success {
+  margin-top: 1rem;
+  padding: 0.62rem 0.75rem;
+  border-radius: 11px;
+  border: 1px solid rgba(167, 243, 208, 0.35);
+  background: rgba(22, 163, 74, 0.14);
+  font-size: 0.8rem;
+  color: rgb(204, 251, 229);
+}
+
+.mockPill {
+  display: inline-flex;
+  margin-top: 0.45rem;
+  padding: 0.28rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid rgba(212, 175, 55, 0.38);
+  background: rgba(212, 175, 55, 0.1);
+  color: rgba(253, 230, 138, 0.95);
+}
+
+.skeletonBlock {
+  margin-top: 1rem;
+}

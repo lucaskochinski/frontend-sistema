@@ -1,0 +1,119 @@
+.mockPill {
+  display: inline-flex;
+  margin-bottom: 0.85rem;
+  padding: 0.28rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid rgba(212, 175, 55, 0.38);
+  background: rgba(212, 175, 55, 0.1);
+  color: rgba(253, 230, 138, 0.95);
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.thActions {
+  text-align: right;
+  width: 1%;
+  white-space: nowrap;
+}
+
+.tdActions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.tdActions button + button {
+  margin-left: 0.35rem;
+}
+
+.badgePub {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.28rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 650;
+  border: 1px solid rgba(212, 175, 55, 0.42);
+  background: rgba(212, 175, 55, 0.12);
+  color: rgba(253, 230, 138, 0.96);
+}
+
+.badgeRest {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.28rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 650;
+  border: 1px solid rgba(212, 175, 55, 0.38);
+  background: rgba(212, 175, 55, 0.1);
+  color: rgba(253, 224, 130, 0.96);
+}
+
+.fieldset {
+  margin: 0;
+  padding: 0;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.radioOpt {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+  padding: 0.75rem 0.85rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.22);
+  cursor: pointer;
+}
+
+.radioOpt input {
+  margin-top: 0.2rem;
+  accent-color: rgb(212, 175, 55);
+}
+
+.radioOpt strong {
+  display: block;
+  font-size: 0.84rem;
+  color: #fafafa;
+  margin-bottom: 0.2rem;
+}
+
+.radioHint {
+  display: block;
+  font-size: 0.74rem;
+  font-weight: 400;
+  color: rgba(161, 161, 170, 0.95);
+  line-height: 1.45;
+}
+
+.emailChips {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.emailChips li {
+  font-size: 0.72rem;
+  font-family: ui-monospace, monospace;
+  padding: 0.22rem 0.5rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(228, 228, 231, 0.92);
+}

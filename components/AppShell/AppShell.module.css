@@ -1,0 +1,549 @@
+.root {
+  --sidebar-expanded: 276px;
+  --sidebar-narrow: 76px;
+  display: flex;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+  background: #09090b;
+  color: #fafafa;
+}
+
+.backdrop {
+  display: none;
+}
+
+.sidebar {
+  flex-shrink: 0;
+  width: var(--sidebar-expanded);
+  height: 100dvh;
+  max-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, #0c0c10 0%, #09090b 40%, #050506 100%);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  transition:
+    width 0.28s cubic-bezier(0.33, 1, 0.68, 1),
+    transform 0.28s cubic-bezier(0.33, 1, 0.68, 1);
+  z-index: 120;
+}
+
+.sideTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 1rem 0.75rem 1.05rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.brandMark {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  line-height: 0;
+  text-decoration: none;
+}
+
+.brandMarkWide {
+  justify-content: flex-start;
+}
+
+.brandMarkGlyph {
+  justify-content: center;
+  flex: 1;
+  padding-inline: 0.25rem;
+}
+
+.logoWide {
+  display: block;
+  width: 100% !important;
+  max-width: 100%;
+  height: auto !important;
+  max-height: clamp(3.35rem, 5.2vw, 4.65rem);
+  min-height: 3rem;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.logoGlyph {
+  display: block;
+  width: 2.65rem !important;
+  height: 2.65rem !important;
+  object-fit: contain;
+}
+
+.closeDrawer {
+  display: none;
+}
+
+.navScroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.85rem 0.65rem 0.35rem;
+}
+
+.navAdmin {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0 0.65rem 0.95rem;
+}
+
+.navAdminDivider {
+  height: 1px;
+  margin: 0.35rem 0.95rem;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.navSectionLabel {
+  padding: 0.45rem 0.85rem 0.2rem;
+  margin: 0;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(212, 175, 55, 0.52);
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.72rem 0.85rem;
+  border-radius: 11px;
+  border: 1px solid transparent;
+  color: #a1a1aa;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.navLink:focus-visible {
+  outline: 2px solid rgba(212, 175, 55, 0.45);
+  outline-offset: 1px;
+}
+
+.navLinkActive {
+  color: #f0e8d4;
+  font-weight: 600;
+  border-color: rgba(212, 175, 55, 0.28);
+  background: linear-gradient(
+    145deg,
+    rgba(212, 175, 55, 0.2) 0%,
+    rgba(157, 128, 55, 0.14) 42%,
+    rgba(112, 92, 45, 0.16) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 230, 160, 0.12),
+    0 0 24px rgba(212, 175, 55, 0.05);
+}
+
+.navLinkActive:hover {
+  border-color: rgba(212, 175, 55, 0.38);
+  background: linear-gradient(
+    145deg,
+    rgba(220, 186, 80, 0.26) 0%,
+    rgba(148, 120, 55, 0.18) 48%,
+    rgba(92, 78, 42, 0.2) 100%
+  );
+}
+
+.navIcon {
+  flex-shrink: 0;
+  width: 1.35rem;
+  display: flex;
+  justify-content: center;
+  color: currentColor;
+}
+
+.navLabel {
+  white-space: nowrap;
+  overflow: hidden;
+  transition:
+    opacity 0.2s ease,
+    max-width 0.28s ease;
+  max-width: 12rem;
+  opacity: 1;
+}
+
+.sideFoot {
+  padding: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.collapseBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+  padding: 0.35rem 0.45rem;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: rgba(161, 161, 170, 0.72);
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition:
+    color 0.18s ease,
+    background 0.18s ease;
+}
+
+.collapseBtn:hover {
+  color: rgba(228, 228, 231, 0.95);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.collapseBtn:focus-visible {
+  outline: 2px solid rgba(212, 175, 55, 0.32);
+  outline-offset: 1px;
+}
+
+.collapseIcon {
+  flex-shrink: 0;
+  width: 1.1rem;
+  height: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(161, 161, 170, 0.88);
+  opacity: 0.9;
+}
+
+.collapseBtn:hover .collapseIcon {
+  color: rgba(212, 212, 216, 0.95);
+}
+
+.collapseLabel {
+  overflow: hidden;
+  white-space: nowrap;
+  transition:
+    opacity 0.2s ease,
+    max-width 0.28s ease;
+  max-width: 6rem;
+}
+
+.profileLink {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.72rem;
+  border-radius: 11px;
+  border: 1px solid transparent;
+  color: #a1a1aa;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.profileLink:focus-visible {
+  outline: 2px solid rgba(212, 175, 55, 0.45);
+  outline-offset: 1px;
+}
+
+.profileLink:hover {
+  color: #e4e4e7;
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.profileLinkActive {
+  color: #f0e8d4;
+  font-weight: 600;
+  border-color: rgba(212, 175, 55, 0.28);
+  background: linear-gradient(
+    145deg,
+    rgba(212, 175, 55, 0.18) 0%,
+    rgba(157, 128, 55, 0.12) 42%,
+    rgba(112, 92, 45, 0.14) 100%
+  );
+}
+
+.profileAvatar {
+  flex-shrink: 0;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.24);
+  color: rgba(253, 230, 165, 0.95);
+}
+
+.profileOctopus {
+  display: block;
+}
+
+.profileName {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition:
+    opacity 0.2s ease,
+    max-width 0.28s ease;
+  max-width: 12rem;
+}
+
+.signOut {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0.45rem;
+  font-size: 0.8rem;
+  color: rgba(161, 161, 170, 0.9);
+  text-decoration: none;
+  border-radius: 11px;
+  border: 1px solid transparent;
+  transition:
+    color 0.18s ease,
+    background 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.signOut:hover {
+  color: #fecaca;
+  background: rgba(248, 113, 113, 0.06);
+  border-color: rgba(248, 113, 113, 0.12);
+}
+
+.signOut:focus-visible {
+  outline: 2px solid rgba(248, 113, 113, 0.45);
+  outline-offset: 1px;
+}
+
+/* Barra lateral recolhida (desktop): só ícone de sair */
+.signOutIconBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 2.65rem;
+  padding: 0.45rem;
+  border-radius: 11px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: rgba(161, 161, 170, 0.9);
+  text-decoration: none;
+  transition:
+    color 0.18s ease,
+    background 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.signOutIconBtn:hover {
+  color: #fecaca;
+  background: rgba(248, 113, 113, 0.08);
+  border-color: rgba(248, 113, 113, 0.15);
+}
+
+.signOutIconBtn:focus-visible {
+  outline: 2px solid rgba(248, 113, 113, 0.45);
+  outline-offset: 1px;
+}
+
+.mainColumn {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  height: 100dvh;
+  max-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: none;
+}
+
+.topBar {
+  display: none;
+  flex-shrink: 0;
+}
+
+.main {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 110;
+    background: rgba(0, 0, 0, 0.52);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.26s ease;
+  }
+
+  .root[data-drawer="open"] .backdrop {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: min(286px, 88vw);
+    transform: translateX(-102%);
+    box-shadow: 12px 0 48px rgba(0, 0, 0, 0.45);
+  }
+
+  .root[data-drawer="open"] .sidebar {
+    transform: translateX(0);
+  }
+
+  .closeDrawer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #fafafa;
+    font-size: 1.35rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .navLink {
+    justify-content: flex-start;
+  }
+
+  .collapseBtn {
+    display: none;
+  }
+
+  .collapseLabel {
+    opacity: 1;
+    max-width: 6rem;
+  }
+
+  .topBar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(9, 9, 11, 0.92);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+
+  .menuBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.05);
+    color: #d4af37;
+    cursor: pointer;
+  }
+
+  .topBarTitle {
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(161, 161, 170, 0.95);
+    font-weight: 600;
+  }
+}
+
+@media (min-width: 901px) {
+  .menuBtn {
+    display: none;
+  }
+
+  .root[data-collapsed="true"] .sidebar {
+    width: var(--sidebar-narrow);
+  }
+
+  .root[data-collapsed="true"] .navLink {
+    justify-content: center;
+    gap: 0;
+    padding-inline: 0;
+    padding-block: 0.72rem;
+  }
+
+  .root[data-collapsed="true"] .navLabel {
+    display: none;
+  }
+
+  .root[data-collapsed="true"] .navSectionLabel {
+    display: none;
+  }
+
+  .root[data-collapsed="true"] .navAdminDivider {
+    margin: 0.25rem 0.55rem;
+  }
+
+  .root[data-collapsed="true"] .navIcon {
+    width: 1.35rem;
+    flex-shrink: 0;
+  }
+
+  .root[data-collapsed="true"] .collapseBtn {
+    justify-content: center;
+  }
+
+  .root[data-collapsed="true"] .collapseLabel {
+    opacity: 0;
+    max-width: 0;
+  }
+
+  .root[data-collapsed="true"] .profileLink {
+    justify-content: center;
+    gap: 0;
+    padding-inline: 0.35rem;
+  }
+
+  .root[data-collapsed="true"] .profileName {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar,
+  .brandMark,
+  .navLabel,
+  .collapseLabel,
+  .profileName,
+  .backdrop,
+  .signOut,
+  .signOutIconBtn {
+    transition: none;
+  }
+}

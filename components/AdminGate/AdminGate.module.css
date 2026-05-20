@@ -1,0 +1,22 @@
+.bypassRibbon {
+  margin: 0 0 1rem;
+  padding: 0.55rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  background: rgba(212, 175, 55, 0.1);
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: rgba(253, 230, 138, 0.95);
+}
+
+.bypassRibbon code {
+  font-size: 0.72rem;
+  padding: 0.12rem 0.35rem;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.35);
+  color: rgb(251, 245, 216);
+}
+
+.bypassRibbon strong {
+  font-weight: 700;
+}

@@ -1,0 +1,80 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: clamp(1rem, 4vw, 2.5rem);
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(6px);
+}
+
+.dialog {
+  width: min(100%, 32rem);
+  margin: auto;
+  border-radius: 16px;
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  background:
+    radial-gradient(120% 70% at 100% -20%, rgba(212, 175, 55, 0.12), transparent),
+    linear-gradient(168deg, rgba(22, 22, 28, 0.98), rgba(10, 10, 12, 0.99));
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(0, 0, 0, 0.4) inset;
+}
+
+.dialogWide {
+  width: min(100%, 40rem);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.15rem 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #fafafa;
+}
+
+.close {
+  flex-shrink: 0;
+  appearance: none;
+  cursor: pointer;
+  border: none;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(228, 228, 231, 0.9);
+  width: 2rem;
+  height: 2rem;
+  border-radius: 10px;
+  font-size: 1.25rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.body {
+  padding: 1rem 1.15rem 1.15rem;
+  max-height: min(70vh, 32rem);
+  overflow-y: auto;
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  justify-content: flex-end;
+  padding: 0.85rem 1.15rem 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}

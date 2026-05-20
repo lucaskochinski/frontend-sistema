@@ -1,0 +1,41 @@
+:root {
+  --hooko-bg: #09090b;
+  --hooko-bg-deep: #000000;
+  --hooko-gold: #d4af37;
+  --hooko-gold-bright: #ffd700;
+  --hooko-glass: rgba(255, 255, 255, 0.06);
+  --hooko-border: rgba(255, 255, 255, 0.1);
+  --hooko-text: #fafafa;
+  --hooko-text-muted: #a1a1aa;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--hooko-bg-deep);
+  color: var(--hooko-text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
