@@ -4,11 +4,49 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react"
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./page.module.css";
+import { apiFetch, getStoredOrganizationId } from "@/lib/hooko-session";
 
 /** Mock: desliga API real enquanto o backend não está ligado */
 const USE_MOCK = false;
 const SIMULATE_EMPTY = false;
 const SIMULATE_META_DISCONNECTED = false;
+
+function SmartThumbnail({ initialSrc, mediaId, className }) {
+  const [src, setSrc] = useState(initialSrc || "/imagens/meta.png");
+  const [refreshing, setRefreshing] = useState(false);
+
+  const handleError = async () => {
+    // Evita loop infinito e só atualiza se tiver um mediaId real
+    if (refreshing || !mediaId || src === "/imagens/meta.png") return;
+    setRefreshing(true);
+    try {
+      const orgId = getStoredOrganizationId();
+      if (!orgId) return;
+      
+      const res = await apiFetch(`/api/dashboard/media-refresh/${mediaId}?organizationId=${orgId}`);
+      if (res && res.thumbnailUrl) {
+        setSrc(res.thumbnailUrl); // Link novo injetado na tela!
+      } else {
+        setSrc("/imagens/meta.png");
+      }
+    } catch (e) {
+      console.error("Erro ao renovar imagem expirada do Meta:", e);
+      setSrc("/imagens/meta.png");
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  return (
+    <img
+      src={src}
+      alt="Miniatura Criativo"
+      className={className}
+      onError={handleError}
+      style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+    />
+  );
+}
 
 const mockPlanLimits = { used: 14, limit: 50 };
 
@@ -212,7 +250,46 @@ export default function DashboardCreativesPage() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(null);
   const [pageIndex, setPageIndex] = useState(0);
-  const metaConnected = !SIMULATE_META_DISCONNECTED;
+
+  const [metaConnected, setMetaConnected] = useState(false);
+  const [metaActId, setMetaActId] = useState("");
+  const [liveCampaigns, setLiveCampaigns] = useState([]);
+  const [liveAds, setLiveAds] = useState([]);
+  const [quota, setQuota] = useState({ used: 0, limit: 0 });
+  const [modalLoading, setModalLoading] = useState(false);
+
+  const fetchImportedCreatives = useCallback(async () => {
+    try {
+      setLoading(true);
+      const orgId = getStoredOrganizationId();
+      if (!orgId) return;
+
+      const [insights, statusRes] = await Promise.all([
+        apiFetch(`/api/dashboard/insights?organizationId=${orgId}`).catch(() => null),
+        apiFetch(`/api/meta/status?organizationId=${orgId}`).catch(() => null),
+      ]);
+
+      if (insights && Array.isArray(insights.items)) {
+        const mapped = insights.items.map((item) => ({
+          id: item.creativeAnalysisId,
+          media_id: item.mediaId,
+          name: item.adName || "Anúncio",
+          campaign_name: item.campaignName || "Sem Campanha",
+          headline: item.aiAnalysis?.transcription || item.adName || "Sem título",
+          thumbnail_url: item.thumbnailUrl || "/imagens/meta.png",
+          status: "processed",
+        }));
+        setImportedCreatives(mapped);
+      }
+      if (statusRes) {
+        setMetaConnected(!!statusRes.connected);
+      }
+    } catch (err) {
+      console.error("Erro ao carregar dados do Meta:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     const n = importedCreatives.length;
@@ -225,17 +302,8 @@ export default function DashboardCreativesPage() {
   }, [importedCreatives.length]);
 
   useEffect(() => {
-    if (!USE_MOCK) {
-      setLoading(false);
-      setImportedCreatives([]);
-      return;
-    }
-    const t = setTimeout(() => {
-      setImportedCreatives(SIMULATE_EMPTY ? [] : mockImportedCreatives);
-      setLoading(false);
-    }, LOAD_MS);
-    return () => clearTimeout(t);
-  }, []);
+    fetchImportedCreatives();
+  }, [fetchImportedCreatives]);
 
   useEffect(() => {
     if (modalOpen) {
@@ -293,14 +361,91 @@ export default function DashboardCreativesPage() {
     };
   }, [deleteConfirmOpen, closeDeleteConfirm]);
 
-  const onConnectMeta = useCallback(() => {}, []);
+  const onConnectMeta = useCallback(async () => {
+    try {
+      const orgId = getStoredOrganizationId();
+      if (!orgId) return;
+      const res = await apiFetch(`/api/meta/oauth/authorize-url?organizationId=${orgId}`);
+      if (res && res.authorizeUrl) {
+        window.location.href = res.authorizeUrl;
+      }
+    } catch (err) {
+      console.error("Erro ao conectar Meta:", err);
+      alert("Erro ao conectar o Meta Ads.");
+    }
+  }, []);
 
   const creditsPct =
-    mockPlanLimits.limit > 0
-      ? Math.min(100, (mockPlanLimits.used / mockPlanLimits.limit) * 100)
+    quota.limit > 0
+      ? Math.min(100, (quota.used / quota.limit) * 100)
       : 0;
 
-  const step2Ads = selectedCampaign ? adsForCampaign(selectedCampaign.id) : [];
+  const step2Ads = selectedCampaign ? liveAds : [];
+
+  const handleLoadCampaigns = async () => {
+    if (!metaActId.trim()) {
+      alert("Por favor, informe o ID da sua Conta Meta (ex: 12345678).");
+      return;
+    }
+    try {
+      setModalLoading(true);
+      const orgId = getStoredOrganizationId();
+      const res = await apiFetch(`/api/metasync/account/${metaActId}/live-campaigns?includeQuota=true&organizationId=${orgId}`);
+      if (res && res.items) {
+        setLiveCampaigns(res.items);
+      }
+      if (res && res.quota) {
+        setQuota({ used: res.quota.used || 0, limit: res.quota.limit || 0 });
+      }
+    } catch (err) {
+      console.error("Erro ao carregar campanhas:", err);
+      alert(err.message || "Erro ao carregar campanhas da conta.");
+    } finally {
+      setModalLoading(false);
+    }
+  };
+
+  const handleOpenCampaign = async (campaign) => {
+    setSelectedCampaign({ id: campaign.id, name: campaign.name });
+    setModalStep(2);
+    try {
+      setModalLoading(true);
+      const orgId = getStoredOrganizationId();
+      const res = await apiFetch(`/api/metasync/account/${metaActId}/campaign/${campaign.id}/live-ads?organizationId=${orgId}`);
+      if (res && res.items) {
+        setLiveAds(res.items);
+      }
+    } catch (err) {
+      console.error("Erro ao carregar anúncios:", err);
+      alert(err.message || "Erro ao carregar anúncios desta campanha.");
+    } finally {
+      setModalLoading(false);
+    }
+  };
+
+  const handleImportAd = async (ad) => {
+    try {
+      const orgId = getStoredOrganizationId();
+      if (!orgId) return;
+
+      setModalLoading(true);
+      const res = await apiFetch(
+        `/api/metasync/account/${metaActId}/campaign/${selectedCampaign.id}/ad/${ad.id}/import?organizationId=${orgId}`,
+        { method: "POST" }
+      );
+
+      if (res && res.ok) {
+        alert("Criativo importado com sucesso e enviado para análise da IA!");
+        closeModal();
+        fetchImportedCreatives();
+      }
+    } catch (err) {
+      console.error("Erro ao importar criativo:", err);
+      alert(err.message || "Erro ao importar criativo");
+    } finally {
+      setModalLoading(false);
+    }
+  };
 
   const totalImported = importedCreatives.length;
   const totalPages = totalImported > 0 ? Math.ceil(totalImported / PAGE_SIZE) : 0;
@@ -401,11 +546,9 @@ export default function DashboardCreativesPage() {
                   <article className={styles.creativeCard}>
                     <div className={styles.creativeMedia}>
                       {c.thumbnail_url ? (
-                        <Image
-                          src={c.thumbnail_url}
-                          alt=""
-                          width={640}
-                          height={360}
+                        <SmartThumbnail
+                          initialSrc={c.thumbnail_url}
+                          mediaId={c.media_id}
                           className={styles.creativeMediaImg}
                         />
                       ) : (
@@ -528,7 +671,7 @@ export default function DashboardCreativesPage() {
               <div className={styles.creditsRow}>
                 <span className={styles.creditsLabel}>Créditos de criativos (mês)</span>
                 <span className={styles.creditsCount}>
-                  {mockPlanLimits.used}/{mockPlanLimits.limit} utilizados
+                  {quota.used}/{quota.limit} utilizados
                 </span>
               </div>
               <div className={styles.progressTrack}>
@@ -541,7 +684,17 @@ export default function DashboardCreativesPage() {
                 <span className={styles.folderChromeDot} />
                 <span className={styles.folderChromeDot} />
                 <span className={styles.folderChromeDot} />
-                <span className={styles.folderChromeLabel}>Conta Meta</span>
+                <span className={styles.folderChromeLabel}>
+                  Conta Meta
+                  <input
+                    type="text"
+                    value={metaActId}
+                    onChange={(e) => setMetaActId(e.target.value)}
+                    placeholder="ID da Conta (ex: 123456)"
+                    style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', borderRadius: '4px', padding: '2px 8px', outline: 'none', marginLeft: '10px', fontSize: '13px' }}
+                  />
+                  <button type="button" onClick={handleLoadCampaigns} style={{ marginLeft: '6px', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', padding: '3px 10px', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>Carregar</button>
+                </span>
               </div>
 
               <header className={styles.folderNavBar}>
@@ -570,7 +723,7 @@ export default function DashboardCreativesPage() {
                     ← Voltar para Campanhas
                   </button>
                 ) : (
-                  <span className={styles.folderNavHint}>{mockLiveCampaigns.length} pastas</span>
+                  <span className={styles.folderNavHint}>{liveCampaigns.length} pastas</span>
                 )}
               </header>
 
@@ -582,15 +735,12 @@ export default function DashboardCreativesPage() {
                 >
                 {modalStep === 1 ? (
                   <ul className={styles.folderGrid}>
-                    {mockLiveCampaigns.map((row) => (
+                    {modalLoading ? <p className={styles.modalSub}>A carregar campanhas...</p> : liveCampaigns.map((row) => (
                       <li key={row.id} className={styles.folderGridItem}>
                         <button
                           type="button"
                           className={styles.folderTile}
-                          onClick={() => {
-                            setSelectedCampaign({ id: row.id, name: row.name });
-                            setModalStep(2);
-                          }}
+                          onClick={() => handleOpenCampaign(row)}
                         >
                           <span className={styles.folderTileIconWrap} aria-hidden>
                             <IconFolder className={styles.folderTileIcon} />
@@ -607,7 +757,7 @@ export default function DashboardCreativesPage() {
                     {step2Ads.length === 0 ? (
                       <li className={styles.metaRow}>
                         <p className={styles.modalSub} style={{ margin: 0 }}>
-                          Nenhum anúncio disponível nesta campanha (mock).
+                          {modalLoading ? "A carregar anúncios..." : "Nenhum anúncio disponível nesta campanha."}
                         </p>
                       </li>
                     ) : (
@@ -645,14 +795,15 @@ export default function DashboardCreativesPage() {
                               <button
                                 type="button"
                                 className={styles.importBtnPremium}
-                                disabled={disabled}
+                                disabled={disabled || modalLoading}
+                                onClick={() => handleImportAd(ad)}
                                 title={
                                   disabled
                                     ? "Este criativo já está no Hooko"
                                     : "Debita 1 crédito de criativo"
                                 }
                               >
-                                Importar Criativo (1 Crédito)
+                                {modalLoading ? "Importando..." : "Importar Criativo (1 Crédito)"}
                               </button>
                             </div>
                           </li>

@@ -5,7 +5,7 @@ import { apiFetch } from "@/lib/hooko-session";
 import { TableSkeleton } from "@/components/Skeleton/Skeleton.js";
 import s from "../adminShared.module.css";
 
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 const MOCK_SUMMARY = {
   subscriptionsByStatus: [

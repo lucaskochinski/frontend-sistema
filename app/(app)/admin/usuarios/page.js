@@ -10,7 +10,7 @@ import { HOOKO_PLATFORM_ADMIN_ROLE_KEY } from "@/lib/platform-admin";
 import s from "../adminShared.module.css";
 import u from "./usuarios.module.css";
 
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 /** @typedef {{ id: string, email: string, planLabel: string, subscriptionStatus: string, createdDisplay: string, organizationId?: string }} UiUser */
 
@@ -298,7 +298,7 @@ function AdminUsuariosPageContent() {
         </p>
       </header>
 
-      {USE_MOCK ? <span className={u.mockPill}>USE_MOCK = true</span> : null}
+      {USE_MOCK ? <span className={u.mockPill}>USE_MOCK = false</span> : null}
       {listErr ? <p className={s.err}>{listErr}</p> : null}
       {toastOk ? <p className={s.success}>{toastOk}</p> : null}
 

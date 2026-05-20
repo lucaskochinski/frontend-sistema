@@ -7,7 +7,7 @@ import { apiFetch } from "@/lib/hooko-session";
 import s from "../adminShared.module.css";
 import p from "./planos.module.css";
 
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 const DEFAULT_LIMITS = `{
   "creative_imports_per_month": 50
@@ -317,7 +317,7 @@ export default function AdminPlanosPage() {
       </header>
 
       {USE_MOCK ? (
-        <p className={p.mockPill}>USE_MOCK = true</p>
+        <p className={p.mockPill}>USE_MOCK = false</p>
       ) : null}
       {err ? <p className={s.err}>{err}</p> : null}
       {ok ? <p className={s.success}>{ok}</p> : null}

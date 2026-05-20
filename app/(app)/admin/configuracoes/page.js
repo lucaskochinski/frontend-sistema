@@ -5,7 +5,7 @@ import Skeleton from "@/components/Skeleton/Skeleton.js";
 import s from "../adminShared.module.css";
 import c from "./configuracoes.module.css";
 
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 export default function AdminConfiguracoesPage() {
   const [syncTime, setSyncTime] = useState("03:00");
@@ -40,7 +40,7 @@ export default function AdminConfiguracoesPage() {
         <p className={s.lede}>Parâmetros globais do motor — mock com USE_MOCK até integrar PUT /api/admin/settings.</p>
       </header>
 
-      <span className={c.mockPill}>USE_MOCK = true</span>
+      <span className={c.mockPill}>USE_MOCK = false</span>
 
       {!loaded ? (
         <div className={c.skeletonBlock}>

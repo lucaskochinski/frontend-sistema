@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import Skeleton from "@/components/Skeleton/Skeleton";
 import styles from "./page.module.css";
 
-const USE_MOCK = true;
+const USE_MOCK = false;
 /** Skeleton no boot da página (card central). */
 const INITIAL_LOAD_MS = 1500;
 /** Simulação OAuth Meta / Drive. */

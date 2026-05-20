@@ -8,7 +8,7 @@ import Skeleton from "@/components/Skeleton/Skeleton";
 import AuthPasswordField from "@/components/AuthPasswordField/AuthPasswordField";
 import { persistSession } from "@/lib/hooko-session";
 
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 const MOCK_LOGIN_RESPONSE = {
   accessToken: "mock-jwt",

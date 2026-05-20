@@ -14,7 +14,7 @@ import {
 import { AdminDashboardSkeleton } from "@/components/Skeleton/Skeleton.js";
 import dash from "./adminDashboard.module.css";
 
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 const MOCK_METRICS = {
   mrrEuro: 12840,
@@ -71,7 +71,7 @@ export default function AdminDashboardPage() {
         <p className={dash.lede}>Métricas sintéticas (mock) para validar layout e hierarquia visual.</p>
       </header>
 
-      <span className={dash.mockPill}>USE_MOCK = true</span>
+      <span className={dash.mockPill}>USE_MOCK = false</span>
 
       <div className={dash.gridKpi}>
         <article className={dash.kpi}>
