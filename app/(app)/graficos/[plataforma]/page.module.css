@@ -1,0 +1,278 @@
+.page {
+  max-width: 120rem;
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 3vw, 1.75rem) 3rem;
+}
+
+.topHeader {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(96, 165, 250, 0.14);
+  background:
+    radial-gradient(ellipse 100% 90% at 0% 50%, rgba(59, 130, 246, 0.14), transparent 55%),
+    radial-gradient(ellipse 90% 70% at 92% 18%, rgba(37, 99, 235, 0.1), transparent 48%),
+    radial-gradient(ellipse 120% 80% at 10% 0%, rgba(212, 175, 55, 0.09), transparent 52%),
+    linear-gradient(165deg, #101118 0%, #0a0a0f 52%, #0c0e14 100%);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.45) inset,
+    0 24px 56px rgba(0, 0, 0, 0.45),
+    0 0 80px rgba(37, 99, 235, 0.07);
+}
+
+.topHeaderGlow {
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(circle at 72% 28%, rgba(59, 130, 246, 0.12), transparent 40%);
+  pointer-events: none;
+}
+
+.topHeaderInner {
+  position: relative;
+  z-index: 1;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.topHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.topIconWrap {
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 12px;
+  background: linear-gradient(
+    155deg,
+    rgba(59, 130, 246, 0.18) 0%,
+    rgba(15, 23, 42, 0.42) 52%,
+    rgba(212, 175, 55, 0.08) 100%
+  );
+  border: 1px solid rgba(96, 165, 250, 0.26);
+  color: #bfdbfe;
+}
+
+.topIconSvg {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.topTitleBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.topPageTitle {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #fafafa;
+  letter-spacing: -0.025em;
+  text-transform: capitalize;
+}
+
+.topHint {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #a1a1aa;
+}
+
+.btnPrimary {
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  background: rgba(212, 175, 55, 0.12);
+  color: #f5e6b8;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 0.55rem 1.2rem;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.btnPrimary:hover {
+  border-color: rgba(250, 204, 21, 0.5);
+  background: rgba(212, 175, 55, 0.2);
+}
+
+/* Filters Bar */
+.filterBar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.85rem;
+  margin-bottom: 1.5rem;
+  padding: 0.85rem 1.25rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: linear-gradient(168deg, rgba(20, 20, 26, 0.4) 0%, rgba(10, 10, 13, 0.6) 100%);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2) inset;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.filterLabel {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.select {
+  appearance: none;
+  font-family: inherit;
+  font-size: 0.82rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: #e2e8f0;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 0.85rem;
+  padding-right: 2rem;
+}
+
+.select:focus {
+  outline: none;
+  border-color: rgba(96, 165, 250, 0.4);
+}
+
+.select option {
+  background: #0f1015;
+  color: #f1f5f9;
+}
+
+/* Cards Grid */
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.card {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: linear-gradient(168deg, rgba(20, 20, 26, 0.6) 0%, rgba(10, 10, 13, 0.85) 100%);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2) inset, 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 1rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(96, 165, 250, 0.15);
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #94a3b8;
+  letter-spacing: -0.01em;
+}
+
+.cardValue {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+.cardValuePositive {
+  color: #10b981;
+}
+
+/* Charts Section */
+.chartsSection {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 64rem) {
+  .chartsSection {
+    grid-template-columns: 2fr 3fr;
+  }
+}
+
+.chartPanel {
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(168deg, rgba(20, 20, 26, 0.55) 0%, rgba(10, 10, 13, 0.8) 100%);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.chartPanelTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fafafa;
+  letter-spacing: -0.02em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 0.65rem;
+}
+
+.chartContainer {
+  width: 100%;
+  height: 18rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.pieLabelCenter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.pieLabelNumber {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.pieLabelText {
+  font-size: 0.68rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0.15rem 0 0;
+}

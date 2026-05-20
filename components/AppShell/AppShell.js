@@ -180,6 +180,13 @@ export default function AppShell({ children }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isMobileVp, setIsMobileVp] = useState(false);
   const [isPlatformAdmin, setIsPlatformAdmin] = useState(() => isAdminUiBypassEnabled());
+  const [chartsOpen, setChartsOpen] = useState(false);
+
+  useEffect(() => {
+    if (pathname && pathname.startsWith("/graficos")) {
+      setChartsOpen(true);
+    }
+  }, [pathname]);
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 900px)");
@@ -318,6 +325,81 @@ export default function AppShell({ children }) {
                 </Link>
               );
             })}
+
+            {/* Seção Gráficos com Dropdown */}
+            <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+              <button
+                type="button"
+                className={`${styles.navLink} ${pathname.startsWith("/graficos") ? styles.navLinkActive : ""}`}
+                onClick={() => setChartsOpen(!chartsOpen)}
+                style={{
+                  width: "100%",
+                  justifyContent: "space-between",
+                  border: "none",
+                  background: "none",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  padding: "0.6rem 0.85rem",
+                  fontFamily: "inherit"
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <span className={styles.navIcon} style={{ display: "flex", alignItems: "center" }} aria-hidden>
+                    <IconChart />
+                  </span>
+                  <span className={styles.navLabel} style={{ fontWeight: 600, fontSize: "0.9rem" }}>Gráficos</span>
+                </div>
+                <span style={{
+                  transition: "transform 0.2s ease",
+                  transform: chartsOpen ? "rotate(180deg)" : "rotate(0deg)",
+                  fontSize: "10px",
+                  opacity: 0.7,
+                  display: "inline-block",
+                  marginRight: "4px",
+                  color: "currentColor"
+                }}>
+                  ▼
+                </span>
+              </button>
+
+              {chartsOpen && (
+                <div style={{ display: "flex", flexDirection: "column", paddingLeft: "36px", gap: "4px", marginTop: "2px" }}>
+                  {[
+                    { href: "/graficos/utmify", label: "Utmify" },
+                    { href: "/graficos/pagtrust", label: "Pagtrust" },
+                    { href: "/graficos/lovable", label: "Lovable" },
+                    { href: "/graficos/hooko", label: "Hooko" },
+                    { href: "/graficos/vturb", label: "Vturb" },
+                  ].map((subItem) => {
+                    const subActive = pathname === subItem.href;
+                    return (
+                      <Link
+                        key={subItem.href}
+                        href={subItem.href}
+                        className={`${styles.navLinkSub} ${subActive ? styles.navLinkSubActive : ""}`}
+                        style={{
+                          fontSize: "0.82rem",
+                          padding: "6px 12px",
+                          borderRadius: "8px",
+                          color: subActive ? "#60a5fa" : "#a1a1aa",
+                          background: subActive ? "rgba(59, 130, 246, 0.08)" : "transparent",
+                          border: subActive ? "1px solid rgba(59, 130, 246, 0.15)" : "1px solid transparent",
+                          transition: "all 0.15s ease",
+                          textDecoration: "none",
+                          fontWeight: subActive ? "600" : "500",
+                          display: "block",
+                          textAlign: "left"
+                        }}
+                        onClick={closeDrawer}
+                      >
+                        {subItem.label}
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </nav>
 
           {isPlatformAdmin ? (
