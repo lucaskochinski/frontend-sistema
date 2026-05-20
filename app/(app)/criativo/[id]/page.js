@@ -654,15 +654,24 @@ export default function CreativeDetailPage() {
           <div className={styles.videoShell}>
             <div className={styles.videoInner}>
               <div className={styles.videoRatio}>
-                {data.vturb_video_id || data.vturbVideoId ? (
-                  <iframe
-                    src={`https://scripts.converteai.net/${data.vturb_video_id || data.vturbVideoId}/players/${data.vturb_video_id || data.vturbVideoId}/embed.html`}
-                    style={{ width: "100%", height: "100%", border: "none", position: "absolute", top: 0, left: 0 }}
-                    allowFullScreen
-                  />
-                ) : (
-                  <video className={styles.videoEl} controls playsInline preload="metadata" src={data.media_url} />
-                )}
+                {(() => {
+                  const rawId = data.vturb_video_id || data.vturbVideoId;
+                  if (!rawId) {
+                    return <video className={styles.videoEl} controls playsInline preload="metadata" src={data.media_url} />;
+                  }
+                  // Sanitização rigorosa: permite apenas caracteres alfanuméricos, traços e underscores
+                  const cleanId = String(rawId).replace(/[^a-zA-Z0-9_-]/g, "");
+                  if (!cleanId) {
+                    return <video className={styles.videoEl} controls playsInline preload="metadata" src={data.media_url} />;
+                  }
+                  return (
+                    <iframe
+                      src={`https://scripts.converteai.net/${cleanId}/players/${cleanId}/embed.html`}
+                      style={{ width: "100%", height: "100%", border: "none", position: "absolute", top: 0, left: 0 }}
+                      allowFullScreen
+                    />
+                  );
+                })()}
               </div>
             </div>
           </div>
