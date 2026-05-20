@@ -77,14 +77,37 @@ export default function DashboardClient() {
     { name: "Outros", value: 0, color: COLORS.other },
   ];
 
-  // Gráfico da Imagem 2 (Receitas PagTrust Suave) 
-  // Usa o profitByHour da nossa API para simular a flutuação diária
   const areaChartData = (sales?.profitByHour || []).map((h) => ({
     hora: h.hora,
     receita: h.valor > 0 ? h.valor : 0, // Área só de receita bruta por hora
     lucro: h.valor, 
     gasto: totalSpend / 24 // média simplificada para o gráfico
   }));
+
+  const funnelData = useMemo(() => {
+    const f = overview?.funnel || { cliques: 0, pageViews: 0, initiateCheckouts: 0, vendasIniciadas: 0, vendasAprovadas: 0 };
+    const max = Math.max(1, f.cliques);
+    return [
+      { label: 'Cliques', val: 100, num: f.cliques, color: '#3b82f6' },
+      { label: 'Vis. Página', val: Math.round((f.pageViews / max) * 100), num: f.pageViews, color: '#6366f1' },
+      { label: 'ICs', val: Math.round((f.initiateCheckouts / max) * 100), num: f.initiateCheckouts, color: '#8b5cf6' },
+      { label: 'Vendas Inic.', val: Math.round((f.vendasIniciadas / max) * 100), num: f.vendasIniciadas, color: '#a855f7' },
+      { label: 'Vendas Apr.', val: Math.round((f.vendasAprovadas / max) * 100), num: f.vendasAprovadas, color: '#ec4899' },
+    ];
+  }, [overview]);
+
+  const rankingsData = useMemo(() => {
+    const r = overview?.rankings || {};
+    return {
+      bestHook: r.bestHook || 'Sem dados',
+      bestRetention: r.bestRetention || 'Sem dados',
+      bestCtr: r.bestCtr || 'Sem dados',
+      bestCostIc: r.bestCostIc || 'Sem dados',
+      bestRoi: r.bestRoi || 'Sem dados',
+      bestSalesVolume: r.bestSalesVolume || 'Sem dados',
+      bestConversionRate: r.bestConversionRate || 'Sem dados',
+    };
+  }, [overview]);
 
   if (loading) {
     return (
@@ -256,14 +279,8 @@ export default function DashboardClient() {
         <div style={{ backgroundColor: '#1e202e', padding: '1.5rem', borderRadius: '0.75rem', border: '1px solid #2d3042' }}>
           <h3 style={{ margin: '0 0 1rem 0', fontSize: '1rem', color: '#e5e7eb' }}>Funil de Conversão (Meta Ads + PagTrust)</h3>
           <div style={{ height: '300px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '0.5rem', paddingTop: '2rem' }}>
-            {/* Barras em forma de funil manual */}
-            {[
-              { label: 'Cliques', val: 100, num: 477, color: '#3b82f6' },
-              { label: 'Vis. Página', val: 74, num: 353, color: '#6366f1' },
-              { label: 'ICs', val: 14.3, num: 68, color: '#8b5cf6' },
-              { label: 'Vendas Inic.', val: 7.8, num: 37, color: '#a855f7' },
-              { label: 'Vendas Apr.', val: 4.4, num: 21, color: '#ec4899' },
-            ].map((step, i) => (
+            {/* Barras em forma de funil dinâmico */}
+            {funnelData.map((step, i) => (
               <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', height: '100%', justifyContent: 'flex-end' }}>
                 <div style={{ fontSize: '0.75rem', color: '#9ca3af', marginBottom: '0.5rem', textAlign: 'center' }}>{step.label}</div>
                 <div style={{ width: '80%', height: `${step.val}%`, backgroundColor: step.color, borderRadius: '4px 4px 0 0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '0.8rem', fontWeight: 'bold', transition: 'height 1s ease' }}>
@@ -282,31 +299,31 @@ export default function DashboardClient() {
             <tbody>
               <tr style={{ borderBottom: '1px solid #374151' }}>
                 <td style={{ padding: '0.75rem 0', color: '#9ca3af' }}>Melhor Gancho (3s / Impr.)</td>
-                <td style={{ textAlign: 'right', fontWeight: 'bold', color: '#10b981' }}>Vid_04 (32.4%)</td>
+                <td style={{ textAlign: 'right', fontWeight: 'bold', color: '#10b981' }}>{rankingsData.bestHook}</td>
               </tr>
               <tr style={{ borderBottom: '1px solid #374151' }}>
                 <td style={{ padding: '0.75rem 0', color: '#9ca3af' }}>Maior Retenção Corpo (75% / Início)</td>
-                <td style={{ textAlign: 'right', fontWeight: 'bold', color: '#10b981' }}>Vid_02 (18.1%)</td>
+                <td style={{ textAlign: 'right', fontWeight: 'bold', color: '#10b981' }}>{rankingsData.bestRetention}</td>
               </tr>
               <tr style={{ borderBottom: '1px solid #374151' }}>
                 <td style={{ padding: '0.75rem 0', color: '#9ca3af' }}>Maior CTR (Cliques/Impr.)</td>
-                <td style={{ textAlign: 'right', fontWeight: 'bold', color: '#3b82f6' }}>Img_Promo (4.2%)</td>
+                <td style={{ textAlign: 'right', fontWeight: 'bold', color: '#3b82f6' }}>{rankingsData.bestCtr}</td>
               </tr>
               <tr style={{ borderBottom: '1px solid #374151' }}>
                 <td style={{ padding: '0.75rem 0', color: '#9ca3af' }}>Menor Custo IC</td>
-                <td style={{ textAlign: 'right', fontWeight: 'bold', color: '#a855f7' }}>Vid_Oferta (R$ 14,20)</td>
+                <td style={{ textAlign: 'right', fontWeight: 'bold', color: '#a855f7' }}>{rankingsData.bestCostIc}</td>
               </tr>
               <tr style={{ borderBottom: '1px solid #374151' }}>
                 <td style={{ padding: '0.75rem 0', color: '#9ca3af' }}>Maior ROI (%)</td>
-                <td style={{ textAlign: 'right', fontWeight: 'bold', color: '#10b981' }}>Vid_04 (310%)</td>
+                <td style={{ textAlign: 'right', fontWeight: 'bold', color: '#10b981' }}>{rankingsData.bestRoi}</td>
               </tr>
               <tr style={{ borderBottom: '1px solid #374151' }}>
                 <td style={{ padding: '0.75rem 0', color: '#9ca3af' }}>Maior Volume de Vendas</td>
-                <td style={{ textAlign: 'right', fontWeight: 'bold', color: '#ec4899' }}>Vid_01 (14 vendas)</td>
+                <td style={{ textAlign: 'right', fontWeight: 'bold', color: '#ec4899' }}>{rankingsData.bestSalesVolume}</td>
               </tr>
               <tr>
                 <td style={{ padding: '0.75rem 0', color: '#9ca3af' }}>Maior Conversão (Vendas/Views)</td>
-                <td style={{ textAlign: 'right', fontWeight: 'bold', color: '#ec4899' }}>Img_Checkout (8.9%)</td>
+                <td style={{ textAlign: 'right', fontWeight: 'bold', color: '#ec4899' }}>{rankingsData.bestConversionRate}</td>
               </tr>
             </tbody>
           </table>
