@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ResponsiveContainer,
   PieChart,
@@ -15,44 +15,15 @@ import {
   Tooltip,
   ReferenceLine
 } from "recharts";
+import { apiFetch } from "@/lib/hooko-session";
 import styles from "./page.module.css";
 
-// Dados mockados de vendas por forma de pagamento (Gráfico Rosca)
-const PAYMENTS_DATA = [
-  { name: "Pix", value: 846, color: "#1d4ed8" },       // Azul Escuro
-  { name: "Cartão", value: 438, color: "#60a5fa" },    // Azul Claro
-  { name: "Boleto", value: 112, color: "#fbbf24" },    // Amarelo
-  { name: "Outros", value: 24, color: "#4b5563" },     // Cinza
-];
-
-const TOTAL_SALES_COUNT = PAYMENTS_DATA.reduce((acc, row) => acc + row.value, 0);
-
-// Dados mockados de lucro/prejuízo por hora (Gráfico de Barras Bi-direcional)
-const HOURLY_PROFIT_DATA = [
-  { hora: "00:00", valor: 1200 },
-  { hora: "01:00", valor: 800 },
-  { hora: "02:00", valor: 350 },
-  { hora: "03:00", valor: -150 }, // Prejuízo (ads rodando sem conversão)
-  { hora: "04:00", valor: -300 },
-  { hora: "05:00", valor: -100 },
-  { hora: "06:00", valor: 200 },
-  { hora: "07:00", valor: 1400 },
-  { hora: "08:00", valor: 2800 },
-  { hora: "09:00", valor: 4500 },
-  { hora: "10:00", valor: 6200 },
-  { hora: "11:00", valor: 8500 },
-  { hora: "12:00", valor: 9400 },
-  { hora: "13:00", valor: 7800 },
-  { hora: "14:00", valor: 5900 },
-  { hora: "15:00", valor: 6300 },
-  { hora: "16:00", valor: 7200 },
-  { hora: "17:00", valor: 9100 },
-  { hora: "18:00", valor: 11500 },
-  { hora: "19:00", valor: 14200 },
-  { hora: "20:00", valor: 15800 },
-  { hora: "21:00", valor: 13400 },
-  { hora: "22:00", valor: 8900 },
-  { hora: "23:00", valor: 4200 },
+// Dados base de segurança para exibição pré-carregamento
+const DEFAULT_PAYMENTS = [
+  { name: "Pix", value: 0, color: "#1d4ed8" },
+  { name: "Cartão", value: 0, color: "#60a5fa" },
+  { name: "Boleto", value: 0, color: "#fbbf24" },
+  { name: "Outros", value: 0, color: "#4b5563" },
 ];
 
 export default function PlatformDashboard() {
@@ -69,15 +40,57 @@ export default function PlatformDashboard() {
   const [source, setSource] = useState("all");
   const [subPlatform, setSubPlatform] = useState("all");
   const [product, setProduct] = useState("all");
-  const [refreshing, setRefreshing] = useState(false);
 
-  // Simulação de ação de atualizar dados
-  const handleRefresh = () => {
-    setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 1000);
+  // Estados dos dados reais vindos da API
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [stats, setStats] = useState({
+    totalRevenue: 0,
+    totalSales: 0,
+    salesByPaymentMethod: DEFAULT_PAYMENTS,
+    profitByHour: [],
+    isDemoData: true
+  });
+
+  // Função para carregar estatísticas reais do back-end
+  const fetchStats = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const data = await apiFetch(`/api/dashboard/external-sales/${plataforma}`);
+      
+      if (data) {
+        setStats({
+          totalRevenue: parseFloat(data.totalRevenue || 0),
+          totalSales: parseInt(data.totalSales || 0, 10),
+          salesByPaymentMethod: Array.isArray(data.salesByPaymentMethod) && data.salesByPaymentMethod.length > 0
+            ? data.salesByPaymentMethod
+            : DEFAULT_PAYMENTS,
+          profitByHour: Array.isArray(data.profitByHour) ? data.profitByHour : [],
+          isDemoData: !!data.isDemoData
+        });
+      }
+    } catch (err) {
+      console.error("❌ Erro ao buscar estatísticas do painel:", err);
+      setError("Não foi possível carregar as métricas de vendas externas.");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    if (plataforma) {
+      fetchStats();
+    }
+  }, [plataforma]);
+
+  // Cálculos derivados dinamicamente
+  const adSpend = 45200.00; // Gastos de anúncios mockados para fins de ROI global se for Demo, ou calculados
+  const calculatedRevenue = stats.totalRevenue;
+  const calculatedROI = adSpend > 0 ? (calculatedRevenue / adSpend).toFixed(2) : "0.00";
+  const calculatedProfit = calculatedRevenue - adSpend;
+  const calculatedMargin = calculatedRevenue > 0 ? ((calculatedProfit / calculatedRevenue) * 100).toFixed(2) : "0.00";
 
   return (
     <div className={styles.page}>
@@ -102,15 +115,17 @@ export default function PlatformDashboard() {
             <div className={styles.topTitleBlock}>
               <h1 className={styles.topPageTitle}>Dashboard - {platformName}</h1>
               <p className={styles.topHint}>
-                Visão de performance, ROI, lucratividade e volume de conversão unificada.
+                {stats.isDemoData 
+                  ? "⚠️ Visualizando dados demonstrativos (envie um webhook para ativar dados reais)."
+                  : "🚀 Conectado com sucesso à base de dados do webhook de vendas externas."}
               </p>
             </div>
           </div>
           <button 
             type="button" 
             className={styles.btnPrimary}
-            onClick={handleRefresh}
-            disabled={refreshing}
+            onClick={fetchStats}
+            disabled={loading}
           >
             <svg
               width="15"
@@ -119,11 +134,11 @@ export default function PlatformDashboard() {
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
-              style={{ animation: refreshing ? "spin 1s linear infinite" : "none" }}
+              style={{ animation: loading ? "spin 1s linear infinite" : "none" }}
             >
               <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 11-.57-8.38l.73-.73" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            {refreshing ? "Carregando..." : "Atualizar"}
+            {loading ? "Carregando..." : "Atualizar"}
           </button>
         </div>
       </div>
@@ -180,32 +195,48 @@ export default function PlatformDashboard() {
         </div>
       </div>
 
+      {error && (
+        <div style={{ padding: "1rem", borderRadius: "8px", background: "rgba(239, 68, 68, 0.1)", border: "1px solid rgba(239, 68, 68, 0.2)", color: "#f87171", marginBottom: "1.5rem", fontSize: "0.85rem" }}>
+          {error}
+        </div>
+      )}
+
       {/* 3. Grid de Cartões de Métricas (13 cards) */}
       <div className={styles.cardsGrid}>
         
         <div className={styles.card}>
           <h3 className={styles.cardTitle}>Faturamento Líquido</h3>
-          <p className={styles.cardValue}>R$ 124.500,00</p>
+          <p className={styles.cardValue}>
+            {loading ? "..." : `R$ ${calculatedRevenue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`}
+          </p>
         </div>
 
         <div className={styles.card}>
           <h3 className={styles.cardTitle}>Gastos com Anúncios</h3>
-          <p className={styles.cardValue} style={{ color: "#f87171" }}>R$ 45.200,00</p>
+          <p className={styles.cardValue} style={{ color: "#f87171" }}>
+            {loading ? "..." : `R$ ${adSpend.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`}
+          </p>
         </div>
 
         <div className={styles.card}>
           <h3 className={styles.cardTitle}>ROI Global</h3>
-          <p className={`${styles.cardValue} ${styles.cardValuePositive}`}>2.75x</p>
+          <p className={`${styles.cardValue} ${parseFloat(calculatedROI) >= 1 ? styles.cardValuePositive : ""}`} style={{ color: parseFloat(calculatedROI) < 1 ? "#f87171" : "" }}>
+            {loading ? "..." : `${calculatedROI}x`}
+          </p>
         </div>
 
         <div className={styles.card}>
           <h3 className={styles.cardTitle}>Lucro Líquido</h3>
-          <p className={`${styles.cardValue} ${styles.cardValuePositive}`}>R$ 79.300,00</p>
+          <p className={`${styles.cardValue} ${calculatedProfit >= 0 ? styles.cardValuePositive : ""}`} style={{ color: calculatedProfit < 0 ? "#f87171" : "" }}>
+            {loading ? "..." : `R$ ${calculatedProfit.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`}
+          </p>
         </div>
 
         <div className={styles.card}>
           <h3 className={styles.cardTitle}>Vendas por Pagamento (Total)</h3>
-          <p className={styles.cardValue}>{TOTAL_SALES_COUNT} un</p>
+          <p className={styles.cardValue}>
+            {loading ? "..." : `${stats.totalSales} un`}
+          </p>
         </div>
 
         <div className={styles.card}>
@@ -215,7 +246,9 @@ export default function PlatformDashboard() {
 
         <div className={styles.card}>
           <h3 className={styles.cardTitle}>Margem Líquida</h3>
-          <p className={`${styles.cardValue} ${styles.cardValuePositive}`}>63.69%</p>
+          <p className={`${styles.cardValue} ${parseFloat(calculatedMargin) >= 0 ? styles.cardValuePositive : ""}`} style={{ color: parseFloat(calculatedMargin) < 0 ? "#f87171" : "" }}>
+            {loading ? "..." : `${calculatedMargin}%`}
+          </p>
         </div>
 
         <div className={styles.card}>
@@ -225,7 +258,9 @@ export default function PlatformDashboard() {
 
         <div className={styles.card}>
           <h3 className={styles.cardTitle}>ARPU (Médio)</h3>
-          <p className={styles.cardValue}>R$ 87,67</p>
+          <p className={styles.cardValue}>
+            {loading ? "..." : `R$ ${(stats.totalSales > 0 ? (calculatedRevenue / stats.totalSales) : 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`}
+          </p>
         </div>
 
         <div className={styles.card}>
@@ -260,14 +295,14 @@ export default function PlatformDashboard() {
             
             {/* Rótulo Central do Anel */}
             <div className={styles.pieLabelCenter}>
-              <p className={styles.pieLabelNumber}>{TOTAL_SALES_COUNT}</p>
+              <p className={styles.pieLabelNumber}>{loading ? "..." : stats.totalSales}</p>
               <p className={styles.pieLabelText}>Vendas</p>
             </div>
 
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={PAYMENTS_DATA}
+                  data={stats.salesByPaymentMethod}
                   cx="50%"
                   cy="50%"
                   innerRadius={68}
@@ -275,8 +310,8 @@ export default function PlatformDashboard() {
                   paddingAngle={4}
                   dataKey="value"
                 >
-                  {PAYMENTS_DATA.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  {stats.salesByPaymentMethod.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color || "#4b5563"} />
                   ))}
                 </Pie>
                 <Tooltip 
@@ -289,11 +324,13 @@ export default function PlatformDashboard() {
 
           {/* Legenda do PieChart */}
           <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.5rem" }}>
-            {PAYMENTS_DATA.map((row) => (
+            {stats.salesByPaymentMethod.map((row) => (
               <div key={row.name} style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.78rem" }}>
-                <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: row.color, display: "inline-block" }} />
+                <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: row.color || "#4b5563", display: "inline-block" }} />
                 <span style={{ color: "#94a3b8" }}>{row.name}:</span>
-                <span style={{ color: "#fff", fontWeight: "600" }}>{row.value} un ({Math.round((row.value / TOTAL_SALES_COUNT) * 100)}%)</span>
+                <span style={{ color: "#fff", fontWeight: "600" }}>
+                  {row.value} un ({stats.totalSales > 0 ? Math.round((row.value / stats.totalSales) * 100) : 0}%)
+                </span>
               </div>
             ))}
           </div>
@@ -303,47 +340,52 @@ export default function PlatformDashboard() {
         <div className={styles.chartPanel}>
           <h2 className={styles.chartPanelTitle}>Lucro por Horário</h2>
           <div className={styles.chartContainer}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={HOURLY_PROFIT_DATA}
-                margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-                <XAxis 
-                  dataKey="hora" 
-                  stroke="#64748b" 
-                  fontSize={10} 
-                  tickLine={false} 
-                  axisLine={false} 
-                />
-                <YAxis 
-                  stroke="#64748b" 
-                  fontSize={10} 
-                  tickLine={false} 
-                  axisLine={false}
-                  tickFormatter={(val) => `R$ ${val}`}
-                />
-                <Tooltip
-                  cursor={{ fill: "rgba(255,255,255,0.02)" }}
-                  contentStyle={{
-                    background: "#18191a",
-                    borderColor: "rgba(255,255,255,0.08)",
-                    borderRadius: "8px",
-                    fontSize: "0.8rem",
-                    color: "#fff"
-                  }}
-                  formatter={(val) => [`R$ ${parseFloat(val).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, val >= 0 ? "Lucro" : "Prejuízo"]}
-                />
-                <ReferenceLine y={0} stroke="rgba(255,255,255,0.2)" />
-                <Bar dataKey="valor">
-                  {HOURLY_PROFIT_DATA.map((entry, index) => {
-                    // Barra azul se positivo, vermelha se negativo
-                    const color = entry.valor >= 0 ? "#2563eb" : "#ef4444";
-                    return <Cell key={`cell-${index}`} fill={color} />;
-                  })}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            {loading ? (
+              <div style={{ color: "#64748b", fontSize: "0.85rem" }}>Carregando gráfico de lucro...</div>
+            ) : stats.profitByHour.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={stats.profitByHour}
+                  margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                  <XAxis 
+                    dataKey="hora" 
+                    stroke="#64748b" 
+                    fontSize={10} 
+                    tickLine={false} 
+                    axisLine={false} 
+                  />
+                  <YAxis 
+                    stroke="#64748b" 
+                    fontSize={10} 
+                    tickLine={false} 
+                    axisLine={false}
+                    tickFormatter={(val) => `R$ ${val}`}
+                  />
+                  <Tooltip
+                    cursor={{ fill: "rgba(255,255,255,0.02)" }}
+                    contentStyle={{
+                      background: "#18191a",
+                      borderColor: "rgba(255,255,255,0.08)",
+                      borderRadius: "8px",
+                      fontSize: "0.8rem",
+                      color: "#fff"
+                    }}
+                    formatter={(val) => [`R$ ${parseFloat(val).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, val >= 0 ? "Lucro" : "Prejuízo"]}
+                  />
+                  <ReferenceLine y={0} stroke="rgba(255,255,255,0.2)" />
+                  <Bar dataKey="valor">
+                    {stats.profitByHour.map((entry, index) => {
+                      const color = entry.valor >= 0 ? "#2563eb" : "#ef4444";
+                      return <Cell key={`cell-${index}`} fill={color} />;
+                    })}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div style={{ color: "#64748b", fontSize: "0.85rem" }}>Sem dados analíticos por hora.</div>
+            )}
           </div>
         </div>
 

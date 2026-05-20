@@ -654,7 +654,15 @@ export default function CreativeDetailPage() {
           <div className={styles.videoShell}>
             <div className={styles.videoInner}>
               <div className={styles.videoRatio}>
-                <video className={styles.videoEl} controls playsInline preload="metadata" src={data.media_url} />
+                {data.vturb_video_id || data.vturbVideoId ? (
+                  <iframe
+                    src={`https://scripts.converteai.net/${data.vturb_video_id || data.vturbVideoId}/players/${data.vturb_video_id || data.vturbVideoId}/embed.html`}
+                    style={{ width: "100%", height: "100%", border: "none", position: "absolute", top: 0, left: 0 }}
+                    allowFullScreen
+                  />
+                ) : (
+                  <video className={styles.videoEl} controls playsInline preload="metadata" src={data.media_url} />
+                )}
               </div>
             </div>
           </div>
