@@ -266,7 +266,7 @@ export default function DashboardClient() {
             ].map((step, i) => (
               <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', height: '100%', justifyContent: 'flex-end' }}>
                 <div style={{ fontSize: '0.75rem', color: '#9ca3af', marginBottom: '0.5rem', textAlign: 'center' }}>{step.label}</div>
-                <div style={{ width: '80%', height: \`\${step.val}%\`, backgroundColor: step.color, borderRadius: '4px 4px 0 0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '0.8rem', fontWeight: 'bold', transition: 'height 1s ease' }}>
+                <div style={{ width: '80%', height: `${step.val}%`, backgroundColor: step.color, borderRadius: '4px 4px 0 0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '0.8rem', fontWeight: 'bold', transition: 'height 1s ease' }}>
                   {step.val}%
                 </div>
                 <div style={{ marginTop: '0.5rem', fontWeight: 'bold', color: '#e5e7eb' }}>{step.num}</div>
