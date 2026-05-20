@@ -22,7 +22,7 @@ import Skeleton from "@/components/Skeleton/Skeleton";
 import styles from "./page.module.css";
 
 /** Liga dados mock até a API estar disponível */
-const USE_MOCK = true;
+const USE_MOCK = false;
 const LOAD_MS = 1500;
 
 const DATE_RANGE_PRESETS = [

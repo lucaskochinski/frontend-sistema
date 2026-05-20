@@ -6,7 +6,7 @@ import Link from "next/link";
 import styles from "./page.module.css";
 
 /** Mock: desliga API real enquanto o backend não está ligado */
-const USE_MOCK = true;
+const USE_MOCK = false;
 const SIMULATE_EMPTY = false;
 const SIMULATE_META_DISCONNECTED = false;
 
