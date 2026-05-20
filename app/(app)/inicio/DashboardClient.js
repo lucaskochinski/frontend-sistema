@@ -249,6 +249,71 @@ export default function DashboardClient() {
         </div>
       </div>
 
+      {/* SECTION: Funil de Conversão e Ranking Avançado */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1.5rem' }}>
+        
+        {/* Funil de Conversão (Meta Ads) */}
+        <div style={{ backgroundColor: '#1e202e', padding: '1.5rem', borderRadius: '0.75rem', border: '1px solid #2d3042' }}>
+          <h3 style={{ margin: '0 0 1rem 0', fontSize: '1rem', color: '#e5e7eb' }}>Funil de Conversão (Meta Ads + PagTrust)</h3>
+          <div style={{ height: '300px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '0.5rem', paddingTop: '2rem' }}>
+            {/* Barras em forma de funil manual */}
+            {[
+              { label: 'Cliques', val: 100, num: 477, color: '#3b82f6' },
+              { label: 'Vis. Página', val: 74, num: 353, color: '#6366f1' },
+              { label: 'ICs', val: 14.3, num: 68, color: '#8b5cf6' },
+              { label: 'Vendas Inic.', val: 7.8, num: 37, color: '#a855f7' },
+              { label: 'Vendas Apr.', val: 4.4, num: 21, color: '#ec4899' },
+            ].map((step, i) => (
+              <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', height: '100%', justifyContent: 'flex-end' }}>
+                <div style={{ fontSize: '0.75rem', color: '#9ca3af', marginBottom: '0.5rem', textAlign: 'center' }}>{step.label}</div>
+                <div style={{ width: '80%', height: \`\${step.val}%\`, backgroundColor: step.color, borderRadius: '4px 4px 0 0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '0.8rem', fontWeight: 'bold', transition: 'height 1s ease' }}>
+                  {step.val}%
+                </div>
+                <div style={{ marginTop: '0.5rem', fontWeight: 'bold', color: '#e5e7eb' }}>{step.num}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Tabela de Destaques / Ranking */}
+        <div style={{ backgroundColor: '#1e202e', padding: '1.5rem', borderRadius: '0.75rem', border: '1px solid #2d3042', overflowY: 'auto' }}>
+          <h3 style={{ margin: '0 0 1rem 0', fontSize: '1rem', color: '#e5e7eb' }}>Destaques (Rankings Avançados)</h3>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
+            <tbody>
+              <tr style={{ borderBottom: '1px solid #374151' }}>
+                <td style={{ padding: '0.75rem 0', color: '#9ca3af' }}>Melhor Gancho (3s / Impr.)</td>
+                <td style={{ textAlign: 'right', fontWeight: 'bold', color: '#10b981' }}>Vid_04 (32.4%)</td>
+              </tr>
+              <tr style={{ borderBottom: '1px solid #374151' }}>
+                <td style={{ padding: '0.75rem 0', color: '#9ca3af' }}>Maior Retenção Corpo (75% / Início)</td>
+                <td style={{ textAlign: 'right', fontWeight: 'bold', color: '#10b981' }}>Vid_02 (18.1%)</td>
+              </tr>
+              <tr style={{ borderBottom: '1px solid #374151' }}>
+                <td style={{ padding: '0.75rem 0', color: '#9ca3af' }}>Maior CTR (Cliques/Impr.)</td>
+                <td style={{ textAlign: 'right', fontWeight: 'bold', color: '#3b82f6' }}>Img_Promo (4.2%)</td>
+              </tr>
+              <tr style={{ borderBottom: '1px solid #374151' }}>
+                <td style={{ padding: '0.75rem 0', color: '#9ca3af' }}>Menor Custo IC</td>
+                <td style={{ textAlign: 'right', fontWeight: 'bold', color: '#a855f7' }}>Vid_Oferta (R$ 14,20)</td>
+              </tr>
+              <tr style={{ borderBottom: '1px solid #374151' }}>
+                <td style={{ padding: '0.75rem 0', color: '#9ca3af' }}>Maior ROI (%)</td>
+                <td style={{ textAlign: 'right', fontWeight: 'bold', color: '#10b981' }}>Vid_04 (310%)</td>
+              </tr>
+              <tr style={{ borderBottom: '1px solid #374151' }}>
+                <td style={{ padding: '0.75rem 0', color: '#9ca3af' }}>Maior Volume de Vendas</td>
+                <td style={{ textAlign: 'right', fontWeight: 'bold', color: '#ec4899' }}>Vid_01 (14 vendas)</td>
+              </tr>
+              <tr>
+                <td style={{ padding: '0.75rem 0', color: '#9ca3af' }}>Maior Conversão (Vendas/Views)</td>
+                <td style={{ textAlign: 'right', fontWeight: 'bold', color: '#ec4899' }}>Img_Checkout (8.9%)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
     </div>
   );
 }
