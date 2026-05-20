@@ -454,7 +454,11 @@ export default function DashboardCreativesPage() {
       setModalLoading(true);
       const res = await apiFetch(
         `/api/metasync/account/${metaActId}/campaign/${selectedCampaign.id}/ad/${ad.id}/import?organizationId=${orgId}`,
-        { method: "POST" }
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ metaActId }),
+        }
       );
 
       if (res && res.ok) {
