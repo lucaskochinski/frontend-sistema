@@ -252,7 +252,7 @@ export default function DashboardCreativesPage() {
   const [pageIndex, setPageIndex] = useState(0);
 
   const [metaConnected, setMetaConnected] = useState(false);
-  const [metaActId, setMetaActId] = useState("");
+  const [metaActId, setMetaActId] = useState("1901871430406663");
   const [liveCampaigns, setLiveCampaigns] = useState([]);
   const [liveAds, setLiveAds] = useState([]);
   const [quota, setQuota] = useState({ used: 0, limit: 0 });
@@ -309,8 +309,31 @@ export default function DashboardCreativesPage() {
     if (modalOpen) {
       setModalStep(1);
       setSelectedCampaign(null);
+      
+      // Auto load campaigns in background
+      if (metaActId) {
+        const autoLoad = async () => {
+          try {
+            setModalLoading(true);
+            const orgId = getStoredOrganizationId();
+            if (!orgId) return;
+            const res = await apiFetch(`/api/metasync/account/${metaActId}/live-campaigns?includeQuota=true&organizationId=${orgId}`);
+            if (res && res.items) {
+              setLiveCampaigns(res.items);
+            }
+            if (res && res.quota) {
+              setQuota({ used: res.quota.used || 0, limit: res.quota.limit || 0 });
+            }
+          } catch (e) {
+            console.error("Erro ao auto-carregar campanhas:", e);
+          } finally {
+            setModalLoading(false);
+          }
+        };
+        autoLoad();
+      }
     }
-  }, [modalOpen]);
+  }, [modalOpen, metaActId]);
 
   useEffect(() => {
     if (!modalOpen) return;
