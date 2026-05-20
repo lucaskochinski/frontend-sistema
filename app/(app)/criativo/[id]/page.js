@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import { apiFetch, getStoredOrganizationId } from "@/lib/hooko-session";
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -391,17 +392,21 @@ export default function CreativeDetailPage() {
   }, [deleteConfirmOpen, closeDeleteConfirm]);
 
   useEffect(() => {
-    if (!USE_MOCK) {
-      setLoading(false);
-      setData(null);
-      return;
+    async function fetchAdDetails() {
+      if (!routeId) return;
+      try {
+        setLoading(true);
+        const orgId = getStoredOrganizationId();
+        const res = await apiFetch(`/api/dashboard/insights/${routeId}?organizationId=${orgId}`);
+        setData(res);
+      } catch (err) {
+        console.error("Erro ao carregar detalhes do criativo:", err);
+        setData(null);
+      } finally {
+        setLoading(false);
+      }
     }
-    setLoading(true);
-    const t = setTimeout(() => {
-      setData({ ...mockCreativeData, id: routeId || mockCreativeData.id });
-      setLoading(false);
-    }, LOAD_MS);
-    return () => clearTimeout(t);
+    fetchAdDetails();
   }, [routeId]);
 
   const filteredDaily = useMemo(() => {
