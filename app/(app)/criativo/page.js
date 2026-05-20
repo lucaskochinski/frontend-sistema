@@ -802,7 +802,7 @@ export default function DashboardCreativesPage() {
                                     className={styles.adThumbImg}
                                   />
                                 ) : (
-                                  <div className={styles.adThumbPlaceholder}>Sem preview</div>
+                                  <div className={styles.adThumbPlaceholder}>Mensagem</div>
                                 )}
                               </div>
                               <div className={styles.metaRowMain}>
