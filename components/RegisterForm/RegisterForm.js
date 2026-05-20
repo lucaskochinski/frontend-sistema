@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useState } from "react";
 import Skeleton from "@/components/Skeleton/Skeleton";
 import AuthPasswordField from "@/components/AuthPasswordField/AuthPasswordField";
-import { persistSession } from "@/lib/hooko-session";
+import { persistSession, getApiBase } from "@/lib/hooko-session";
 
 const USE_MOCK = false;
 
@@ -40,7 +40,7 @@ async function registerRequest(payload) {
     throw err;
   }
 
-  const API_BASE = typeof process.env.NEXT_PUBLIC_API_URL === "string" ? process.env.NEXT_PUBLIC_API_URL : "";
+  const API_BASE = getApiBase();
 
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 1500));
