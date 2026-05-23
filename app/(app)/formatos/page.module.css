@@ -32,6 +32,91 @@
   position: relative;
   z-index: 1;
   padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.filterRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.errorBox {
+  margin-bottom: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  background: rgba(239, 68, 68, 0.08);
+  color: #fca5a5;
+  font-size: 0.85rem;
+}
+
+.statusText,
+.summaryText {
+  margin: 0 0 1.25rem;
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+
+.emptyState {
+  border-radius: 16px;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.emptyTitle {
+  margin: 0 0 0.5rem;
+  color: #fafafa;
+  font-size: 1.1rem;
+}
+
+.emptyCopy {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.emptyCopy a {
+  color: #f5e6b8;
+}
+
+.adPreviewList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+}
+
+.adPreviewLink {
+  color: #93c5fd;
+  text-decoration: none;
+}
+
+.adPreviewLink:hover {
+  text-decoration: underline;
+}
+
+.adPreviewCampaign {
+  color: #64748b;
+}
+
+.adPreviewMore {
+  color: #64748b;
+  font-style: italic;
+}
+
+.cardFooter .btn {
+  text-decoration: none;
 }
 
 .topHeaderMain {

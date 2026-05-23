@@ -20,6 +20,7 @@ import {
   PolarAngleAxis,
 } from "recharts";
 import Skeleton from "@/components/Skeleton/Skeleton";
+import MetaMetricsPanel from "@/components/MetaMetrics/MetaMetricsPanel";
 import styles from "./page.module.css";
 
 /** Liga dados mock até a API estar disponível */
@@ -342,6 +343,59 @@ function ScoreBarRow({ label, value }) {
   );
 }
 
+function MetaVideoPlayer({ mediaId, initialVideoUrl, posterUrl, mediaType }) {
+  const [videoSrc, setVideoSrc] = useState(initialVideoUrl || "");
+  const [poster, setPoster] = useState(posterUrl || "/imagens/meta.png");
+  const refreshingRef = useRef(false);
+
+  useEffect(() => {
+    setVideoSrc(initialVideoUrl || "");
+    setPoster(posterUrl || "/imagens/meta.png");
+  }, [initialVideoUrl, posterUrl, mediaId]);
+
+  const refreshFromMeta = useCallback(async () => {
+    if (!mediaId || refreshingRef.current) return;
+    refreshingRef.current = true;
+    try {
+      const orgId = getStoredOrganizationId();
+      if (!orgId) return;
+      const res = await apiFetch(
+        `/api/dashboard/media-refresh/${mediaId}?organizationId=${orgId}`
+      );
+      if (res?.url) setVideoSrc(res.url);
+      if (res?.thumbnailUrl) setPoster(res.thumbnailUrl);
+    } catch (err) {
+      console.error("Erro ao renovar vídeo do Meta:", err);
+    } finally {
+      refreshingRef.current = false;
+    }
+  }, [mediaId]);
+
+  if (mediaType === "image" || (!videoSrc && poster)) {
+    return (
+      <img
+        src={poster}
+        alt="Criativo"
+        className={styles.videoEl}
+        style={{ objectFit: "cover" }}
+        onError={mediaId ? refreshFromMeta : undefined}
+      />
+    );
+  }
+
+  return (
+    <video
+      className={styles.videoEl}
+      controls
+      playsInline
+      preload="metadata"
+      src={videoSrc || undefined}
+      poster={poster}
+      onError={mediaId ? refreshFromMeta : undefined}
+    />
+  );
+}
+
 export default function CreativeDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -354,6 +408,9 @@ export default function CreativeDetailPage() {
   const [copyExpanded, setCopyExpanded] = useState(false);
   const [rangeKey, setRangeKey] = useState("30d");
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [breakdownKey, setBreakdownKey] = useState("platform_position");
+  const [breakdownData, setBreakdownData] = useState(null);
+  const [breakdownLoading, setBreakdownLoading] = useState(false);
 
   const lastDay = data?.performance_daily?.[data.performance_daily.length - 1]?.date || toYMD(new Date());
   const [customFrom, setCustomFrom] = useState(() => toYMD(addDays(parseYMD(lastDay) || new Date(), -29)));
@@ -409,6 +466,26 @@ export default function CreativeDetailPage() {
     fetchAdDetails();
   }, [routeId]);
 
+  useEffect(() => {
+    async function loadBreakdowns() {
+      if (!routeId) return;
+      setBreakdownLoading(true);
+      try {
+        const orgId = getStoredOrganizationId();
+        const period = rangeKey === "7d" ? "week" : rangeKey === "90d" ? "month" : "month";
+        const res = await apiFetch(
+          `/api/dashboard/insights/${routeId}/meta-breakdowns?organizationId=${orgId}&breakdown=${breakdownKey}&period=${period}`,
+        );
+        setBreakdownData(res);
+      } catch {
+        setBreakdownData(null);
+      } finally {
+        setBreakdownLoading(false);
+      }
+    }
+    loadBreakdowns();
+  }, [routeId, breakdownKey, rangeKey]);
+
   const filteredDaily = useMemo(() => {
     const series = data?.performance_daily;
     if (!series?.length) return [];
@@ -416,6 +493,41 @@ export default function CreativeDetailPage() {
   }, [data?.performance_daily, rangeKey, customFrom, customTo]);
 
   const agg = useMemo(() => aggregateFromDaily(filteredDaily), [filteredDaily]);
+
+  const periodMeta = useMemo(() => {
+    if (!filteredDaily.length) return data;
+    const totals = {
+      impressions: 0,
+      reach: 0,
+      clicks: 0,
+      spend: 0,
+      videoPlays: 0,
+      video3s: 0,
+      video75: 0,
+    };
+    for (const row of filteredDaily) {
+      totals.impressions += Number(row.impressions || 0);
+      totals.clicks += Number(row.clicks || 0);
+      totals.spend += Number(row.spend || 0);
+      totals.reach += Number(row.reach || 0);
+      totals.videoPlays += Number(row.video?.plays || 0);
+      totals.video3s += Number(row.video?.watched3s || 0);
+      totals.video75 += Number(row.video?.watched75 || 0);
+    }
+    return {
+      delivery: data?.delivery || {
+        impressions: totals.impressions,
+        reach: totals.reach,
+        clicks: totals.clicks,
+        spend: totals.spend,
+        ctr: totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0,
+      },
+      videoMetrics: data?.video_metrics,
+      videoRetention: data?.video_retention,
+      videoPlayCurve: data?.video_play_curve,
+      creativeHealth: data?.creative_health,
+    };
+  }, [data, filteredDaily]);
 
   const radarData = useMemo(() => {
     const a = data?.ai_analysis;
@@ -517,7 +629,7 @@ export default function CreativeDetailPage() {
         </div>
 
         <p className={styles.bandHint}>
-          Métricas abaixo refletem o período selecionado ({filteredDaily.length} dias com dados no mock).
+          Métricas abaixo refletem o período selecionado ({filteredDaily.length} dias com dados da Meta).
         </p>
 
         <div className={styles.perfGrid}>
@@ -651,6 +763,38 @@ export default function CreativeDetailPage() {
             </div>
           </div>
         </div>
+
+        <div className={styles.chartCard} style={{ gridColumn: "1 / -1" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "1rem", flexWrap: "wrap", marginBottom: "0.75rem" }}>
+            <h2 className={styles.chartTitle} style={{ margin: 0 }}>Métricas Meta completas</h2>
+            <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.8rem", color: "#a1a1aa" }}>
+              Breakdown
+              <select
+                value={breakdownKey}
+                onChange={(e) => setBreakdownKey(e.target.value)}
+                style={{ background: "#161822", color: "#fff", border: "1px solid rgba(255,255,255,0.12)", borderRadius: "8px", padding: "0.35rem 0.5rem" }}
+              >
+                <option value="platform_position">Posição (Feed/Stories/Reels)</option>
+                <option value="publisher_platform">Plataforma (FB/IG)</option>
+                <option value="device_platform">Dispositivo</option>
+                <option value="age">Idade</option>
+                <option value="gender">Gênero</option>
+                <option value="body_asset">Variação de copy</option>
+                <option value="title_asset">Variação de headline</option>
+                <option value="video_asset">Variação de vídeo</option>
+              </select>
+            </label>
+          </div>
+          <MetaMetricsPanel
+            delivery={periodMeta.delivery}
+            videoMetrics={periodMeta.videoMetrics}
+            videoRetention={periodMeta.videoRetention}
+            videoPlayCurve={periodMeta.videoPlayCurve}
+            creativeHealth={periodMeta.creativeHealth}
+            breakdownItems={breakdownLoading ? [] : breakdownData?.items}
+            breakdownLabel={breakdownData?.breakdown}
+          />
+        </div>
       </section>
 
       <div className={styles.split}>
@@ -661,19 +805,24 @@ export default function CreativeDetailPage() {
               <div className={styles.videoRatio}>
                 {(() => {
                   const rawId = data.vturb_video_id || data.vturbVideoId;
-                  if (!rawId) {
-                    return <video className={styles.videoEl} controls playsInline preload="metadata" src={data.media_url} />;
-                  }
-                  // Sanitização rigorosa: permite apenas caracteres alfanuméricos, traços e underscores
-                  const cleanId = String(rawId).replace(/[^a-zA-Z0-9_-]/g, "");
-                  if (!cleanId) {
-                    return <video className={styles.videoEl} controls playsInline preload="metadata" src={data.media_url} />;
+                  if (rawId) {
+                    const cleanId = String(rawId).replace(/[^a-zA-Z0-9_-]/g, "");
+                    if (cleanId) {
+                      return (
+                        <iframe
+                          src={`https://scripts.converteai.net/${cleanId}/players/${cleanId}/embed.html`}
+                          style={{ width: "100%", height: "100%", border: "none", position: "absolute", top: 0, left: 0 }}
+                          allowFullScreen
+                        />
+                      );
+                    }
                   }
                   return (
-                    <iframe
-                      src={`https://scripts.converteai.net/${cleanId}/players/${cleanId}/embed.html`}
-                      style={{ width: "100%", height: "100%", border: "none", position: "absolute", top: 0, left: 0 }}
-                      allowFullScreen
+                    <MetaVideoPlayer
+                      mediaId={data.media_id}
+                      initialVideoUrl={data.media_url}
+                      posterUrl={data.thumbnail_url}
+                      mediaType={data.media_type}
                     />
                   );
                 })()}

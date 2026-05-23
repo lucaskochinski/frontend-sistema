@@ -16,16 +16,17 @@ function SmartThumbnail({ initialSrc, mediaId, className }) {
   const [refreshing, setRefreshing] = useState(false);
 
   const handleError = async () => {
-    // Evita loop infinito e só atualiza se tiver um mediaId real
-    if (refreshing || !mediaId || src === "/imagens/meta.png") return;
+    if (refreshing || !mediaId) return;
     setRefreshing(true);
     try {
       const orgId = getStoredOrganizationId();
       if (!orgId) return;
-      
+
       const res = await apiFetch(`/api/dashboard/media-refresh/${mediaId}?organizationId=${orgId}`);
-      if (res && res.thumbnailUrl) {
-        setSrc(res.thumbnailUrl); // Link novo injetado na tela!
+      if (res?.thumbnailUrl) {
+        setSrc(res.thumbnailUrl);
+      } else if (res?.url && res?.type !== "video") {
+        setSrc(res.url);
       } else {
         setSrc("/imagens/meta.png");
       }
@@ -252,11 +253,63 @@ export default function DashboardCreativesPage() {
   const [pageIndex, setPageIndex] = useState(0);
 
   const [metaConnected, setMetaConnected] = useState(false);
-  const [metaActId, setMetaActId] = useState("1901871430406663");
+  const [metaAccounts, setMetaAccounts] = useState([]);
+  const [metaActId, setMetaActId] = useState("");
   const [liveCampaigns, setLiveCampaigns] = useState([]);
   const [liveAds, setLiveAds] = useState([]);
   const [quota, setQuota] = useState({ used: 0, limit: 0 });
   const [modalLoading, setModalLoading] = useState(false);
+  const [accountsLoading, setAccountsLoading] = useState(false);
+
+  const loadCampaignsForAccount = useCallback(async (actId) => {
+    const trimmed = String(actId || "").trim();
+    if (!trimmed) {
+      setLiveCampaigns([]);
+      return;
+    }
+
+    try {
+      setModalLoading(true);
+      const orgId = getStoredOrganizationId();
+      if (!orgId) return;
+
+      const res = await apiFetch(
+        `/api/metasync/account/${trimmed}/live-campaigns?includeQuota=true&organizationId=${orgId}`
+      );
+      if (res?.items) {
+        setLiveCampaigns(res.items);
+      }
+      if (res?.quota) {
+        setQuota({ used: res.quota.used || 0, limit: res.quota.limit || 0 });
+      }
+    } catch (err) {
+      console.error("Erro ao carregar campanhas:", err);
+      setLiveCampaigns([]);
+      alert(err.message || "Erro ao carregar campanhas da conta.");
+    } finally {
+      setModalLoading(false);
+    }
+  }, []);
+
+  const fetchMetaAccounts = useCallback(async () => {
+    try {
+      setAccountsLoading(true);
+      const orgId = getStoredOrganizationId();
+      if (!orgId) return [];
+
+      const res = await apiFetch(`/api/metasync/ad-accounts?organizationId=${orgId}`);
+      const items = Array.isArray(res?.items) ? res.items : [];
+      setMetaAccounts(items);
+      return items;
+    } catch (err) {
+      console.error("Erro ao carregar contas Meta:", err);
+      setMetaAccounts([]);
+      alert(err.message || "Erro ao carregar contas de anúncio do Meta.");
+      return [];
+    } finally {
+      setAccountsLoading(false);
+    }
+  }, []);
 
   const fetchImportedCreatives = useCallback(async () => {
     try {
@@ -271,7 +324,9 @@ export default function DashboardCreativesPage() {
 
       if (insights && Array.isArray(insights.items)) {
         const mapped = insights.items.map((item) => ({
-          id: item.creativeAnalysisId,
+          id: item.adId,
+          ad_id: item.adId,
+          creative_analysis_id: item.creativeAnalysisId,
           media_id: item.mediaId,
           name: item.adName || "Anúncio",
           campaign_name: item.campaignName || "Sem Campanha",
@@ -306,34 +361,44 @@ export default function DashboardCreativesPage() {
   }, [fetchImportedCreatives]);
 
   useEffect(() => {
-    if (modalOpen) {
+    if (!modalOpen) return;
+
+    setModalStep(1);
+    setSelectedCampaign(null);
+    setLiveCampaigns([]);
+    setLiveAds([]);
+
+    let cancelled = false;
+
+    const bootstrapImportModal = async () => {
+      const accounts = await fetchMetaAccounts();
+      if (cancelled) return;
+
+      const firstActId = accounts[0]?.id ? String(accounts[0].id) : "";
+      setMetaActId(firstActId);
+
+      if (firstActId) {
+        await loadCampaignsForAccount(firstActId);
+      }
+    };
+
+    bootstrapImportModal();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [modalOpen, fetchMetaAccounts, loadCampaignsForAccount]);
+
+  const handleAccountChange = useCallback(
+    async (nextActId) => {
+      setMetaActId(nextActId);
       setModalStep(1);
       setSelectedCampaign(null);
-      
-      // Auto load campaigns in background
-      if (metaActId) {
-        const autoLoad = async () => {
-          try {
-            setModalLoading(true);
-            const orgId = getStoredOrganizationId();
-            if (!orgId) return;
-            const res = await apiFetch(`/api/metasync/account/${metaActId}/live-campaigns?includeQuota=true&organizationId=${orgId}`);
-            if (res && res.items) {
-              setLiveCampaigns(res.items);
-            }
-            if (res && res.quota) {
-              setQuota({ used: res.quota.used || 0, limit: res.quota.limit || 0 });
-            }
-          } catch (e) {
-            console.error("Erro ao auto-carregar campanhas:", e);
-          } finally {
-            setModalLoading(false);
-          }
-        };
-        autoLoad();
-      }
-    }
-  }, [modalOpen, metaActId]);
+      setLiveAds([]);
+      await loadCampaignsForAccount(nextActId);
+    },
+    [loadCampaignsForAccount]
+  );
 
   useEffect(() => {
     if (!modalOpen) return;
@@ -404,29 +469,6 @@ export default function DashboardCreativesPage() {
       : 0;
 
   const step2Ads = selectedCampaign ? liveAds : [];
-
-  const handleLoadCampaigns = async () => {
-    if (!metaActId.trim()) {
-      alert("Por favor, informe o ID da sua Conta Meta (ex: 12345678).");
-      return;
-    }
-    try {
-      setModalLoading(true);
-      const orgId = getStoredOrganizationId();
-      const res = await apiFetch(`/api/metasync/account/${metaActId}/live-campaigns?includeQuota=true&organizationId=${orgId}`);
-      if (res && res.items) {
-        setLiveCampaigns(res.items);
-      }
-      if (res && res.quota) {
-        setQuota({ used: res.quota.used || 0, limit: res.quota.limit || 0 });
-      }
-    } catch (err) {
-      console.error("Erro ao carregar campanhas:", err);
-      alert(err.message || "Erro ao carregar campanhas da conta.");
-    } finally {
-      setModalLoading(false);
-    }
-  };
 
   const handleOpenCampaign = async (campaign) => {
     setSelectedCampaign({ id: campaign.id, name: campaign.name });
@@ -713,14 +755,25 @@ export default function DashboardCreativesPage() {
                 <span className={styles.folderChromeDot} />
                 <span className={styles.folderChromeLabel}>
                   Conta Meta
-                  <input
-                    type="text"
+                  <select
+                    className={styles.accountSelect}
                     value={metaActId}
-                    onChange={(e) => setMetaActId(e.target.value)}
-                    placeholder="ID da Conta (ex: 123456)"
-                    style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', borderRadius: '4px', padding: '2px 8px', outline: 'none', marginLeft: '10px', fontSize: '13px' }}
-                  />
-                  <button type="button" onClick={handleLoadCampaigns} style={{ marginLeft: '6px', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', padding: '3px 10px', borderRadius: '4px', cursor: 'pointer', fontSize: '13px' }}>Carregar</button>
+                    onChange={(e) => handleAccountChange(e.target.value)}
+                    disabled={accountsLoading || modalLoading || metaAccounts.length === 0}
+                    aria-label="Selecionar conta de anúncio Meta"
+                  >
+                    {accountsLoading ? (
+                      <option value="">A carregar contas…</option>
+                    ) : metaAccounts.length === 0 ? (
+                      <option value="">Nenhuma conta encontrada</option>
+                    ) : (
+                      metaAccounts.map((acc) => (
+                        <option key={acc.id} value={acc.id}>
+                          {acc.name} ({acc.id})
+                        </option>
+                      ))
+                    )}
+                  </select>
                 </span>
               </div>
 
@@ -762,7 +815,16 @@ export default function DashboardCreativesPage() {
                 >
                 {modalStep === 1 ? (
                   <ul className={styles.folderGrid}>
-                    {modalLoading ? <p className={styles.modalSub}>A carregar campanhas...</p> : liveCampaigns.map((row) => (
+                    {accountsLoading || modalLoading ? (
+                      <p className={styles.modalSub}>A carregar campanhas…</p>
+                    ) : metaAccounts.length === 0 ? (
+                      <p className={styles.modalSub}>
+                        Nenhuma conta de anúncio encontrada. Verifique a ligação ao Meta em Ajustes.
+                      </p>
+                    ) : liveCampaigns.length === 0 ? (
+                      <p className={styles.modalSub}>Nenhuma campanha encontrada nesta conta.</p>
+                    ) : (
+                      liveCampaigns.map((row) => (
                       <li key={row.id} className={styles.folderGridItem}>
                         <button
                           type="button"
@@ -777,7 +839,8 @@ export default function DashboardCreativesPage() {
                           <span className={styles.folderTileCta}>Abrir pasta →</span>
                         </button>
                       </li>
-                    ))}
+                      ))
+                    )}
                   </ul>
                 ) : (
                   <ul className={styles.metaList}>

@@ -15,7 +15,7 @@ import {
   Tooltip,
   ReferenceLine
 } from "recharts";
-import { apiFetch } from "@/lib/hooko-session";
+import { apiFetch, getStoredOrganizationId } from "@/lib/hooko-session";
 import styles from "./page.module.css";
 
 // Dados base de segurança para exibição pré-carregamento
@@ -49,26 +49,47 @@ export default function PlatformDashboard() {
     totalSales: 0,
     salesByPaymentMethod: DEFAULT_PAYMENTS,
     profitByHour: [],
-    isDemoData: true
+    revenueByHour: [],
+    isDemoData: true,
   });
+  const [metaOverview, setMetaOverview] = useState(null);
 
-  // Função para carregar estatísticas reais do back-end
+  const periodToApi = (p) => {
+    if (p === "today" || p === "yesterday") return "today";
+    if (p === "7d") return "week";
+    if (p === "30d" || p === "month") return "month";
+    return "month";
+  };
+
   const fetchStats = async () => {
     try {
       setLoading(true);
       setError(null);
-      
-      const data = await apiFetch(`/api/dashboard/external-sales/${plataforma}`);
-      
-      if (data) {
+
+      const orgId = getStoredOrganizationId();
+      const apiPeriod = periodToApi(period);
+      const [salesData, overviewData] = await Promise.all([
+        apiFetch(`/api/dashboard/external-sales/${plataforma}?organizationId=${orgId}&period=${apiPeriod}`).catch(() => null),
+        apiFetch(`/api/dashboard/overview?organizationId=${orgId}&period=${apiPeriod}`).catch(() => null),
+      ]);
+
+      setMetaOverview(overviewData);
+
+      if (salesData) {
         setStats({
-          totalRevenue: parseFloat(data.totalRevenue || 0),
-          totalSales: parseInt(data.totalSales || 0, 10),
-          salesByPaymentMethod: Array.isArray(data.salesByPaymentMethod) && data.salesByPaymentMethod.length > 0
-            ? data.salesByPaymentMethod
-            : DEFAULT_PAYMENTS,
-          profitByHour: Array.isArray(data.profitByHour) ? data.profitByHour : [],
-          isDemoData: !!data.isDemoData
+          totalRevenue: parseFloat(salesData.totalRevenue || 0),
+          totalSales: parseInt(salesData.totalSales || 0, 10),
+          salesByPaymentMethod:
+            Array.isArray(salesData.salesByPaymentMethod) && salesData.salesByPaymentMethod.length > 0
+              ? salesData.salesByPaymentMethod
+              : DEFAULT_PAYMENTS,
+          profitByHour: Array.isArray(salesData.revenueByHour)
+            ? salesData.revenueByHour
+            : Array.isArray(salesData.profitByHour)
+              ? salesData.profitByHour
+              : [],
+          revenueByHour: Array.isArray(salesData.revenueByHour) ? salesData.revenueByHour : [],
+          isDemoData: !!salesData.isDemoData,
         });
       }
     } catch (err) {
@@ -83,10 +104,9 @@ export default function PlatformDashboard() {
     if (plataforma) {
       fetchStats();
     }
-  }, [plataforma]);
+  }, [plataforma, period]);
 
-  // Cálculos derivados dinamicamente
-  const adSpend = 45200.00; // Gastos de anúncios mockados para fins de ROI global se for Demo, ou calculados
+  const adSpend = Number(metaOverview?.totalSpend || 0);
   const calculatedRevenue = stats.totalRevenue;
   const calculatedROI = adSpend > 0 ? (calculatedRevenue / adSpend).toFixed(2) : "0.00";
   const calculatedProfit = calculatedRevenue - adSpend;
@@ -338,10 +358,10 @@ export default function PlatformDashboard() {
 
         {/* Painel Direito: Lucro por Horário (Barras Positivas/Negativas) */}
         <div className={styles.chartPanel}>
-          <h2 className={styles.chartPanelTitle}>Lucro por Horário</h2>
+          <h2 className={styles.chartPanelTitle}>Receita por horário (PagTrust)</h2>
           <div className={styles.chartContainer}>
             {loading ? (
-              <div style={{ color: "#64748b", fontSize: "0.85rem" }}>Carregando gráfico de lucro...</div>
+              <div style={{ color: "#64748b", fontSize: "0.85rem" }}>Carregando gráfico...</div>
             ) : stats.profitByHour.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
@@ -349,17 +369,17 @@ export default function PlatformDashboard() {
                   margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-                  <XAxis 
-                    dataKey="hora" 
-                    stroke="#64748b" 
-                    fontSize={10} 
-                    tickLine={false} 
-                    axisLine={false} 
+                  <XAxis
+                    dataKey="hora"
+                    stroke="#64748b"
+                    fontSize={10}
+                    tickLine={false}
+                    axisLine={false}
                   />
-                  <YAxis 
-                    stroke="#64748b" 
-                    fontSize={10} 
-                    tickLine={false} 
+                  <YAxis
+                    stroke="#64748b"
+                    fontSize={10}
+                    tickLine={false}
                     axisLine={false}
                     tickFormatter={(val) => `R$ ${val}`}
                   />
@@ -370,17 +390,12 @@ export default function PlatformDashboard() {
                       borderColor: "rgba(255,255,255,0.08)",
                       borderRadius: "8px",
                       fontSize: "0.8rem",
-                      color: "#fff"
+                      color: "#fff",
                     }}
-                    formatter={(val) => [`R$ ${parseFloat(val).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, val >= 0 ? "Lucro" : "Prejuízo"]}
+                    formatter={(val) => [`R$ ${parseFloat(val).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, "Receita"]}
                   />
                   <ReferenceLine y={0} stroke="rgba(255,255,255,0.2)" />
-                  <Bar dataKey="valor">
-                    {stats.profitByHour.map((entry, index) => {
-                      const color = entry.valor >= 0 ? "#2563eb" : "#ef4444";
-                      return <Cell key={`cell-${index}`} fill={color} />;
-                    })}
-                  </Bar>
+                  <Bar dataKey="valor" fill="#2563eb" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (

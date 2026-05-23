@@ -1,87 +1,61 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import styles from "./page.module.css";
-
-const INITIAL_FORMATS = [
-  {
-    id: "f1",
-    name: "Stories & Reels (Vertical)",
-    ratio: "9:16",
-    widthPct: 40,
-    heightPct: 80,
-    dimensions: "1080 x 1920 px",
-    description: "Formato padrão para Stories do Instagram, Facebook e Reels. Essencial para criativos UGC e vídeos de conversão direta.",
-    syncedCount: 18,
-    category: "Recomendado",
-    tagType: "gold"
-  },
-  {
-    id: "f2",
-    name: "Feed Quadrado",
-    ratio: "1:1",
-    widthPct: 70,
-    heightPct: 70,
-    dimensions: "1080 x 1080 px",
-    description: "O formato mais versátil. Excelente ocupação de tela nos feeds do Instagram e Facebook. Suporta imagens e vídeos.",
-    syncedCount: 14,
-    category: "Estático/Vídeo",
-    tagType: "blue"
-  },
-  {
-    id: "f3",
-    name: "Feed Retrato (Vertical)",
-    ratio: "4:5",
-    widthPct: 65,
-    heightPct: 80,
-    dimensions: "1080 x 1350 px",
-    description: "Maximiza a área vertical visível no feed do Instagram, superando o modelo quadrado e garantindo maior retenção visual.",
-    syncedCount: 9,
-    category: "Engajamento",
-    tagType: "gold"
-  },
-  {
-    id: "f4",
-    name: "Landscape (Horizontal)",
-    ratio: "16:9",
-    widthPct: 80,
-    heightPct: 45,
-    dimensions: "1920 x 1080 px",
-    description: "Ideal para canais de vídeo tradicionais como YouTube Ads e posicionamentos in-stream ou de rede de audiência.",
-    syncedCount: 3,
-    category: "Tradicional",
-    tagType: "blue"
-  },
-  {
-    id: "f5",
-    name: "Carrossel Dinâmico",
-    ratio: "1:1 (Multi)",
-    widthPct: 70,
-    heightPct: 70,
-    dimensions: "1080 x 1080 px (x10)",
-    description: "Permite listar múltiplos ângulos de produto ou contar uma narrativa visual interativa usando múltiplos cards.",
-    syncedCount: 7,
-    category: "Multi-Card",
-    tagType: "blue"
-  }
-];
+import { apiFetch, getStoredOrganizationId } from "@/lib/hooko-session";
 
 export default function FormatosPage() {
-  const [formats, setFormats] = useState(INITIAL_FORMATS);
+  const [formats, setFormats] = useState([]);
+  const [totalImported, setTotalImported] = useState(0);
+  const [unclassifiedCount, setUnclassifiedCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [filter, setFilter] = useState("all");
 
-  const filteredFormats = formats.filter(f => {
-    if (filter === "all") return true;
-    if (filter === "vertical") return f.ratio === "9:16" || f.ratio === "4:5";
-    if (filter === "square") return f.ratio.startsWith("1:1");
-    return true;
-  });
+  const loadFormats = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const orgId = getStoredOrganizationId();
+      if (!orgId) {
+        setFormats([]);
+        setTotalImported(0);
+        setUnclassifiedCount(0);
+        return;
+      }
+
+      const res = await apiFetch(
+        `/api/dashboard/creative-formats?organizationId=${orgId}`
+      );
+
+      setFormats(Array.isArray(res?.items) ? res.items : []);
+      setTotalImported(Number(res?.totalImported) || 0);
+      setUnclassifiedCount(Number(res?.unclassifiedCount) || 0);
+    } catch (err) {
+      console.error("Erro ao carregar formatos:", err);
+      setError(err.message || "Não foi possível carregar os formatos.");
+      setFormats([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadFormats();
+  }, [loadFormats]);
+
+  const filteredFormats = useMemo(() => {
+    return formats.filter((f) => {
+      if (filter === "all") return true;
+      return f.filterGroup === filter;
+    });
+  }, [formats, filter]);
 
   return (
     <div className={styles.page}>
-      {/* Top Header */}
       <div className={styles.topHeader}>
-        <div className={styles.topHeaderGlow} />
+        <div className={styles.topHeaderGlow} aria-hidden />
         <div className={styles.topHeaderInner}>
           <div className={styles.topHeaderMain}>
             <div className={styles.topIconWrap}>
@@ -91,94 +65,184 @@ export default function FormatosPage() {
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="1.7"
+                aria-hidden
               >
                 <path d="M12 2L2 7l10 5 10-5-10-5z" strokeLinejoin="round" />
-                <path d="M2 17l10 5 10-5M2 12l10 5 10-5" strokeLinejoin="round" opacity="0.85" />
+                <path
+                  d="M2 17l10 5 10-5M2 12l10 5 10-5"
+                  strokeLinejoin="round"
+                  opacity="0.85"
+                />
               </svg>
             </div>
             <div className={styles.topTitleBlock}>
               <h1 className={styles.topPageTitle}>Formatos de Criativos</h1>
               <p className={styles.topHint}>
-                Gerencie, categorize e inspecione a distribuição de formatos dos seus anúncios importados da Meta Ads.
+                Dados reais da Meta Graph API — dimensões de{" "}
+                <code>video.format[native]</code>, <code>object_type</code> e
+                carrosséis detectados na estrutura do creative.
               </p>
             </div>
           </div>
+          <button
+            type="button"
+            className={`${styles.btn} ${styles.btnPrimary}`}
+            onClick={loadFormats}
+            disabled={loading}
+          >
+            {loading ? "A carregar…" : "Atualizar"}
+          </button>
         </div>
       </div>
 
-      {/* Quick Filters */}
-      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1.5rem" }}>
+      <div className={styles.filterRow}>
         <button
+          type="button"
           className={`${styles.btn} ${filter === "all" ? styles.btnPrimary : ""}`}
           onClick={() => setFilter("all")}
         >
-          Todos os Formatos ({formats.length})
+          Todos ({formats.length})
         </button>
         <button
+          type="button"
           className={`${styles.btn} ${filter === "vertical" ? styles.btnPrimary : ""}`}
           onClick={() => setFilter("vertical")}
         >
-          Verticais (9:16 / 4:5)
+          Verticais
         </button>
         <button
+          type="button"
           className={`${styles.btn} ${filter === "square" ? styles.btnPrimary : ""}`}
           onClick={() => setFilter("square")}
         >
-          Quadrados (1:1)
+          Quadrados
+        </button>
+        <button
+          type="button"
+          className={`${styles.btn} ${filter === "landscape" ? styles.btnPrimary : ""}`}
+          onClick={() => setFilter("landscape")}
+        >
+          Horizontais
+        </button>
+        <button
+          type="button"
+          className={`${styles.btn} ${filter === "carousel" ? styles.btnPrimary : ""}`}
+          onClick={() => setFilter("carousel")}
+        >
+          Carrossel
         </button>
       </div>
 
-      {/* Formats Grid */}
-      <div className={styles.grid}>
-        {filteredFormats.map((item) => (
-          <div key={item.id} className={styles.card}>
-            <div className={styles.cardHeader}>
-              <h2 className={styles.formatTitle}>{item.name}</h2>
-              <span
-                className={`${styles.badge} ${
-                  item.tagType === "gold" ? styles.badgeGold : styles.badgeBlue
-                }`}
-              >
-                {item.category}
-              </span>
-            </div>
+      {error ? (
+        <div className={styles.errorBox} role="alert">
+          {error}
+        </div>
+      ) : null}
 
-            <div className={styles.cardBody}>
-              {/* Aspect Ratio Box Visualizer */}
-              <div className={styles.aspectPreviewBox}>
-                <div
-                  className={styles.ratioRepresentation}
-                  style={{
-                    width: `${item.widthPct}%`,
-                    height: `${item.heightPct}%`,
-                  }}
-                >
-                  {item.ratio}
+      {loading ? (
+        <p className={styles.statusText}>A carregar formatos dos criativos importados…</p>
+      ) : totalImported === 0 ? (
+        <div className={styles.emptyState}>
+          <h2 className={styles.emptyTitle}>Nenhum criativo importado</h2>
+          <p className={styles.emptyCopy}>
+            Importe anúncios em <Link href="/criativo">Criativos</Link> para ver os
+            formatos que a Meta devolve.
+          </p>
+        </div>
+      ) : (
+        <>
+          <p className={styles.summaryText}>
+            {totalImported} criativo(s) importado(s) · {formats.length} grupo(s) com
+            dados Meta · {unclassifiedCount} sem dimensões/tipo do Meta
+          </p>
+
+          {filteredFormats.length === 0 ? (
+            <p className={styles.statusText}>
+              Nenhum grupo neste filtro. Os criativos podem estar sem{" "}
+              <code>format.native</code> persistido — reimporte para atualizar.
+            </p>
+          ) : (
+            <div className={styles.grid}>
+              {filteredFormats.map((item) => (
+                <div key={item.id} className={styles.card}>
+                  <div className={styles.cardHeader}>
+                    <h2 className={styles.formatTitle}>{item.label}</h2>
+                    {item.objectType ? (
+                      <span className={`${styles.badge} ${styles.badgeBlue}`}>
+                        {item.objectType}
+                      </span>
+                    ) : null}
+                  </div>
+
+                  <div className={styles.cardBody}>
+                    <div className={styles.aspectPreviewBox}>
+                      <div
+                        className={styles.ratioRepresentation}
+                        style={{
+                          width: `${item.widthPct}%`,
+                          height: `${item.heightPct}%`,
+                        }}
+                      >
+                        {item.aspectRatio || item.label}
+                      </div>
+                    </div>
+
+                    <div className={styles.metaInfo}>
+                      {item.width && item.height ? (
+                        <h3 className={styles.dimensionText}>
+                          Meta: {item.width} × {item.height} px
+                          {item.formatFilter ? ` (${item.formatFilter})` : ""}
+                        </h3>
+                      ) : (
+                        <h3 className={styles.dimensionText}>{item.label}</h3>
+                      )}
+                      <p className={styles.descriptionText}>
+                        Agrupamento baseado nos campos persistidos da Graph API na
+                        importação.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className={styles.statRow}>
+                    <span className={styles.statLabel}>Criativos neste grupo</span>
+                    <span className={styles.statValue}>{item.syncedCount}</span>
+                  </div>
+
+                  {item.ads?.length > 0 ? (
+                    <ul className={styles.adPreviewList}>
+                      {item.ads.slice(0, 4).map((ad) => (
+                        <li key={ad.adId}>
+                          <Link href={`/criativo/${ad.adId}`} className={styles.adPreviewLink}>
+                            {ad.adName}
+                          </Link>
+                          <span className={styles.adPreviewCampaign}>
+                            {ad.objectType ? ` · ${ad.objectType}` : ""}
+                            {ad.videoLengthSeconds
+                              ? ` · ${Math.round(ad.videoLengthSeconds)}s`
+                              : ""}
+                            {ad.width && ad.height ? ` · ${ad.width}×${ad.height}` : ""}
+                          </span>
+                        </li>
+                      ))}
+                      {item.ads.length > 4 ? (
+                        <li className={styles.adPreviewMore}>
+                          +{item.ads.length - 4} mais
+                        </li>
+                      ) : null}
+                    </ul>
+                  ) : null}
+
+                  <div className={styles.cardFooter}>
+                    <Link href="/criativo" className={`${styles.btn} ${styles.btnPrimary}`}>
+                      Ver criativos
+                    </Link>
+                  </div>
                 </div>
-              </div>
-
-              <div className={styles.metaInfo}>
-                <h3 className={styles.dimensionText}>{item.dimensions}</h3>
-                <p className={styles.descriptionText}>{item.description}</p>
-              </div>
+              ))}
             </div>
-
-            <div className={styles.statRow}>
-              <span className={styles.statLabel}>Criativos Vinculados</span>
-              <span className={styles.statValue}>{item.syncedCount} ativos</span>
-            </div>
-
-            <div className={styles.cardFooter}>
-              <button className={`${styles.btn} ${styles.btnPrimary}`}>
-                Filtrar Anúncios
-              </button>
-              <button className={styles.btn}>
-                Diretrizes de Design
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+          )}
+        </>
+      )}
     </div>
   );
 }

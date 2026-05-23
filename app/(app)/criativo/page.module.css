@@ -1190,12 +1190,36 @@
 
 .folderChromeLabel {
   flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
   text-align: center;
   font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(180, 180, 188, 0.75);
+}
+
+.accountSelect {
+  min-width: min(100%, 18rem);
+  max-width: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #fff;
+  border-radius: 6px;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.78rem;
+  letter-spacing: normal;
+  text-transform: none;
+  outline: none;
+}
+
+.accountSelect:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
 }
 
 .folderNavBar {
