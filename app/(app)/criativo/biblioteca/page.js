@@ -330,7 +330,7 @@ export default function DashboardCreativesPage() {
 
       if (insights && Array.isArray(insights.items)) {
         const mapped = insights.items.map((item) => {
-          const ai = normalizeAiCreativeAnalysis(item.aiAnalysis);
+          const ai = normalizeAiCreativeAnalysis(item.aiAnalysis, { aiUi: item.aiUi });
           return {
             id: item.adId,
             ad_id: item.adId,

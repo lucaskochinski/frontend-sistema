@@ -28,14 +28,14 @@ export default function CreativeAiSection({
   const top =
     featured ||
     [...insights].sort((a, b) => {
-      const sa = normalizeAiCreativeAnalysis(a?.aiAnalysis).performanceScore || 0;
-      const sb = normalizeAiCreativeAnalysis(b?.aiAnalysis).performanceScore || 0;
+      const sa = normalizeAiCreativeAnalysis(a?.aiAnalysis, { aiUi: a?.aiUi }).performanceScore || 0;
+      const sb = normalizeAiCreativeAnalysis(b?.aiAnalysis, { aiUi: b?.aiUi }).performanceScore || 0;
       return sb - sa;
     })[0] ||
     null;
 
   const featuredAnalysis = normalizeAiCreativeAnalysis(top?.aiAnalysis, {
-    videoMetrics: videoMetrics || undefined,
+    aiUi: top?.aiUi,
     rollup: top?.rollup,
   });
 

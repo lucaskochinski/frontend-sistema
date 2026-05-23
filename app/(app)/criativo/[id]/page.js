@@ -665,9 +665,16 @@ export default function CreativeDetailPage() {
 
   const radarData = useMemo(() => {
     const normalized = normalizeAiCreativeAnalysis(data?.ai_analysis, {
+      aiUi: data?.ai_ui,
       videoMetrics: data?.video_metrics,
     });
     if (normalized.pending) return [];
+    if (Array.isArray(normalized.chartSeries) && normalized.chartSeries.length) {
+      return normalized.chartSeries.map((row) => ({
+        metric: row.label,
+        value: row.value || 0,
+      }));
+    }
     return [
       { metric: "Gancho", value: normalized.scores.gancho || 0 },
       { metric: "Oferta", value: normalized.scores.oferta || 0 },
@@ -675,14 +682,15 @@ export default function CreativeDetailPage() {
       { metric: "CTA", value: normalized.scores.cta || 0 },
       { metric: "Harmonia", value: normalized.scores.harmonia || normalized.scores.formato || 0 },
     ];
-  }, [data?.ai_analysis, data?.video_metrics]);
+  }, [data?.ai_analysis, data?.ai_ui, data?.video_metrics]);
 
   const aiNormalized = useMemo(
     () =>
       normalizeAiCreativeAnalysis(data?.ai_analysis, {
+        aiUi: data?.ai_ui,
         videoMetrics: data?.video_metrics,
       }),
-    [data?.ai_analysis, data?.video_metrics],
+    [data?.ai_analysis, data?.ai_ui, data?.video_metrics],
   );
 
   const needsVerMais = useMemo(() => {
