@@ -58,15 +58,35 @@ export default function AdminPlanosPage() {
   const [limitsJson, setLimitsJson] = useState(DEFAULT_LIMITS);
   const [visibility, setVisibility] = useState(/** @type {'public' | 'org'} */ ("public"));
   const [customOrgId, setCustomOrgId] = useState("");
+  const [usingPublicFallback, setUsingPublicFallback] = useState(false);
 
   const loadPlans = useCallback(async () => {
     setErr("");
+    setUsingPublicFallback(false);
     try {
       const data = await apiFetch("/api/admin/plans?limit=200&includeInactive=true");
       const items = Array.isArray(data.items) ? data.items : [];
       setPlans(items.map(mapPlanItem));
       setLoaded(true);
     } catch (e) {
+      /** API antiga em produção só expunha POST /api/admin/plans — GET devolve 404. */
+      if (e?.status === 404) {
+        try {
+          const pub = await apiFetch("/api/plans/public");
+          const items = Array.isArray(pub.items) ? pub.items : [];
+          setPlans(items.map(mapPlanItem));
+          setUsingPublicFallback(true);
+          setErr(
+            "API em produção desactualizada: faça redeploy do hooko--api para listar todos os planos (inactivos, Stripe ID, editar/desactivar).",
+          );
+          setLoaded(true);
+          return;
+        } catch (fallbackErr) {
+          setErr(fallbackErr?.message || "Erro ao carregar planos públicos");
+          setLoaded(true);
+          return;
+        }
+      }
       setErr(e?.message || "Erro ao carregar planos");
       setLoaded(true);
     }
@@ -421,6 +441,11 @@ export default function AdminPlanosPage() {
       </header>
 
       {err ? <p className={s.err}>{err}</p> : null}
+      {usingPublicFallback ? (
+        <p className={s.hint} style={{ marginBottom: "0.75rem" }}>
+          Modo compatibilidade: a listagem mostra só planos públicos activos. Criar plano (POST) pode funcionar; editar/desactivar exigem API actualizada.
+        </p>
+      ) : null}
       {ok ? <p className={s.success}>{ok}</p> : null}
 
       <div className={p.toolbar}>
