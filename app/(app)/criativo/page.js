@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import styles from "./page.module.css";
 import { apiFetch, getStoredOrganizationId } from "@/lib/hooko-session";
+import ExternalImage from "@/components/ExternalMedia/ExternalImage";
 
 /** Mock: desliga API real enquanto o backend não está ligado */
 const USE_MOCK = false;
@@ -16,7 +17,11 @@ function SmartThumbnail({ initialSrc, mediaId, className }) {
   const [refreshing, setRefreshing] = useState(false);
 
   const handleError = async () => {
-    if (refreshing || !mediaId) return;
+    if (!mediaId) {
+      setSrc("/imagens/meta.png");
+      return;
+    }
+    if (refreshing) return;
     setRefreshing(true);
     try {
       const orgId = getStoredOrganizationId();
@@ -39,12 +44,12 @@ function SmartThumbnail({ initialSrc, mediaId, className }) {
   };
 
   return (
-    <img
+    <ExternalImage
       src={src}
       alt="Miniatura Criativo"
       className={className}
       onError={handleError}
-      style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+      style={{ objectFit: "cover", width: "100%", height: "100%" }}
     />
   );
 }
@@ -861,11 +866,9 @@ export default function DashboardCreativesPage() {
                             <div className={styles.metaRowWithThumb}>
                               <div className={styles.adThumb} aria-hidden>
                                 {ad.thumbnail_url ? (
-                                  <Image
+                                  <ExternalImage
                                     src={ad.thumbnail_url}
                                     alt=""
-                                    width={144}
-                                    height={144}
                                     className={styles.adThumbImg}
                                   />
                                 ) : (

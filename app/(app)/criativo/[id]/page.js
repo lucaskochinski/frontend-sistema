@@ -21,6 +21,8 @@ import {
 } from "recharts";
 import Skeleton from "@/components/Skeleton/Skeleton";
 import MetaMetricsPanel from "@/components/MetaMetrics/MetaMetricsPanel";
+import ExternalImage from "@/components/ExternalMedia/ExternalImage";
+import ExternalVideo from "@/components/ExternalMedia/ExternalVideo";
 import styles from "./page.module.css";
 
 /** Liga dados mock até a API estar disponível */
@@ -373,7 +375,7 @@ function MetaVideoPlayer({ mediaId, initialVideoUrl, posterUrl, mediaType }) {
 
   if (mediaType === "image" || (!videoSrc && poster)) {
     return (
-      <img
+      <ExternalImage
         src={poster}
         alt="Criativo"
         className={styles.videoEl}
@@ -384,11 +386,8 @@ function MetaVideoPlayer({ mediaId, initialVideoUrl, posterUrl, mediaType }) {
   }
 
   return (
-    <video
+    <ExternalVideo
       className={styles.videoEl}
-      controls
-      playsInline
-      preload="metadata"
       src={videoSrc || undefined}
       poster={poster}
       onError={mediaId ? refreshFromMeta : undefined}
