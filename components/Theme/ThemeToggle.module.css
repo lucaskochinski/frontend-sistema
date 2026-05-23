@@ -32,3 +32,49 @@
 .label {
   white-space: nowrap;
 }
+
+.sidebar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.72rem 0.85rem;
+  border-radius: 11px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--hooko-nav-text);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: left;
+  justify-content: flex-start;
+}
+
+.sidebar:hover {
+  color: var(--hooko-nav-hover-text);
+  border-color: var(--hooko-border);
+  background: var(--hooko-surface);
+}
+
+.sidebarIcon {
+  flex-shrink: 0;
+  width: 1.35rem;
+  display: flex;
+  justify-content: center;
+  color: currentColor;
+}
+
+.sidebarLabel {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.compact.sidebar {
+  justify-content: center;
+  gap: 0;
+  padding: 0.72rem 0;
+}
+
+.compact.sidebar .sidebarLabel {
+  display: none;
+}

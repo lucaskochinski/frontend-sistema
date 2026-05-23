@@ -61,9 +61,7 @@ export default function WinningCreativeCard({
             </span>
           ) : null}
           {headline ? (
-            <span style={{ display: "block", marginTop: "0.35rem", fontSize: "0.76rem", color: "rgba(161,161,170,0.95)" }}>
-              {headline}
-            </span>
+            <span className={styles.headlineHint}>{headline}</span>
           ) : null}
         </div>
       </div>

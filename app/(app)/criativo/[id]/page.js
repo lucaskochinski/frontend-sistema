@@ -24,6 +24,8 @@ import ExternalImage from "@/components/ExternalMedia/ExternalImage";
 import ExternalVideo from "@/components/ExternalMedia/ExternalVideo";
 import { WinningCreativeCard, AiInsightsPanel, HookoAiCoach } from "@/components/CreativeAi";
 import { normalizeAiCreativeAnalysis } from "@/lib/ai-creative-analysis";
+import { chartTooltipStyle } from "@/components/Dashboard/dashboardTheme";
+import { useTheme } from "@/components/Theme/ThemeProvider";
 import styles from "./page.module.css";
 
 /** Liga dados mock até a API estar disponível */
@@ -191,13 +193,60 @@ const SCORE_METRICS = [
 
 const COPY_COLLAPSE_CHARS = 140;
 
-const chartTooltipStyle = {
-  background: "rgba(14,14,18,0.94)",
-  border: "1px solid rgba(255,255,255,0.1)",
-  borderRadius: "10px",
-  fontSize: "12px",
-  color: "#e4e4e7",
-};
+function resolveInsightAiAnalysis(data) {
+  if (!data || typeof data !== "object") return null;
+  const raw = data.ai_analysis ?? data.aiAnalysis;
+  if (!raw) return null;
+  if (typeof raw === "string") {
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return null;
+    }
+  }
+  return typeof raw === "object" ? raw : null;
+}
+
+function resolveInsightAiUi(data) {
+  if (!data || typeof data !== "object") return null;
+  return data.ai_ui ?? data.aiUi ?? null;
+}
+
+function pickAiUiForNormalize(data, aiRaw) {
+  const ui = resolveInsightAiUi(data);
+  if (!ui || typeof ui !== "object") return null;
+  if (ui.performanceScore != null) return ui;
+  if (Array.isArray(ui.insights) && ui.insights.some((item) => item?.score != null)) return ui;
+  if (aiRaw && !ui.pending) return ui;
+  return null;
+}
+
+function resolveInsightTranscript(data) {
+  if (!data || typeof data !== "object") return null;
+
+  const direct = data.transcript ?? data.transcript_full ?? data.transcriptFull;
+  if (typeof direct === "string" && direct.trim()) return direct.trim();
+
+  const aiRaw = resolveInsightAiAnalysis(data);
+  if (aiRaw?.transcript && String(aiRaw.transcript).trim()) return String(aiRaw.transcript).trim();
+  if (aiRaw?.transcriptSnippet && String(aiRaw.transcriptSnippet).trim()) {
+    return String(aiRaw.transcriptSnippet).trim();
+  }
+
+  return null;
+}
+
+function chartAxisColors(theme) {
+  const isLight = theme === "light";
+  return {
+    grid: isLight ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.06)",
+    axis: isLight ? "rgba(82,82,91,0.88)" : "rgba(161,161,170,0.88)",
+    axisGold: isLight ? "rgba(184,148,31,0.85)" : "rgba(212,175,55,0.85)",
+    axisPurple: isLight ? "rgba(124,58,237,0.85)" : "rgba(196,181,253,0.9)",
+    polarGrid: isLight ? "rgba(0,0,0,0.08)" : "rgba(255,255,255,0.08)",
+    polarTick: isLight ? "rgba(82,82,91,0.85)" : "rgba(180,180,188,0.85)",
+  };
+}
 
 function IconTrashDetail({ className }) {
   return (
@@ -520,6 +569,7 @@ function MetaVideoPlayer({ mediaId, initialVideoUrl, posterUrl, mediaType, adId 
 export default function CreativeDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const { theme } = useTheme();
   const routeId = params?.id != null ? String(params.id) : "";
   const titleId = useId();
   const deleteDialogTitleId = useId();
@@ -642,9 +692,15 @@ export default function CreativeDetailPage() {
     return "Não há dados de performance da Meta no período selecionado. Tente ampliar o intervalo de datas.";
   }, [data, hasPeriodPerformance, hasSyncedPerformance]);
 
+  const aiRaw = useMemo(() => resolveInsightAiAnalysis(data), [data]);
+  const aiUiPayload = useMemo(() => pickAiUiForNormalize(data, aiRaw), [data, aiRaw]);
+  const transcriptText = useMemo(() => resolveInsightTranscript(data), [data]);
+  const chartColors = useMemo(() => chartAxisColors(theme), [theme]);
+  const tooltipStyle = useMemo(() => chartTooltipStyle(), [theme]);
+
   const radarData = useMemo(() => {
-    const normalized = normalizeAiCreativeAnalysis(data?.ai_analysis, {
-      aiUi: data?.ai_ui,
+    const normalized = normalizeAiCreativeAnalysis(aiRaw, {
+      aiUi: aiUiPayload,
       videoMetrics: data?.video_metrics,
     });
     if (normalized.pending) return [];
@@ -661,15 +717,15 @@ export default function CreativeDetailPage() {
       { metric: "CTA", value: normalized.scores.cta || 0 },
       { metric: "Harmonia", value: normalized.scores.harmonia || normalized.scores.formato || 0 },
     ];
-  }, [data?.ai_analysis, data?.ai_ui, data?.video_metrics]);
+  }, [aiRaw, aiUiPayload, data?.video_metrics]);
 
   const aiNormalized = useMemo(
     () =>
-      normalizeAiCreativeAnalysis(data?.ai_analysis, {
-        aiUi: data?.ai_ui,
+      normalizeAiCreativeAnalysis(aiRaw, {
+        aiUi: aiUiPayload,
         videoMetrics: data?.video_metrics,
       }),
-    [data?.ai_analysis, data?.ai_ui, data?.video_metrics],
+    [aiRaw, aiUiPayload, data?.video_metrics],
   );
 
   const needsVerMais = useMemo(() => {
@@ -692,7 +748,7 @@ export default function CreativeDetailPage() {
     );
   }
 
-  const ai = data.ai_analysis || {};
+  const ai = aiRaw || {};
   const aiScoresForBars = aiNormalized.scores;
   const aiProcessing = data.ai_processing || {};
   const coachMessage =
@@ -768,8 +824,8 @@ export default function CreativeDetailPage() {
         </div>
       ) : null}
 
-      <section style={{ marginBottom: "1.25rem" }} aria-label="Painéis de análise IA">
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1rem" }}>
+      <section className={styles.aiPanels} aria-label="Painéis de análise IA">
+        <div className={styles.aiPanelsGrid}>
           <WinningCreativeCard
             title="Criativo vencedor"
             headline={data.headline}
@@ -781,13 +837,11 @@ export default function CreativeDetailPage() {
         <HookoAiCoach message={coachMessage} />
       </section>
 
-      {data.transcript ? (
+      {transcriptText ? (
         <section className={styles.verdictBox} style={{ marginBottom: "1.25rem" }} aria-label="Transcrição do vídeo">
           <div className={styles.verdictSection}>
-            <h3 className={styles.verdictHeading}>Transcrição (Deepgram / Gemini)</h3>
-            <p className={styles.verdictBody} style={{ whiteSpace: "pre-wrap" }}>
-              {data.transcript}
-            </p>
+            <h3 className={styles.verdictHeading}>Transcrição do vídeo</h3>
+            <p className={styles.transcriptBody}>{transcriptText}</p>
           </div>
         </section>
       ) : null}
@@ -861,17 +915,17 @@ export default function CreativeDetailPage() {
             <div className={styles.chartArea}>
               <ResponsiveContainer width="100%" height="100%" minHeight={220}>
                 <ComposedChart data={filteredDaily} margin={{ top: 8, right: 8, left: -18, bottom: 0 }}>
-                  <CartesianGrid stroke="rgba(255,255,255,0.06)" vertical={false} />
+                  <CartesianGrid stroke={chartColors.grid} vertical={false} />
                   <XAxis
                     dataKey="label"
-                    tick={{ fill: "rgba(161,161,170,0.88)", fontSize: 10 }}
+                    tick={{ fill: chartColors.axis, fontSize: 10 }}
                     tickLine={false}
-                    axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
+                    axisLine={{ stroke: chartColors.grid }}
                     interval="preserveStartEnd"
                   />
                   <YAxis
                     yAxisId="left"
-                    tick={{ fill: "rgba(161,161,170,0.75)", fontSize: 10 }}
+                    tick={{ fill: chartColors.axis, fontSize: 10 }}
                     tickLine={false}
                     axisLine={false}
                     tickFormatter={(v) => `${v}`}
@@ -879,12 +933,12 @@ export default function CreativeDetailPage() {
                   <YAxis
                     yAxisId="right"
                     orientation="right"
-                    tick={{ fill: "rgba(212,175,55,0.85)", fontSize: 10 }}
+                    tick={{ fill: chartColors.axisGold, fontSize: 10 }}
                     tickLine={false}
                     axisLine={false}
                   />
                   <Tooltip
-                    contentStyle={chartTooltipStyle}
+                    contentStyle={tooltipStyle}
                     formatter={(value, name) => {
                       if (name === "spend") return [formatCurrencyBRL(Number(value)), "Gasto"];
                       if (name === "roas") return [Number(value).toFixed(2), "ROAS"];
@@ -923,17 +977,17 @@ export default function CreativeDetailPage() {
             <div className={styles.chartArea}>
               <ResponsiveContainer width="100%" height="100%" minHeight={220}>
                 <ComposedChart data={filteredDaily} margin={{ top: 8, right: 8, left: -18, bottom: 0 }}>
-                  <CartesianGrid stroke="rgba(255,255,255,0.06)" vertical={false} />
+                  <CartesianGrid stroke={chartColors.grid} vertical={false} />
                   <XAxis
                     dataKey="label"
-                    tick={{ fill: "rgba(161,161,170,0.88)", fontSize: 10 }}
+                    tick={{ fill: chartColors.axis, fontSize: 10 }}
                     tickLine={false}
-                    axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
+                    axisLine={{ stroke: chartColors.grid }}
                     interval="preserveStartEnd"
                   />
                   <YAxis
                     yAxisId="left"
-                    tick={{ fill: "rgba(161,161,170,0.75)", fontSize: 10 }}
+                    tick={{ fill: chartColors.axis, fontSize: 10 }}
                     tickLine={false}
                     axisLine={false}
                     tickFormatter={(v) => (v >= 1000 ? `${(v / 1000).toFixed(1)}k` : `${v}`)}
@@ -941,12 +995,12 @@ export default function CreativeDetailPage() {
                   <YAxis
                     yAxisId="right"
                     orientation="right"
-                    tick={{ fill: "rgba(196,181,253,0.9)", fontSize: 10 }}
+                    tick={{ fill: chartColors.axisPurple, fontSize: 10 }}
                     tickLine={false}
                     axisLine={false}
                   />
                   <Tooltip
-                    contentStyle={chartTooltipStyle}
+                    contentStyle={tooltipStyle}
                     formatter={(value, name) => {
                       if (name === "impressions")
                         return [new Intl.NumberFormat("pt-BR").format(Number(value)), "Impressões"];
@@ -1047,6 +1101,13 @@ export default function CreativeDetailPage() {
               <span className={styles.ctaPill}>{formatCta(data.cta_type)}</span>
             </div>
           </div>
+
+          {transcriptText ? (
+            <div className={styles.transcriptCard}>
+              <h2 className={styles.copyLabel}>Transcrição do vídeo</h2>
+              <p className={styles.transcriptBody}>{transcriptText}</p>
+            </div>
+          ) : null}
         </section>
 
         <aside className={styles.colRight}>
@@ -1058,8 +1119,8 @@ export default function CreativeDetailPage() {
               <div className={styles.radarWrap}>
                 <ResponsiveContainer width="100%" height="100%" minHeight={240}>
                   <RadarChart cx="50%" cy="52%" outerRadius="72%" data={radarData}>
-                    <PolarGrid stroke="rgba(255,255,255,0.08)" />
-                    <PolarAngleAxis dataKey="metric" tick={{ fill: "rgba(180,180,188,0.85)", fontSize: 10 }} />
+                    <PolarGrid stroke={chartColors.polarGrid} />
+                    <PolarAngleAxis dataKey="metric" tick={{ fill: chartColors.polarTick, fontSize: 10 }} />
                     <Radar
                       name="Score"
                       dataKey="value"

@@ -385,6 +385,7 @@ export default function AppShell({ children }) {
         </div>
 
         <div className={styles.sideFoot}>
+          <ThemeToggle sidebar compact={showGlyphLogo} />
           <button
             type="button"
             className={styles.collapseBtn}

@@ -2,9 +2,9 @@
   display: block;
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.04) 0%,
-    rgba(212, 175, 55, 0.14) 45%,
-    rgba(255, 255, 255, 0.04) 100%
+    var(--hooko-skeleton-from) 0%,
+    var(--hooko-skeleton-mid) 45%,
+    var(--hooko-skeleton-from) 100%
   );
   background-size: 200% 100%;
   animation: skeletonSweep 1.45s ease-in-out infinite;
@@ -41,7 +41,8 @@
 .card {
   padding: 1.15rem;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--hooko-border);
+  background: var(--hooko-card-bg);
 }
 
 .chart {
@@ -49,6 +50,7 @@
   border: 1px solid var(--hooko-border);
   padding: 1.25rem;
   min-height: 280px;
+  background: var(--hooko-card-bg);
 }
 
 .tableSkeleton {

@@ -3,20 +3,20 @@
 import { useTheme } from "./ThemeProvider";
 import styles from "./ThemeToggle.module.css";
 
-export default function ThemeToggle({ compact = false }) {
+export default function ThemeToggle({ compact = false, sidebar = false }) {
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
 
   return (
     <button
       type="button"
-      className={`${styles.toggle} ${compact ? styles.compact : ""}`}
+      className={`${styles.toggle} ${compact ? styles.compact : ""} ${sidebar ? styles.sidebar : ""}`}
       onClick={toggleTheme}
       aria-pressed={isDark}
       aria-label={isDark ? "Ativar tema claro" : "Ativar tema escuro"}
       title={isDark ? "Tema claro" : "Tema escuro"}
     >
-      <span className={styles.icon} aria-hidden>
+      <span className={`${styles.icon} ${sidebar ? styles.sidebarIcon : ""}`} aria-hidden>
         {isDark ? (
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
             <circle cx="12" cy="12" r="4" />
@@ -28,7 +28,8 @@ export default function ThemeToggle({ compact = false }) {
           </svg>
         )}
       </span>
-      {!compact ? <span className={styles.label}>{isDark ? "Tema claro" : "Tema escuro"}</span> : null}
+      {!compact && !sidebar ? <span className={styles.label}>{isDark ? "Tema claro" : "Tema escuro"}</span> : null}
+      {sidebar && !compact ? <span className={styles.sidebarLabel}>{isDark ? "Tema claro" : "Tema escuro"}</span> : null}
     </button>
   );
 }

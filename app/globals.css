@@ -39,6 +39,34 @@
   --hooko-radius-xl: 24px;
   --hooko-blur-backdrop: 16px;
   --hooko-shadow-premium: 0 24px 64px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  --hooko-skeleton-from: rgba(255, 255, 255, 0.04);
+  --hooko-skeleton-mid: rgba(212, 175, 55, 0.14);
+  --hooko-detail-band-bg: linear-gradient(
+    168deg,
+    rgba(20, 20, 26, 0.96) 0%,
+    rgba(8, 8, 12, 0.98) 55%,
+    rgba(12, 11, 16, 0.95) 100%
+  );
+  --hooko-detail-band-border: rgba(255, 255, 255, 0.09);
+  --hooko-detail-split-bg: rgba(8, 8, 12, 0.55);
+  --hooko-detail-panel-left-bg: linear-gradient(180deg, rgba(16, 16, 22, 0.45) 0%, rgba(6, 6, 10, 0.65) 100%);
+  --hooko-detail-panel-right-bg: linear-gradient(195deg, rgba(14, 13, 18, 0.75) 0%, rgba(8, 8, 12, 0.9) 100%);
+  --hooko-detail-chart-bg: rgba(4, 4, 8, 0.55);
+  --hooko-detail-card-bg: rgba(14, 14, 18, 0.78);
+  --hooko-detail-score-card-bg: linear-gradient(155deg, rgba(26, 24, 20, 0.85) 0%, rgba(12, 12, 16, 0.92) 55%);
+  --hooko-detail-radar-bg: rgba(10, 10, 14, 0.55);
+  --hooko-detail-verdict-bg: rgba(18, 18, 22, 0.45);
+  --hooko-detail-copy-bg: linear-gradient(165deg, rgba(22, 22, 28, 0.65) 0%, rgba(10, 10, 14, 0.88) 100%);
+  --hooko-detail-video-inner-bg: rgba(6, 6, 10, 0.92);
+  --hooko-chart-grid: rgba(255, 255, 255, 0.06);
+  --hooko-chart-axis: rgba(161, 161, 170, 0.88);
+  --hooko-warning-banner-bg: rgba(251, 191, 36, 0.08);
+  --hooko-warning-banner-border: rgba(251, 191, 36, 0.35);
+  --hooko-warning-banner-text: rgba(254, 243, 199, 0.92);
+  --hooko-score-track-bg: rgba(0, 0, 0, 0.45);
+  --hooko-modal-panel-bg: rgba(18, 18, 22, 0.92);
+  --hooko-crumb-current: rgba(244, 244, 245, 0.88);
+  --hooko-crumb-link: rgba(147, 197, 253, 0.95);
 }
 
 [data-theme="light"] {
@@ -71,6 +99,29 @@
   --hooko-positive: #15803d;
   --hooko-negative: #dc2626;
   --hooko-shadow-premium: 0 20px 48px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.04) inset;
+  --hooko-skeleton-from: rgba(0, 0, 0, 0.04);
+  --hooko-skeleton-mid: rgba(184, 148, 31, 0.12);
+  --hooko-detail-band-bg: linear-gradient(168deg, #ffffff 0%, #f8f8f9 55%, #f4f4f5 100%);
+  --hooko-detail-band-border: rgba(0, 0, 0, 0.08);
+  --hooko-detail-split-bg: #ffffff;
+  --hooko-detail-panel-left-bg: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+  --hooko-detail-panel-right-bg: linear-gradient(195deg, #fafafa 0%, #f4f4f5 100%);
+  --hooko-detail-chart-bg: rgba(0, 0, 0, 0.02);
+  --hooko-detail-card-bg: #ffffff;
+  --hooko-detail-score-card-bg: linear-gradient(155deg, #ffffff 0%, #fafafa 55%);
+  --hooko-detail-radar-bg: #ffffff;
+  --hooko-detail-verdict-bg: #ffffff;
+  --hooko-detail-copy-bg: linear-gradient(165deg, #ffffff 0%, #fafafa 100%);
+  --hooko-detail-video-inner-bg: #f4f4f5;
+  --hooko-chart-grid: rgba(0, 0, 0, 0.06);
+  --hooko-chart-axis: rgba(82, 82, 91, 0.88);
+  --hooko-warning-banner-bg: rgba(251, 191, 36, 0.12);
+  --hooko-warning-banner-border: rgba(217, 119, 6, 0.35);
+  --hooko-warning-banner-text: #78350f;
+  --hooko-score-track-bg: rgba(0, 0, 0, 0.08);
+  --hooko-modal-panel-bg: #ffffff;
+  --hooko-crumb-current: #27272a;
+  --hooko-crumb-link: #1d4ed8;
 }
 
 *,
