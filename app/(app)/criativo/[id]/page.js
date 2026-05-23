@@ -345,75 +345,138 @@ function ScoreBarRow({ label, value }) {
   );
 }
 
-function MetaVideoPlayer({ mediaId, initialVideoUrl, posterUrl, mediaType, adId, embedUrl }) {
-  const [videoSrc, setVideoSrc] = useState(initialVideoUrl || "");
+function instagramEmbedSrcFromUrl(embedUrl) {
+  const raw = embedUrl || "";
+  const m = raw.match(/instagram\.com\/(?:p|reel|tv)\/([^/?#]+)/i);
+  if (!m) return null;
+  const kind = raw.includes("/reel/") ? "reel" : "p";
+  return `https://www.instagram.com/${kind}/${m[1]}/embed/captioned`;
+}
+
+function hasPlayableVideoUrl(mediaUrl) {
+  const src = mediaUrl || "";
+  if (!src) return false;
+  const path = src.split("?")[0] || "";
+  if (/\.(jpe?g|png|webp|gif)$/i.test(path)) return false;
+  if (src.includes("/ads/image/")) return false;
+  return true;
+}
+
+function shouldShowInstagramEmbed({ embedUrl, mediaUrl, mediaType, creativeMeta }) {
+  const igUrl = embedUrl || creativeMeta?.instagram_permalink_url || "";
+  if (!igUrl.includes("instagram.com")) return false;
+  if (hasPlayableVideoUrl(mediaUrl)) return false;
+  const isVideoCreative =
+    mediaType === "video" ||
+    mediaType === "embed" ||
+    String(creativeMeta?.object_type || "").toUpperCase() === "VIDEO";
+  return isVideoCreative;
+}
+
+function InstagramCreativeEmbed({ permalinkUrl, posterUrl }) {
+  const embedSrc = useMemo(() => instagramEmbedSrcFromUrl(permalinkUrl), [permalinkUrl]);
+  if (!embedSrc) {
+    return (
+      <div className={styles.instagramShell}>
+        {posterUrl ? (
+          <ExternalImage
+            src={posterUrl}
+            alt="Preview do criativo"
+            className={styles.instagramPosterFallback}
+          />
+        ) : null}
+        <div className={styles.instagramLinkRow}>
+          <a
+            href={permalinkUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.instagramLink}
+          >
+            Abrir post no Instagram
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.instagramShell}>
+      <iframe
+        src={embedSrc}
+        title="Criativo no Instagram"
+        className={styles.instagramIframe}
+        allowFullScreen
+        scrolling="no"
+        referrerPolicy="no-referrer"
+      />
+      <div className={styles.instagramLinkRow}>
+        <a
+          href={permalinkUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.instagramLink}
+        >
+          Abrir post completo no Instagram
+        </a>
+      </div>
+      <p className={styles.instagramHint}>
+        Vídeo hospedado no Instagram — preview oficial do post.
+      </p>
+    </div>
+  );
+}
+
+function MetaVideoPlayer({ mediaId, initialVideoUrl, posterUrl, mediaType, adId }) {
+  const [videoSrc, setVideoSrc] = useState(() =>
+    hasPlayableVideoUrl(initialVideoUrl) ? initialVideoUrl : "",
+  );
   const [poster, setPoster] = useState(posterUrl || "/imagens/meta.png");
+  const [loadingPlayback, setLoadingPlayback] = useState(
+    () => (mediaType === "video" || mediaType === "embed") && !hasPlayableVideoUrl(initialVideoUrl),
+  );
   const refreshingRef = useRef(false);
 
   useEffect(() => {
-    setVideoSrc(initialVideoUrl || "");
+    setVideoSrc(hasPlayableVideoUrl(initialVideoUrl) ? initialVideoUrl : "");
     setPoster(posterUrl || "/imagens/meta.png");
-  }, [initialVideoUrl, posterUrl, mediaId]);
+    setLoadingPlayback(
+      (mediaType === "video" || mediaType === "embed") && !hasPlayableVideoUrl(initialVideoUrl),
+    );
+  }, [initialVideoUrl, posterUrl, mediaId, mediaType]);
 
   const refreshFromMeta = useCallback(async () => {
     if (refreshingRef.current) return;
     refreshingRef.current = true;
+    setLoadingPlayback(true);
     try {
       const orgId = getStoredOrganizationId();
       if (!orgId) return;
-      if (mediaId) {
-        const res = await apiFetch(
-          `/api/dashboard/media-refresh/${mediaId}?organizationId=${orgId}`,
-        );
-        if (res?.url) setVideoSrc(res.url);
-        if (res?.thumbnailUrl) setPoster(res.thumbnailUrl);
-        return;
-      }
+      let res = null;
       if (adId) {
-        const res = await apiFetch(
+        res = await apiFetch(
           `/api/dashboard/insights/${adId}/media-playback?organizationId=${orgId}`,
         );
-        if (res?.url) setVideoSrc(res.url);
-        if (res?.thumbnailUrl) setPoster(res.thumbnailUrl);
+      } else if (mediaId) {
+        res = await apiFetch(
+          `/api/dashboard/media-refresh/${mediaId}?organizationId=${orgId}`,
+        );
       }
+      if (res?.url && hasPlayableVideoUrl(res.url)) setVideoSrc(res.url);
+      if (res?.thumbnailUrl) setPoster(res.thumbnailUrl);
     } catch (err) {
       console.error("Erro ao renovar vídeo do Meta:", err);
     } finally {
       refreshingRef.current = false;
+      setLoadingPlayback(false);
     }
   }, [mediaId, adId]);
 
   useEffect(() => {
-    if (mediaType !== "video") return;
-    const src = initialVideoUrl || "";
-    const looksLikeImage = /\.(jpe?g|png|webp|gif)(\?|$)/i.test(src.split("?")[0] || "");
-    if ((!src || looksLikeImage) && (mediaId || adId)) {
+    if (mediaType !== "video" && mediaType !== "embed") return;
+    if (!hasPlayableVideoUrl(initialVideoUrl) && (mediaId || adId)) {
       refreshFromMeta();
     }
   }, [mediaType, initialVideoUrl, mediaId, adId, refreshFromMeta]);
-
-  const instagramEmbedSrc = useMemo(() => {
-    const raw = embedUrl || "";
-    const m = raw.match(/instagram\.com\/(?:p|reel|tv)\/([^/?#]+)/i);
-    if (!m) return null;
-    return `https://www.instagram.com/p/${m[1]}/embed`;
-  }, [embedUrl]);
-
-  const hasRealVideo =
-    videoSrc && !/\.(jpe?g|png|webp|gif)(\?|$)/i.test(String(videoSrc).split("?")[0] || "");
-
-  if (instagramEmbedSrc && mediaType === "video" && !hasRealVideo) {
-    return (
-      <iframe
-        src={instagramEmbedSrc}
-        title="Criativo Instagram"
-        className={styles.videoEl}
-        style={{ border: "none", width: "100%", height: "100%" }}
-        allowFullScreen
-        referrerPolicy="no-referrer"
-      />
-    );
-  }
 
   if (mediaType === "image") {
     return (
@@ -427,10 +490,26 @@ function MetaVideoPlayer({ mediaId, initialVideoUrl, posterUrl, mediaType, adId,
     );
   }
 
+  const playableSrc = hasPlayableVideoUrl(videoSrc) ? videoSrc : "";
+
+  if (!playableSrc) {
+    return (
+      <div className={styles.videoPending}>
+        <ExternalImage
+          src={poster}
+          alt="Preview do criativo"
+          className={styles.videoEl}
+          style={{ objectFit: "cover" }}
+        />
+        {loadingPlayback ? <p className={styles.videoPendingText}>Carregando vídeo da Meta…</p> : null}
+      </div>
+    );
+  }
+
   return (
     <ExternalVideo
       className={styles.videoEl}
-      src={videoSrc || undefined}
+      src={playableSrc}
       poster={poster}
       onError={mediaId || adId ? refreshFromMeta : undefined}
     />
@@ -535,6 +614,18 @@ export default function CreativeDetailPage() {
 
   const agg = useMemo(() => aggregateFromDaily(filteredDaily), [filteredDaily]);
 
+  const hasSyncedPerformance = Boolean(data?.performance_daily?.length);
+  const hasPeriodPerformance = filteredDaily.length > 0;
+
+  const noDataNotice = useMemo(() => {
+    if (!data || hasPeriodPerformance) return null;
+    if (data.delivery_note) return data.delivery_note;
+    if (!hasSyncedPerformance) {
+      return "Este anúncio não possui dados de entrega (impressões ou gasto) sincronizados da Meta. Verifique se o anúncio teve veiculação no período ou importe outro criativo com performance.";
+    }
+    return "Não há dados de performance da Meta no período selecionado. Tente ampliar o intervalo de datas.";
+  }, [data, hasPeriodPerformance, hasSyncedPerformance]);
+
   const periodMeta = useMemo(() => {
     if (!filteredDaily.length) return data;
     const totals = {
@@ -630,6 +721,13 @@ export default function CreativeDetailPage() {
         </div>
       </header>
 
+      {noDataNotice ? (
+        <div className={styles.noDataBanner} role="alert">
+          <p className={styles.noDataTitle}>Sem dados de performance</p>
+          <p className={styles.noDataText}>{noDataNotice}</p>
+        </div>
+      ) : null}
+
       <section className={styles.analyticsBand} aria-label="Performance e período">
         <div className={styles.filterRow}>
           <span className={styles.filterLabel}>Período</span>
@@ -670,7 +768,9 @@ export default function CreativeDetailPage() {
         </div>
 
         <p className={styles.bandHint}>
-          Métricas abaixo refletem o período selecionado ({filteredDaily.length} dias com dados da Meta).
+          {hasPeriodPerformance
+            ? `Métricas abaixo refletem o período selecionado (${filteredDaily.length} dias com dados da Meta).`
+            : "Nenhum dia com entrega da Meta no período selecionado — gráficos e totais ficam zerados."}
         </p>
 
         <div className={styles.perfGrid}>
@@ -841,6 +941,28 @@ export default function CreativeDetailPage() {
       <div className={styles.split}>
         <section className={styles.colLeft} aria-label="Anúncio e texto">
           <div className={styles.panelLabel}>Anúncio</div>
+          {(() => {
+            const playableUrl = hasPlayableVideoUrl(data.media_url) ? data.media_url : null;
+            const igPermalink = data.embed_url || data.creative_meta?.instagram_permalink_url || "";
+            const showInstagram =
+              !playableUrl &&
+              shouldShowInstagramEmbed({
+                embedUrl: igPermalink,
+                mediaUrl: data.media_url,
+                mediaType: data.media_type,
+                creativeMeta: data.creative_meta,
+              });
+
+            if (showInstagram) {
+              return (
+                <InstagramCreativeEmbed
+                  permalinkUrl={igPermalink}
+                  posterUrl={data.thumbnail_url}
+                />
+              );
+            }
+
+            return (
           <div className={styles.videoShell}>
             <div className={styles.videoInner}>
               <div className={styles.videoRatio}>
@@ -862,16 +984,17 @@ export default function CreativeDetailPage() {
                     <MetaVideoPlayer
                       mediaId={data.media_id}
                       adId={routeId}
-                      initialVideoUrl={data.media_url}
+                      initialVideoUrl={playableUrl || data.media_url}
                       posterUrl={data.thumbnail_url}
-                      mediaType={data.media_type}
-                      embedUrl={data.embed_url}
+                      mediaType={data.media_type === "embed" ? "video" : data.media_type}
                     />
                   );
                 })()}
               </div>
             </div>
           </div>
+            );
+          })()}
 
           <div className={styles.copyCard}>
             <h2 className={styles.copyLabel}>Primary text</h2>

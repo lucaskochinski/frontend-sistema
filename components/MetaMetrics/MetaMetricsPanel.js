@@ -39,6 +39,25 @@ function formatBRL(val) {
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(val || 0);
 }
 
+const META_RANKING_LABELS = {
+  ABOVE_AVERAGE: "Acima da média",
+  AVERAGE: "Na média",
+  BELOW_AVERAGE: "Abaixo da média",
+};
+
+function formatMetaRanking(value) {
+  if (!value) return null;
+  const raw = String(value).trim();
+  const upper = raw.toUpperCase();
+  if (upper === "UNKNOWN" || upper === "N/A" || upper === "NONE") return null;
+  if (META_RANKING_LABELS[upper]) return META_RANKING_LABELS[upper];
+  const belowMatch = upper.match(/^BELOW_AVERAGE_(\d+)$/);
+  if (belowMatch) return `Abaixo da média (${belowMatch[1]}%)`;
+  const aboveMatch = upper.match(/^ABOVE_AVERAGE_(\d+)$/);
+  if (aboveMatch) return `Acima da média (${aboveMatch[1]}%)`;
+  return raw.replace(/_/g, " ").toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
+}
+
 export default function MetaMetricsPanel({
   delivery,
   videoMetrics,
@@ -52,6 +71,15 @@ export default function MetaMetricsPanel({
   const d = delivery || {};
   const v = videoMetrics || {};
   const h = creativeHealth || {};
+  const qualityRanking = formatMetaRanking(h.qualityRanking);
+  const engagementRanking = formatMetaRanking(h.engagementRateRanking);
+  const conversionRanking = formatMetaRanking(h.conversionRateRanking);
+  const showCreativeHealth =
+    qualityRanking ||
+    engagementRanking ||
+    conversionRanking ||
+    h.creativeDiversityScore ||
+    h.creativeFatigueSummary;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: compact ? "1rem" : "1.25rem" }}>
@@ -91,13 +119,13 @@ export default function MetaMetricsPanel({
         </section>
       ) : null}
 
-      {(h.qualityRanking || h.creativeDiversityScore || h.creativeFatigueSummary) ? (
+      {showCreativeHealth ? (
         <section>
           <h3 style={{ margin: "0 0 0.75rem", fontSize: "0.9rem", color: "#e5e7eb" }}>Saúde do criativo (Meta)</h3>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: "0.65rem" }}>
-            {h.qualityRanking ? <MetricCard label="Quality ranking" value={h.qualityRanking} /> : null}
-            {h.engagementRateRanking ? <MetricCard label="Engagement ranking" value={h.engagementRateRanking} /> : null}
-            {h.conversionRateRanking ? <MetricCard label="Conversion ranking" value={h.conversionRateRanking} /> : null}
+            {qualityRanking ? <MetricCard label="Quality ranking" value={qualityRanking} /> : null}
+            {engagementRanking ? <MetricCard label="Engagement ranking" value={engagementRanking} /> : null}
+            {conversionRanking ? <MetricCard label="Conversion ranking" value={conversionRanking} /> : null}
             {h.creativeDiversityScore ? <MetricCard label="Diversidade criativa" value={h.creativeDiversityScore} sub={h.creativeDiversityLabel || null} /> : null}
             {h.canvasAvgViewPercent != null ? <MetricCard label="Canvas view %" value={`${h.canvasAvgViewPercent}%`} /> : null}
           </div>
