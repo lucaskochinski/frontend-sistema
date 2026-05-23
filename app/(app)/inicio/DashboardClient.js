@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { apiFetch, getStoredOrganizationId } from "@/lib/hooko-session";
 import styles from "./page.module.css";
 import dash from "@/components/Dashboard/dashboard.module.css";
@@ -22,18 +22,58 @@ import {
   MetaMetricsSection,
   MetaRankingsGrid,
   MetaExtendedSection,
+  MetaSecondaryMetrics,
+  MetaRevenueChart,
+  MetaCumulativeRevenueSpendChart,
   FutureFeatureLock,
 } from "@/components/Dashboard";
 
 const GATEWAY_LOCK = { label: "PagTrust / Vturb / Utmify", message: "Integração em breve" };
 
+const DAY_LABELS_PT = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+
+function buildMetaHourlyChart(metaExtended) {
+  return (metaExtended?.hourlySpend || []).map((row) => ({
+    hora: row.hora,
+    valor: Number(row.spend || 0),
+  }));
+}
+
+function buildMetaDayOfWeekChart(dailyMeta) {
+  const totals = Array.from({ length: 7 }, () => 0);
+  for (const row of dailyMeta || []) {
+    if (!row.date) continue;
+    const dow = new Date(`${row.date}T12:00:00Z`).getUTCDay();
+    totals[dow] += Number(row.spend || 0);
+  }
+  return DAY_LABELS_PT.map((label, i) => ({
+    label,
+    count: Math.round(totals[i] * 100) / 100,
+  }));
+}
+
+function buildMetaProfitByHour(metaExtended, purchaseRevenue) {
+  const hourly = metaExtended?.hourlySpend || [];
+  const totalSpend = hourly.reduce((sum, row) => sum + Number(row.spend || 0), 0);
+  const revenue = Number(purchaseRevenue || 0);
+
+  return hourly.map((row) => {
+    const spend = Number(row.spend || 0);
+    const revenueShare = totalSpend > 0 ? (spend / totalSpend) * revenue : 0;
+    return {
+      hora: row.hora,
+      receita: Math.round(revenueShare * 100) / 100,
+      lucro: Math.round((revenueShare - spend) * 100) / 100,
+    };
+  });
+}
+
 function GatewayLockedBlock({ overview }) {
   return (
     <>
       <p className={dash.gatewayIntro}>
-        A Meta não substitui estes gráficos: não informa Pix/cartão/boleto, aprovação de pagamento,
-        reembolsos nem faturamento líquido real do checkout — só receita <em>atribuída</em> via pixel
-        (já nos blocos Meta acima).
+        Estes blocos dependem de webhook PagTrust / Vturb / Utmify (faturamento real do checkout).
+        A Meta cobre gasto, conversões atribuídas e breakdowns — já visíveis acima.
       </p>
 
       <FutureFeatureLock {...GATEWAY_LOCK}>
@@ -62,19 +102,16 @@ function GatewayLockedBlock({ overview }) {
           <SalesByProductList items={[]} />
         </FutureFeatureLock>
         <FutureFeatureLock {...GATEWAY_LOCK}>
-          <SalesBySourceList metaItems={[]} />
-        </FutureFeatureLock>
-        <FutureFeatureLock {...GATEWAY_LOCK}>
           <ApprovalRateChart rates={[]} />
         </FutureFeatureLock>
       </div>
 
       <FutureFeatureLock {...GATEWAY_LOCK}>
-        <SalesByHourChart data={[]} />
+        <SalesByHourChart data={[]} variant="pagtrust" />
       </FutureFeatureLock>
 
       <FutureFeatureLock {...GATEWAY_LOCK}>
-        <SalesByDayOfWeekChart data={[]} />
+        <SalesByDayOfWeekChart data={[]} variant="pagtrust" />
       </FutureFeatureLock>
     </>
   );
@@ -114,6 +151,13 @@ export default function DashboardClient() {
     overview?.globalRoasWeighted ??
     (totalSpend > 0 ? metaPurchaseRevenue / totalSpend : null);
 
+  const metaHourly = useMemo(() => buildMetaHourlyChart(overview?.metaExtended), [overview]);
+  const metaDayOfWeek = useMemo(() => buildMetaDayOfWeekChart(overview?.dailyMeta), [overview]);
+  const metaProfitByHour = useMemo(
+    () => buildMetaProfitByHour(overview?.metaExtended, metaPurchaseRevenue),
+    [overview, metaPurchaseRevenue],
+  );
+
   if (loading) {
     return (
       <div className={styles.page}>
@@ -132,7 +176,7 @@ export default function DashboardClient() {
           <p className={styles.kicker}>Principal</p>
           <h1 className={styles.title}>Dashboard</h1>
           <p className={styles.sub}>
-            Meta Marketing API — métricas activas primeiro; gateway (PagTrust / Vturb / Utmify) no final.
+            Meta Ads — gráficos activos com dados da API; gateway bloqueado no final.
             {overview?.dateRange ? ` Período: ${overview.dateRange.since} → ${overview.dateRange.until}.` : ""}
           </p>
         </div>
@@ -153,13 +197,22 @@ export default function DashboardClient() {
       </header>
 
       <div className={dash.dashboardGrid}>
-        {/* ——— META (disponível) ——— */}
         <DashboardSection title="Resumo Meta">
           <SummaryKpiCards
             spend={totalSpend}
             metaPurchaseRevenue={metaPurchaseRevenue}
             metaRoas={metaRoas != null ? Number(metaRoas) : null}
           />
+          <MetaRevenueChart data={overview?.dailyMeta} dateRange={overview?.dateRange} />
+          <div className={dash.row2}>
+            <MetaDailySpendChart data={overview?.dailyMeta} />
+            <MetaCumulativeRevenueSpendChart data={overview?.dailyMeta} />
+          </div>
+          <MetaSecondaryMetrics overview={overview} />
+        </DashboardSection>
+
+        <DashboardSection title="Lucro Meta por horário">
+          <ProfitByHourChart data={metaProfitByHour} variant="meta" />
         </DashboardSection>
 
         <DashboardSection title="Funil & conversão Meta">
@@ -171,16 +224,16 @@ export default function DashboardClient() {
           <MetaMetricsSection overview={overview} />
         </DashboardSection>
 
-        <DashboardSection title="Gasto & tráfego Meta">
-          <MetaDailySpendChart data={overview?.dailyMeta} />
+        <DashboardSection title="Horários & tráfego Meta">
           <SalesBySourceList metaItems={overview?.metaTrafficSources} />
+          <SalesByHourChart data={metaHourly} variant="meta" />
+          <SalesByDayOfWeekChart data={metaDayOfWeek} variant="meta" />
         </DashboardSection>
 
         <DashboardSection title="Marketing API Meta (completo)">
           <MetaExtendedSection metaExtended={overview?.metaExtended} />
         </DashboardSection>
 
-        {/* ——— GATEWAY (bloqueado — Meta não cobre) ——— */}
         <DashboardSection title="Gateway PagTrust / Vturb / Utmify">
           <GatewayLockedBlock overview={overview} />
         </DashboardSection>

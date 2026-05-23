@@ -7,15 +7,24 @@ import { CHART_DATA_SOURCES, DATA_SOURCE } from "./metaDataSources";
 import { CHART_GRID, CHART_TICK, chartTooltipStyle, DASHBOARD_COLORS } from "./dashboardTheme";
 import styles from "./dashboard.module.css";
 
-export default function ProfitByHourChart({ data = [] }) {
-  const hasData = data.some((d) => d.lucro !== 0 || d.receita !== 0);
+export default function ProfitByHourChart({ data = [], variant = "pagtrust" }) {
+  const isMeta = variant === "meta";
+  const hasData = data.some((d) => Number(d.lucro || 0) !== 0 || Number(d.receita || 0) > 0);
 
   return (
     <DashboardCard
-      title="Lucro por Horário"
-      hint="Receita PagTrust − gasto Meta rateado por hora"
-      source={DATA_SOURCE.CALCULATED}
-      sourceNote={CHART_DATA_SOURCES.profitByHour.note}
+      title={isMeta ? "Lucro atribuído Meta por horário" : "Lucro por Horário"}
+      hint={
+        isMeta
+          ? "Receita atribuída rateada pelo gasto horário − spend Meta"
+          : "Receita PagTrust − gasto Meta rateado por hora"
+      }
+      source={isMeta ? DATA_SOURCE.META : DATA_SOURCE.CALCULATED}
+      sourceNote={
+        isMeta
+          ? "hourly_stats + purchaseRevenue do período"
+          : CHART_DATA_SOURCES.profitByHour.note
+      }
       bodyClassName={styles.chartArea}
     >
       {hasData ? (
@@ -33,7 +42,9 @@ export default function ProfitByHourChart({ data = [] }) {
           </BarChart>
         </ResponsiveContainer>
       ) : (
-        <p className={styles.emptyText}>Sem vendas no período para calcular lucro horário.</p>
+        <p className={styles.emptyText}>
+          {isMeta ? "Sem gasto horário Meta no período." : "Sem vendas no período para calcular lucro horário."}
+        </p>
       )}
     </DashboardCard>
   );
