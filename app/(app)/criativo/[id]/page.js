@@ -345,7 +345,7 @@ function ScoreBarRow({ label, value }) {
   );
 }
 
-function MetaVideoPlayer({ mediaId, initialVideoUrl, posterUrl, mediaType }) {
+function MetaVideoPlayer({ mediaId, initialVideoUrl, posterUrl, mediaType, adId, embedUrl }) {
   const [videoSrc, setVideoSrc] = useState(initialVideoUrl || "");
   const [poster, setPoster] = useState(posterUrl || "/imagens/meta.png");
   const refreshingRef = useRef(false);
@@ -356,31 +356,73 @@ function MetaVideoPlayer({ mediaId, initialVideoUrl, posterUrl, mediaType }) {
   }, [initialVideoUrl, posterUrl, mediaId]);
 
   const refreshFromMeta = useCallback(async () => {
-    if (!mediaId || refreshingRef.current) return;
+    if (refreshingRef.current) return;
     refreshingRef.current = true;
     try {
       const orgId = getStoredOrganizationId();
       if (!orgId) return;
-      const res = await apiFetch(
-        `/api/dashboard/media-refresh/${mediaId}?organizationId=${orgId}`
-      );
-      if (res?.url) setVideoSrc(res.url);
-      if (res?.thumbnailUrl) setPoster(res.thumbnailUrl);
+      if (mediaId) {
+        const res = await apiFetch(
+          `/api/dashboard/media-refresh/${mediaId}?organizationId=${orgId}`,
+        );
+        if (res?.url) setVideoSrc(res.url);
+        if (res?.thumbnailUrl) setPoster(res.thumbnailUrl);
+        return;
+      }
+      if (adId) {
+        const res = await apiFetch(
+          `/api/dashboard/insights/${adId}/media-playback?organizationId=${orgId}`,
+        );
+        if (res?.url) setVideoSrc(res.url);
+        if (res?.thumbnailUrl) setPoster(res.thumbnailUrl);
+      }
     } catch (err) {
       console.error("Erro ao renovar vídeo do Meta:", err);
     } finally {
       refreshingRef.current = false;
     }
-  }, [mediaId]);
+  }, [mediaId, adId]);
 
-  if (mediaType === "image" || (!videoSrc && poster)) {
+  useEffect(() => {
+    if (mediaType !== "video") return;
+    const src = initialVideoUrl || "";
+    const looksLikeImage = /\.(jpe?g|png|webp|gif)(\?|$)/i.test(src.split("?")[0] || "");
+    if ((!src || looksLikeImage) && (mediaId || adId)) {
+      refreshFromMeta();
+    }
+  }, [mediaType, initialVideoUrl, mediaId, adId, refreshFromMeta]);
+
+  const instagramEmbedSrc = useMemo(() => {
+    const raw = embedUrl || "";
+    const m = raw.match(/instagram\.com\/(?:p|reel|tv)\/([^/?#]+)/i);
+    if (!m) return null;
+    return `https://www.instagram.com/p/${m[1]}/embed`;
+  }, [embedUrl]);
+
+  const hasRealVideo =
+    videoSrc && !/\.(jpe?g|png|webp|gif)(\?|$)/i.test(String(videoSrc).split("?")[0] || "");
+
+  if (instagramEmbedSrc && mediaType === "video" && !hasRealVideo) {
+    return (
+      <iframe
+        src={instagramEmbedSrc}
+        title="Criativo Instagram"
+        className={styles.videoEl}
+        style={{ border: "none", width: "100%", height: "100%" }}
+        allowFullScreen
+        referrerPolicy="no-referrer"
+      />
+    );
+  }
+
+  if (mediaType === "image") {
     return (
       <ExternalImage
         src={poster}
         alt="Criativo"
         className={styles.videoEl}
         style={{ objectFit: "cover" }}
-        onError={mediaId ? refreshFromMeta : undefined}
+        onError={mediaId || adId ? refreshFromMeta : undefined}
       />
     );
   }
@@ -390,7 +432,7 @@ function MetaVideoPlayer({ mediaId, initialVideoUrl, posterUrl, mediaType }) {
       className={styles.videoEl}
       src={videoSrc || undefined}
       poster={poster}
-      onError={mediaId ? refreshFromMeta : undefined}
+      onError={mediaId || adId ? refreshFromMeta : undefined}
     />
   );
 }
@@ -819,9 +861,11 @@ export default function CreativeDetailPage() {
                   return (
                     <MetaVideoPlayer
                       mediaId={data.media_id}
+                      adId={routeId}
                       initialVideoUrl={data.media_url}
                       posterUrl={data.thumbnail_url}
                       mediaType={data.media_type}
+                      embedUrl={data.embed_url}
                     />
                   );
                 })()}
