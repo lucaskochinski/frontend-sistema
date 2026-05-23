@@ -1,3 +1,4 @@
+export { default as FutureFeatureLock } from "./FutureFeatureLock";
 export { default as PagTrustRevenueChart } from "./PagTrustRevenueChart";
 export { default as DashboardSection } from "./DashboardSection";
 export { default as DashboardCard } from "./DashboardCard";

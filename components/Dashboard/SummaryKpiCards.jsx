@@ -1,39 +1,47 @@
 "use client";
 
 import { formatBRL } from "@/components/MetaMetrics/MetaMetricsPanel";
-import { CHART_DATA_SOURCES, DATA_SOURCE } from "./metaDataSources";
+import FutureFeatureLock from "./FutureFeatureLock";
 import styles from "./dashboard.module.css";
 
-export default function SummaryKpiCards({ revenue, spend, roi, profit, metaRoas }) {
-  const roiNum = Number(roi);
-  const profitNum = Number(profit);
+export default function SummaryKpiCards({
+  spend = 0,
+  metaPurchaseRevenue = 0,
+  metaRoas = null,
+  gatewayRevenue = 0,
+}) {
+  const roasNum = Number(metaRoas);
+  const roasDisplay = Number.isFinite(roasNum) && roasNum > 0 ? roasNum.toFixed(2) : "—";
 
   return (
     <div className={styles.kpiGrid}>
       <div className={styles.kpiCard}>
-        <p className={styles.kpiLabel}>Faturamento Líquido</p>
-        <p className={styles.kpiValue}>{formatBRL(revenue)}</p>
-        <p className={styles.kpiSub}>{CHART_DATA_SOURCES.summaryKpi.revenue.note}</p>
+        <p className={styles.kpiLabel}>Receita atribuída (Meta)</p>
+        <p className={styles.kpiValue}>{formatBRL(metaPurchaseRevenue)}</p>
+        <p className={styles.kpiSub}>Insights · action_values purchase / omni_purchase</p>
       </div>
       <div className={styles.kpiCard}>
         <p className={styles.kpiLabel}>Gastos com anúncios</p>
         <p className={styles.kpiValue}>{formatBRL(spend)}</p>
-        <p className={styles.kpiSub}>Meta · {CHART_DATA_SOURCES.summaryKpi.spend.metaField}</p>
+        <p className={styles.kpiSub}>Meta · spend (período seleccionado)</p>
       </div>
       <div className={styles.kpiCard}>
-        <p className={styles.kpiLabel}>ROI</p>
-        <p className={`${styles.kpiValue} ${roiNum >= 1 ? styles.positive : styles.negative}`}>{roi}x</p>
-        {metaRoas ? <p className={styles.kpiSub}>ROAS Meta: {metaRoas}</p> : null}
-      </div>
-      <div className={styles.kpiCard}>
-        <p className={styles.kpiLabel}>Lucro</p>
-        <p className={`${styles.kpiValue} ${profitNum >= 0 ? styles.positive : styles.negative}`}>
-          {formatBRL(profit)}
+        <p className={styles.kpiLabel}>ROAS (Meta)</p>
+        <p className={`${styles.kpiValue} ${roasNum >= 1 ? styles.positive : roasNum > 0 ? styles.negative : ""}`}>
+          {roasDisplay}
+          {roasDisplay !== "—" ? "x" : ""}
         </p>
-        <p className={styles.kpiSub}>Receita PagTrust − gasto Meta</p>
+        <p className={styles.kpiSub}>Receita atribuída ÷ gasto Meta</p>
+      </div>
+      <div className={styles.kpiCard}>
+        <FutureFeatureLock compact label="PagTrust / Vturb / Utmify">
+          <>
+            <p className={styles.kpiLabel}>Faturamento líquido (gateway)</p>
+            <p className={styles.kpiValue}>{formatBRL(gatewayRevenue)}</p>
+            <p className={styles.kpiSub}>Vendas aprovadas via webhook</p>
+          </>
+        </FutureFeatureLock>
       </div>
     </div>
   );
 }
-
-export { DATA_SOURCE };

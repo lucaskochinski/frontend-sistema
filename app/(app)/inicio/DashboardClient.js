@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { apiFetch, getStoredOrganizationId } from "@/lib/hooko-session";
 import styles from "./page.module.css";
 import dash from "@/components/Dashboard/dashboard.module.css";
@@ -20,12 +20,15 @@ import {
   MetaConversionFunnel,
   MetaDailySpendChart,
   MetaMetricsSection,
+  MetaRankingsGrid,
+  FutureFeatureLock,
 } from "@/components/Dashboard";
+
+const GATEWAY_LOCK = { label: "PagTrust / Vturb / Utmify", message: "Integração em breve" };
 
 export default function DashboardClient() {
   const [loading, setLoading] = useState(true);
   const [overview, setOverview] = useState(null);
-  const [sales, setSales] = useState(null);
   const [dateFilter, setDateFilter] = useState("month");
 
   useEffect(() => {
@@ -36,15 +39,11 @@ export default function DashboardClient() {
         if (!orgId) return;
 
         const periodParam = encodeURIComponent(dateFilter);
-        const [overviewRes, salesRes] = await Promise.all([
-          apiFetch(`/api/dashboard/overview?organizationId=${orgId}&period=${periodParam}`).catch(() => null),
-          apiFetch(`/api/dashboard/external-sales/pagtrust?organizationId=${orgId}&period=${periodParam}`).catch(
-            () => null,
-          ),
-        ]);
+        const overviewRes = await apiFetch(
+          `/api/dashboard/overview?organizationId=${orgId}&period=${periodParam}`,
+        ).catch(() => null);
 
         setOverview(overviewRes);
-        setSales(salesRes);
       } catch (err) {
         console.error("Erro ao puxar dados do Dashboard:", err);
       } finally {
@@ -55,25 +54,18 @@ export default function DashboardClient() {
   }, [dateFilter]);
 
   const totalSpend = Number(overview?.totalSpend || 0);
-  const totalRevenue = Number(sales?.totalRevenue || 0);
-  const profit = totalRevenue - totalSpend;
-  const roi = totalSpend > 0 ? (totalRevenue / totalSpend).toFixed(2) : "0.00";
-  const metaRoas = overview?.globalRoasWeighted ? Number(overview.globalRoasWeighted).toFixed(2) : null;
-
-  const secondaryMetrics = useMemo(
-    () => ({
-      ...(sales?.secondaryMetrics || {}),
-      creativeAnalyses: overview?.creativeAnalysesCount ?? sales?.secondaryMetrics?.creativeAnalyses ?? 0,
-    }),
-    [sales, overview],
-  );
+  const metaPurchaseRevenue = Number(overview?.delivery?.purchaseRevenue || 0);
+  const metaRoas =
+    overview?.delivery?.roas ??
+    overview?.globalRoasWeighted ??
+    (totalSpend > 0 ? metaPurchaseRevenue / totalSpend : null);
 
   if (loading) {
     return (
       <div className={styles.page}>
         <div className={styles.loadingContainer}>
           <h2 className={styles.title}>Carregando dashboard…</h2>
-          <p className={styles.sub}>Meta Ads + PagTrust</p>
+          <p className={styles.sub}>Meta Ads</p>
         </div>
       </div>
     );
@@ -86,7 +78,7 @@ export default function DashboardClient() {
           <p className={styles.kicker}>Principal</p>
           <h1 className={styles.title}>Dashboard</h1>
           <p className={styles.sub}>
-            Todos os blocos abaixo já estão na home — Meta Ads + PagTrust.
+            Métricas activas via Meta Marketing API — integrações de gateway (PagTrust, Vturb, Utmify) em breve.
             {overview?.dateRange ? ` Período: ${overview.dateRange.since} → ${overview.dateRange.until}.` : ""}
           </p>
         </div>
@@ -107,53 +99,66 @@ export default function DashboardClient() {
       </header>
 
       <div className={dash.dashboardGrid}>
-        <DashboardSection title="Resumo">
+        <DashboardSection title="Resumo Meta">
           <SummaryKpiCards
-            revenue={totalRevenue}
             spend={totalSpend}
-            roi={roi}
-            profit={profit}
-            metaRoas={metaRoas}
+            metaPurchaseRevenue={metaPurchaseRevenue}
+            metaRoas={metaRoas != null ? Number(metaRoas) : null}
           />
 
-          <PagTrustRevenueChart data={sales?.revenueByDay} dateRange={sales?.dateRange || overview?.dateRange} />
+          <FutureFeatureLock {...GATEWAY_LOCK}>
+            <PagTrustRevenueChart data={[]} dateRange={overview?.dateRange} />
+          </FutureFeatureLock>
 
           <div className={dash.row2}>
-            <SalesByPaymentDonut data={sales?.salesByPaymentMethod} totalSales={sales?.totalSales} />
-            <CumulativeRevenueSpendChart data={sales?.cumulativeHourly} />
+            <FutureFeatureLock {...GATEWAY_LOCK}>
+              <SalesByPaymentDonut data={[]} totalSales={0} />
+            </FutureFeatureLock>
+            <FutureFeatureLock {...GATEWAY_LOCK}>
+              <CumulativeRevenueSpendChart data={[]} />
+            </FutureFeatureLock>
           </div>
-          <SecondaryMetricsGrid metrics={secondaryMetrics} />
+
+          <FutureFeatureLock {...GATEWAY_LOCK}>
+            <SecondaryMetricsGrid metrics={{}} />
+          </FutureFeatureLock>
         </DashboardSection>
 
-        <DashboardSection title="Lucro e faturamento">
-          <ProfitByHourChart data={sales?.profitByHour} />
+        <DashboardSection title="Lucro e faturamento (gateway)">
+          <FutureFeatureLock {...GATEWAY_LOCK}>
+            <ProfitByHourChart data={[]} />
+          </FutureFeatureLock>
         </DashboardSection>
 
-        <DashboardSection title="Vendas e aprovação">
+        <DashboardSection title="Vendas e entrega">
           <div className={dash.row3}>
-            <SalesByProductList items={sales?.salesByProduct} />
-            <SalesBySourceList
-              pagtrustItems={sales?.salesBySource}
-              metaItems={overview?.metaTrafficSources}
-            />
-            <ApprovalRateChart rates={sales?.approvalRates} />
+            <FutureFeatureLock {...GATEWAY_LOCK}>
+              <SalesByProductList items={[]} />
+            </FutureFeatureLock>
+            <SalesBySourceList metaItems={overview?.metaTrafficSources} />
+            <FutureFeatureLock {...GATEWAY_LOCK}>
+              <ApprovalRateChart rates={[]} />
+            </FutureFeatureLock>
           </div>
-          <SalesByHourChart data={sales?.revenueByHour} />
+
+          <FutureFeatureLock {...GATEWAY_LOCK}>
+            <SalesByHourChart data={[]} />
+          </FutureFeatureLock>
+
           <div className={dash.row2}>
-            <SalesByDayOfWeekChart data={sales?.salesByDayOfWeek} />
+            <FutureFeatureLock {...GATEWAY_LOCK}>
+              <SalesByDayOfWeekChart data={[]} />
+            </FutureFeatureLock>
             <MetaDailySpendChart data={overview?.dailyMeta} />
           </div>
         </DashboardSection>
 
         <DashboardSection title="Funil Meta Ads">
-          <MetaConversionFunnel
-            funnel={overview?.conversionFunnel || overview?.funnel}
-            salesInitiated={sales?.totalSales}
-            salesApproved={sales?.approvedSales}
-          />
+          <MetaConversionFunnel funnel={overview?.conversionFunnel || overview?.funnel} />
         </DashboardSection>
 
         <DashboardSection title="Performance Meta">
+          <MetaRankingsGrid items={overview?.rankingItems} />
           <MetaMetricsSection overview={overview} />
         </DashboardSection>
       </div>

@@ -49,9 +49,9 @@ function buildSmoothFunnelPath(values, width, height, padY = 12) {
 }
 
 /**
- * Funil UTMify: Cliques → Vis. Página → ICs (Meta) → Vendas Inic. / Apr. (PagTrust ou Meta).
+ * Funil Meta: Cliques → Page view → IC → Add to cart → Compras atribuídas (pixel).
  */
-export default function MetaConversionFunnel({ funnel, salesInitiated, salesApproved }) {
+export default function MetaConversionFunnel({ funnel }) {
   const gradId = useId().replace(/:/g, "");
 
   const steps = useMemo(() => {
@@ -59,42 +59,19 @@ export default function MetaConversionFunnel({ funnel, salesInitiated, salesAppr
     const clicks = Number(f.clicks ?? f.cliques ?? 0);
     const pageViews = Number(f.pageViews ?? 0);
     const ics = Number(f.initiateCheckouts ?? 0);
-
-    const initiated =
-      salesInitiated != null && salesInitiated !== undefined
-        ? Number(salesInitiated)
-        : Number(f.addToCart ?? 0);
-
-    const approved =
-      salesApproved != null && salesApproved !== undefined
-        ? Number(salesApproved)
-        : Number(f.purchasesMeta ?? f.purchases ?? 0);
+    const initiated = Number(f.addToCart ?? 0);
+    const approved = Number(f.purchasesMeta ?? f.purchases ?? 0);
 
     const base = Math.max(1, clicks);
 
     return [
-      { label: "Cliques", value: clicks, pct: 100, source: "meta" },
-      {
-        label: "Vis. Página",
-        value: pageViews,
-        pct: (pageViews / base) * 100,
-        source: "meta",
-      },
-      { label: "ICs", value: ics, pct: (ics / base) * 100, source: "meta" },
-      {
-        label: "Vendas Inic.",
-        value: initiated,
-        pct: (initiated / base) * 100,
-        source: salesInitiated != null ? "pagtrust" : "meta",
-      },
-      {
-        label: "Vendas Apr.",
-        value: approved,
-        pct: (approved / base) * 100,
-        source: salesApproved != null ? "pagtrust" : "meta",
-      },
+      { label: "Cliques", value: clicks, pct: 100 },
+      { label: "Vis. Página", value: pageViews, pct: (pageViews / base) * 100 },
+      { label: "ICs", value: ics, pct: (ics / base) * 100 },
+      { label: "Add to cart", value: initiated, pct: (initiated / base) * 100 },
+      { label: "Compras Meta", value: approved, pct: (approved / base) * 100 },
     ];
-  }, [funnel, salesInitiated, salesApproved]);
+  }, [funnel]);
 
   const values = steps.map((s) => s.value);
   const hasData = values.some((v) => v > 0);
@@ -111,17 +88,15 @@ export default function MetaConversionFunnel({ funnel, salesInitiated, salesAppr
     >
       {!hasData ? (
         <p className={styles.emptyText}>
-          Sem dados de funil — importe anúncios com entrega Meta e conecte PagTrust para vendas aprovadas.
+          Sem dados de funil — importe anúncios com entrega Meta sincronizada no período.
         </p>
       ) : (
         <>
           <div className={styles.funnelFlowHead}>
-            <span className={styles.funnelFlowHint}>
-              Base 100% = cliques Meta · Vendas = PagTrust (fallback: eventos Meta)
-            </span>
+            <span className={styles.funnelFlowHint}>Base 100% = cliques Meta · etapas via Insights API</span>
             <span
               className={styles.funnelInfoIcon}
-              title="Meta: clicks, landing_page_view, initiate_checkout. PagTrust: vendas totais e aprovadas."
+              title="Meta: clicks, landing_page_view, initiate_checkout, add_to_cart, purchase (pixel/CAPI)."
               aria-label="Informação sobre o funil"
             >
               i

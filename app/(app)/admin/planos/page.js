@@ -274,8 +274,8 @@ export default function AdminPlanosPage() {
     for (let i = 0; i < 4; i += 1) {
       if (!validateStep(i)) {
         setWizardStep(i);
-        return;
-      }
+      return;
+    }
     }
 
     setBusy(true);
@@ -283,9 +283,9 @@ export default function AdminPlanosPage() {
     try {
       const payload = buildPayload();
       if (wizardMode === "create") {
-        await apiFetch("/api/admin/plans", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+      await apiFetch("/api/admin/plans", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
         setOk("Plano criado com sucesso.");
@@ -614,9 +614,9 @@ export default function AdminPlanosPage() {
                           Editar
                         </button>
                         {row.isActive ? (
-                          <button type="button" className={`${s.btnDanger} ${s.btnSm}`} onClick={() => setModalDelete(row)}>
+                        <button type="button" className={`${s.btnDanger} ${s.btnSm}`} onClick={() => setModalDelete(row)}>
                             Desactivar
-                          </button>
+                        </button>
                         ) : null}
                       </td>
                     </tr>
