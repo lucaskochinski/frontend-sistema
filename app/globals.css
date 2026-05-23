@@ -67,6 +67,26 @@
   --hooko-modal-panel-bg: rgba(18, 18, 22, 0.92);
   --hooko-crumb-current: rgba(244, 244, 245, 0.88);
   --hooko-crumb-link: rgba(147, 197, 253, 0.95);
+  --hooko-pill-success-bg: rgba(34, 197, 94, 0.12);
+  --hooko-pill-success-border: rgba(74, 222, 128, 0.35);
+  --hooko-pill-success-text: #bbf7d0;
+  --hooko-pill-neutral-bg: rgba(255, 255, 255, 0.04);
+  --hooko-pill-neutral-border: rgba(255, 255, 255, 0.1);
+  --hooko-pill-neutral-text: rgba(200, 200, 210, 0.95);
+  --hooko-tag-info-text: rgba(147, 197, 253, 0.9);
+  --hooko-score-good-bg: rgba(34, 197, 94, 0.12);
+  --hooko-score-good-border: rgba(74, 222, 128, 0.35);
+  --hooko-score-good-text: #bbf7d0;
+  --hooko-score-mid-bg: rgba(234, 179, 8, 0.12);
+  --hooko-score-mid-border: rgba(250, 204, 21, 0.35);
+  --hooko-score-mid-text: #fef08a;
+  --hooko-score-low-bg: rgba(239, 68, 68, 0.12);
+  --hooko-score-low-border: rgba(248, 113, 113, 0.35);
+  --hooko-score-low-text: #fecaca;
+  --hooko-score-muted-bg: rgba(255, 255, 255, 0.04);
+  --hooko-score-muted-border: rgba(255, 255, 255, 0.1);
+  --hooko-score-muted-text: rgba(161, 161, 170, 0.95);
+  --hooko-card-shadow: 0 16px 42px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(0, 0, 0, 0.35) inset;
 }
 
 [data-theme="light"] {
@@ -122,6 +142,26 @@
   --hooko-modal-panel-bg: #ffffff;
   --hooko-crumb-current: #27272a;
   --hooko-crumb-link: #1d4ed8;
+  --hooko-pill-success-bg: rgba(34, 197, 94, 0.14);
+  --hooko-pill-success-border: rgba(22, 163, 74, 0.35);
+  --hooko-pill-success-text: #166534;
+  --hooko-pill-neutral-bg: rgba(0, 0, 0, 0.04);
+  --hooko-pill-neutral-border: rgba(0, 0, 0, 0.12);
+  --hooko-pill-neutral-text: #52525b;
+  --hooko-tag-info-text: #1d4ed8;
+  --hooko-score-good-bg: rgba(34, 197, 94, 0.14);
+  --hooko-score-good-border: rgba(22, 163, 74, 0.35);
+  --hooko-score-good-text: #166534;
+  --hooko-score-mid-bg: rgba(234, 179, 8, 0.16);
+  --hooko-score-mid-border: rgba(202, 138, 4, 0.4);
+  --hooko-score-mid-text: #854d0e;
+  --hooko-score-low-bg: rgba(239, 68, 68, 0.12);
+  --hooko-score-low-border: rgba(220, 38, 38, 0.35);
+  --hooko-score-low-text: #991b1b;
+  --hooko-score-muted-bg: rgba(0, 0, 0, 0.04);
+  --hooko-score-muted-border: rgba(0, 0, 0, 0.1);
+  --hooko-score-muted-text: #52525b;
+  --hooko-card-shadow: 0 12px 32px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05) inset;
 }
 
 *,

@@ -410,6 +410,29 @@
   white-space: nowrap;
 }
 
+.videoLoadBtn {
+  position: absolute;
+  left: 50%;
+  bottom: 12%;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--hooko-border);
+  background: color-mix(in srgb, var(--hooko-bg-deep) 82%, transparent);
+  color: var(--hooko-text);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.videoLoadBtn:hover {
+  border-color: color-mix(in srgb, var(--hooko-gold) 45%, transparent);
+  color: var(--hooko-gold-bright);
+}
+
 /* Instagram embed — fora do box 16:9 (post vertical) */
 .instagramShell {
   width: 100%;

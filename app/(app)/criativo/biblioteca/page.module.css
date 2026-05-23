@@ -558,7 +558,7 @@
   padding: 0;
   border-radius: 8px;
   text-decoration: none;
-  color: rgba(212, 212, 222, 0.95);
+  color: var(--hooko-text-muted);
   border: 1px solid var(--hooko-border);
   cursor: pointer;
   flex: 0 0 auto;
@@ -572,7 +572,8 @@
 
 .footerBtn:hover {
   background: var(--hooko-surface-hover);
-  border-color: var(--hooko-border);
+  border-color: var(--hooko-border-strong);
+  color: var(--hooko-text);
 }
 
 .footerBtn:focus-visible {
@@ -587,7 +588,7 @@
   height: 2.15rem;
   padding: 0;
   border-radius: 8px;
-  color: rgba(180, 180, 192, 0.92);
+  color: var(--hooko-text-muted);
   background: transparent;
   border: 1px solid transparent;
   cursor: pointer;
@@ -599,7 +600,7 @@
 
 .footerBtnSecondary:hover {
   background: var(--hooko-surface);
-  color: var(--hooko-text-muted);
+  color: var(--hooko-text);
 }
 
 .footerBtnSecondary:focus-visible {
@@ -614,7 +615,7 @@
   height: 2.15rem;
   padding: 0;
   border-radius: 8px;
-  color: rgba(248, 113, 113, 0.88);
+  color: var(--hooko-negative);
   background: transparent;
   border: 1px solid transparent;
   cursor: pointer;
@@ -625,8 +626,8 @@
 }
 
 .footerBtnDanger:hover {
-  background: rgba(239, 68, 68, 0.1);
-  color: #fecaca;
+  background: color-mix(in srgb, var(--hooko-negative) 12%, transparent);
+  color: var(--hooko-negative);
 }
 
 .footerBtnDanger:focus-visible {
@@ -1622,9 +1623,7 @@
   border-radius: 16px;
   background: var(--hooko-bg);
   border: 1px solid var(--hooko-border);
-  box-shadow:
-    0 16px 42px rgba(0, 0, 0, 0.45),
-    0 0 0 1px rgba(0, 0, 0, 0.35) inset;
+  box-shadow: var(--hooko-card-shadow);
   overflow: hidden;
   transition:
     transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
@@ -1635,11 +1634,8 @@
 .creativeBundle:hover .creativeCard,
 .creativeBundle:focus-within .creativeCard {
   transform: translateY(-6px);
-  border-color: rgba(212, 175, 55, 0.22);
-  box-shadow:
-    0 26px 56px rgba(0, 0, 0, 0.58),
-    0 0 48px rgba(212, 175, 55, 0.08),
-    0 0 0 1px rgba(0, 0, 0, 0.38) inset;
+  border-color: color-mix(in srgb, var(--hooko-gold) 22%, transparent);
+  box-shadow: var(--hooko-shadow-premium);
 }
 
 .creativeMedia {
@@ -1665,7 +1661,7 @@
   justify-content: center;
   font-size: 0.7rem;
   font-weight: 600;
-  color: rgba(148, 148, 159, 0.9);
+  color: var(--hooko-text-muted);
 }
 
 .creativeBody {
@@ -1694,7 +1690,7 @@
   margin: 0;
   font-size: 0.76rem;
   font-weight: 600;
-  color: rgba(196, 196, 208, 0.95);
+  color: var(--hooko-text-muted);
   line-height: 1.35;
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -1714,13 +1710,13 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(147, 197, 253, 0.9);
+  color: var(--hooko-tag-info-text);
 }
 
 .creativeCampaignName {
   font-size: 0.72rem;
   font-weight: 600;
-  color: rgba(212, 212, 222, 0.96);
+  color: var(--hooko-text-subtle);
   line-height: 1.35;
 }
 
@@ -1734,7 +1730,7 @@
   margin: -0.1rem -0.1rem -0.1rem;
   border-radius: 0 0 15px 15px;
   background: var(--hooko-surface);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--hooko-divider);
 }
 
 .aiScorePill {
@@ -1746,27 +1742,27 @@
   border-radius: 999px;
   font-size: 0.72rem;
   font-weight: 800;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(161, 161, 170, 0.95);
+  border: 1px solid var(--hooko-score-muted-border);
+  background: var(--hooko-score-muted-bg);
+  color: var(--hooko-score-muted-text);
 }
 
 .aiScore_good {
-  border-color: rgba(74, 222, 128, 0.35);
-  color: #bbf7d0;
-  background: rgba(34, 197, 94, 0.12);
+  border-color: var(--hooko-score-good-border);
+  color: var(--hooko-score-good-text);
+  background: var(--hooko-score-good-bg);
 }
 
 .aiScore_mid {
-  border-color: rgba(250, 204, 21, 0.35);
-  color: #fef08a;
-  background: rgba(234, 179, 8, 0.12);
+  border-color: var(--hooko-score-mid-border);
+  color: var(--hooko-score-mid-text);
+  background: var(--hooko-score-mid-bg);
 }
 
 .aiScore_low {
-  border-color: rgba(248, 113, 113, 0.35);
-  color: #fecaca;
-  background: rgba(239, 68, 68, 0.12);
+  border-color: var(--hooko-score-low-border);
+  color: var(--hooko-score-low-text);
+  background: var(--hooko-score-low-bg);
 }
 
 .creativeFooterBtns {
@@ -1782,15 +1778,15 @@
   text-transform: uppercase;
   padding: 0.28rem 0.42rem;
   border-radius: 6px;
-  background: rgba(74, 222, 128, 0.12);
-  border: 1px solid rgba(74, 222, 128, 0.32);
-  color: rgba(187, 247, 208, 0.95);
+  background: var(--hooko-pill-success-bg);
+  border: 1px solid var(--hooko-pill-success-border);
+  color: var(--hooko-pill-success-text);
 }
 
 .statusPillNeutral {
-  background: var(--hooko-surface);
-  border-color: var(--hooko-border);
-  color: rgba(200, 200, 210, 0.95);
+  background: var(--hooko-pill-neutral-bg);
+  border-color: var(--hooko-pill-neutral-border);
+  color: var(--hooko-pill-neutral-text);
 }
 
 .skeletonCreative {

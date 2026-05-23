@@ -481,30 +481,26 @@ function MetaVideoPlayer({ mediaId, initialVideoUrl, posterUrl, mediaType, adId 
     hasPlayableVideoUrl(initialVideoUrl) ? initialVideoUrl : "",
   );
   const [poster, setPoster] = useState(posterUrl || "/imagens/meta.png");
-  const [loadingPlayback, setLoadingPlayback] = useState(
-    () => (mediaType === "video" || mediaType === "embed") && !hasPlayableVideoUrl(initialVideoUrl),
-  );
+  const [loadError, setLoadError] = useState(false);
   const refreshingRef = useRef(false);
 
   useEffect(() => {
     setVideoSrc(hasPlayableVideoUrl(initialVideoUrl) ? initialVideoUrl : "");
     setPoster(posterUrl || "/imagens/meta.png");
-    setLoadingPlayback(
-      (mediaType === "video" || mediaType === "embed") && !hasPlayableVideoUrl(initialVideoUrl),
-    );
+    setLoadError(false);
   }, [initialVideoUrl, posterUrl, mediaId, mediaType]);
 
   const refreshFromMeta = useCallback(async () => {
     if (refreshingRef.current) return;
     refreshingRef.current = true;
-    setLoadingPlayback(true);
+    setLoadError(false);
     try {
       const orgId = getStoredOrganizationId();
       if (!orgId) return;
       let res = null;
       if (adId) {
         res = await apiFetch(
-          `/api/dashboard/insights/${adId}/media-playback?organizationId=${orgId}`,
+          `/api/dashboard/insights/${adId}/media-playback?organizationId=${orgId}&force=1`,
         );
       } else if (mediaId) {
         res = await apiFetch(
@@ -515,18 +511,11 @@ function MetaVideoPlayer({ mediaId, initialVideoUrl, posterUrl, mediaType, adId 
       if (res?.thumbnailUrl) setPoster(res.thumbnailUrl);
     } catch (err) {
       console.error("Erro ao renovar vídeo do Meta:", err);
+      setLoadError(true);
     } finally {
       refreshingRef.current = false;
-      setLoadingPlayback(false);
     }
   }, [mediaId, adId]);
-
-  useEffect(() => {
-    if (mediaType !== "video" && mediaType !== "embed") return;
-    if (!hasPlayableVideoUrl(initialVideoUrl) && (mediaId || adId)) {
-      refreshFromMeta();
-    }
-  }, [mediaType, initialVideoUrl, mediaId, adId, refreshFromMeta]);
 
   if (mediaType === "image") {
     return (
@@ -551,7 +540,11 @@ function MetaVideoPlayer({ mediaId, initialVideoUrl, posterUrl, mediaType, adId 
           className={styles.videoEl}
           style={{ objectFit: "cover" }}
         />
-        {loadingPlayback ? <p className={styles.videoPendingText}>Carregando vídeo da Meta…</p> : null}
+        {(mediaId || adId) ? (
+          <button type="button" className={styles.videoLoadBtn} onClick={refreshFromMeta}>
+            {loadError ? "Meta indisponível — tentar de novo" : "Carregar vídeo da Meta"}
+          </button>
+        ) : null}
       </div>
     );
   }
