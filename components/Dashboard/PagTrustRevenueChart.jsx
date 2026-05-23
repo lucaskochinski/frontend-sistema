@@ -1,9 +1,9 @@
 "use client";
 
-import { ResponsiveContainer, XAxis, YAxis, Tooltip, Area, AreaChart } from "recharts";
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip } from "recharts";
 import { formatBRL } from "@/components/MetaMetrics/MetaMetricsPanel";
 import { CHART_DATA_SOURCES, DATA_SOURCE } from "./metaDataSources";
-import { chartTooltipStyle } from "./dashboardTheme";
+import { CHART_TICK, DASHBOARD_COLORS, HOOKO_GOLD, chartTooltipStyle } from "./dashboardTheme";
 import styles from "./dashboard.module.css";
 
 function formatCompactBRL(value) {
@@ -28,11 +28,7 @@ function IconExpand() {
   );
 }
 
-const PURPLE_TICK = "rgba(255,255,255,0.85)";
-
-/**
- * Receita PagTrust por dia — card roxo estilo UTMify.
- */
+/** Receita PagTrust por dia — card dourado HOOKO (bloqueado no dashboard). */
 export default function PagTrustRevenueChart({ data = [], dateRange }) {
   const hasData = data.some((d) => Number(d.valor || 0) > 0);
 
@@ -58,43 +54,41 @@ export default function PagTrustRevenueChart({ data = [], dateRange }) {
       <div className={styles.pagtrustRevenueChart}>
         {hasData ? (
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data} margin={{ top: 12, right: 12, left: 4, bottom: 4 }}>
-              <defs>
-                <linearGradient id="pagtrustRevenueFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#fff" stopOpacity={0.45} />
-                  <stop offset="95%" stopColor="#fff" stopOpacity={0} />
-                </linearGradient>
-              </defs>
+            <LineChart data={data} margin={{ top: 12, right: 12, left: 4, bottom: 4 }}>
               <XAxis
                 dataKey="label"
-                tick={{ fill: PURPLE_TICK, fontSize: 11 }}
+                tick={{ fill: CHART_TICK, fontSize: 11 }}
                 tickLine={false}
                 axisLine={false}
                 interval="preserveStartEnd"
                 minTickGap={28}
               />
               <YAxis
-                tick={{ fill: PURPLE_TICK, fontSize: 11 }}
+                tick={{ fill: CHART_TICK, fontSize: 11 }}
                 tickLine={false}
                 axisLine={false}
                 width={58}
                 tickFormatter={formatCompactBRL}
               />
               <Tooltip
-                contentStyle={{ ...chartTooltipStyle(), backgroundColor: "rgba(0,0,0,0.85)" }}
+                contentStyle={chartTooltipStyle()}
                 formatter={(val) => [formatBRL(val), "Receita"]}
                 labelFormatter={(label) => `Dia ${label}`}
               />
-              <Area
+              <Line
                 type="monotone"
                 dataKey="valor"
-                stroke="#fff"
+                stroke={DASHBOARD_COLORS.line}
                 strokeWidth={3}
-                fill="url(#pagtrustRevenueFill)"
                 dot={false}
-                activeDot={{ r: 5, fill: "#fff", stroke: "#6366f1", strokeWidth: 2 }}
+                activeDot={{
+                  r: 5,
+                  fill: HOOKO_GOLD.bright,
+                  stroke: DASHBOARD_COLORS.lineActive,
+                  strokeWidth: 2,
+                }}
               />
-            </AreaChart>
+            </LineChart>
           </ResponsiveContainer>
         ) : (
           <p className={styles.pagtrustEmpty}>

@@ -1,58 +1,21 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import {
   clearCheckoutRequired,
   fetchBillingStatus,
   fetchCheckoutPlans,
+  formatPlanPrice,
   hasActiveBillingAccess,
+  planFeatureList,
+  planPitch,
   startCheckout,
 } from "@/lib/billing";
 import { getStoredAccessToken, getStoredOrganizationId } from "@/lib/hooko-session";
 import styles from "./page.module.css";
-
-function formatImports(limits) {
-  const n = limits?.creative_imports_per_month;
-  if (n == null) return "Importações personalizadas";
-  if (n === Infinity || n > 999999) return "Importações ilimitadas";
-  return `${n.toLocaleString("pt-PT")} importações / mês`;
-}
-
-function formatMinutes(limits) {
-  const n = limits?.transcription_minutes_per_month;
-  if (n == null) return null;
-  if (n === Infinity || n > 999999) return "Transcrição ilimitada";
-  return `${n.toLocaleString("pt-PT")} min de transcrição / mês`;
-}
-
-function formatVideo(limits) {
-  const mb = limits?.max_video_size_mb;
-  const sec = limits?.max_video_duration_seconds;
-  if (mb == null && sec == null) return null;
-  const parts = [];
-  if (mb != null) parts.push(`Vídeos até ${mb} MB`);
-  if (sec != null) parts.push(`até ${Math.floor(sec / 60)} min`);
-  return parts.join(" · ");
-}
-
-function planPitch(plan) {
-  const name = String(plan?.displayName || "").toLowerCase();
-  const key = String(plan?.tierKey || "").toLowerCase();
-  const tag = `${name} ${key}`;
-  if (tag.includes("starter")) {
-    return "Ideal para validar criativos e começar a escalar com Meta Ads.";
-  }
-  if (tag.includes("pro")) {
-    return "Para equipas que importam volume e precisam de insights consistentes.";
-  }
-  if (tag.includes("scale")) {
-    return "Operação avançada, alto volume e limites generosos para crescer sem travas.";
-  }
-  return "Plano pensado para a sua operação de performance e criativos.";
-}
 
 function isPopularPlan(plan, index, total) {
   const tag = `${plan?.displayName || ""} ${plan?.tierKey || ""}`.toLowerCase();
@@ -61,27 +24,14 @@ function isPopularPlan(plan, index, total) {
 }
 
 function planFeatures(plan) {
-  const limits = plan?.limits || {};
-  return [
-    formatImports(limits),
-    formatMinutes(limits),
-    formatVideo(limits),
-    Number(plan?.trialDays) > 0 ? `${plan.trialDays} dias para testar grátis` : "Facturação mensal",
-  ].filter(Boolean);
+  return planFeatureList(plan);
 }
 
-function formatPlanPrice(plan) {
-  const cents = plan?.priceAmountCents ?? plan?.price_amount_cents;
-  if (cents == null || !Number.isFinite(Number(cents))) return null;
-  const currency = plan?.priceCurrency ?? plan?.price_currency ?? "brl";
-  return new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: String(currency).toUpperCase(),
-  }).format(Number(cents) / 100);
-}
-
-export default function CheckoutPage() {
+function CheckoutPageInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const upgradeMode = searchParams.get("mode") === "upgrade";
+
   const [loading, setLoading] = useState(true);
   const [plans, setPlans] = useState([]);
   const [selectedPlanId, setSelectedPlanId] = useState(null);
@@ -89,11 +39,14 @@ export default function CheckoutPage() {
   const [err, setErr] = useState("");
   const [hasPlan, setHasPlan] = useState(false);
   const [ready, setReady] = useState(false);
+  const [currentPlanId, setCurrentPlanId] = useState(null);
 
   const selectedPlan = useMemo(
     () => plans.find((p) => p.id === selectedPlanId) || null,
     [plans, selectedPlanId],
   );
+
+  const isCurrentPlan = selectedPlan && currentPlanId && selectedPlan.id === currentPlanId;
 
   useEffect(() => {
     const token = getStoredAccessToken();
@@ -112,22 +65,31 @@ export default function CheckoutPage() {
       try {
         const status = await fetchBillingStatus();
         if (cancelled) return;
-        if (hasActiveBillingAccess(status)) {
+
+        const active = hasActiveBillingAccess(status);
+        const planId = status?.currentPlanId || status?.subscription?.plan?.id || null;
+        setCurrentPlanId(planId ? String(planId) : null);
+
+        if (active && !upgradeMode) {
           clearCheckoutRequired();
           setHasPlan(true);
           router.replace("/inicio");
           return;
         }
+
         const res = await fetchCheckoutPlans();
         if (cancelled) return;
         const items = Array.isArray(res.items) ? res.items : [];
         setPlans(items);
+
         if (items.length > 0) {
+          const current = planId ? items.find((p) => p.id === String(planId)) : null;
           const pro = items.find((p) => {
             const tag = `${p.displayName || ""} ${p.tierKey || ""}`.toLowerCase();
             return tag.includes("pro");
           });
-          const defaultPlan = pro || items.find((p) => p.canCheckout) || items[0];
+          const defaultPlan =
+            current || pro || items.find((p) => p.canCheckout) || items[0];
           setSelectedPlanId(defaultPlan?.id || items[0].id);
         }
       } catch (e) {
@@ -140,7 +102,7 @@ export default function CheckoutPage() {
     return () => {
       cancelled = true;
     };
-  }, [router]);
+  }, [router, upgradeMode]);
 
   useEffect(() => {
     if (!loading && !hasPlan) {
@@ -152,7 +114,7 @@ export default function CheckoutPage() {
   }, [loading, hasPlan]);
 
   async function handleContinue() {
-    if (!selectedPlanId || !selectedPlan?.canCheckout) return;
+    if (!selectedPlanId || !selectedPlan?.canCheckout || isCurrentPlan) return;
     setErr("");
     setBusyPlanId(selectedPlanId);
     try {
@@ -190,22 +152,26 @@ export default function CheckoutPage() {
       <div className={styles.glowTop} aria-hidden />
       <div className={styles.glowSide} aria-hidden />
       <header className={styles.topBar}>
-        <Link href="/checkout" className={styles.logoLink}>
+        <Link href={upgradeMode ? "/perfil" : "/checkout"} className={styles.logoLink}>
           <Image src="/imagens/logo/logo-pequena.png" alt="HOOKO" width={36} height={36} className={styles.logo} />
           <span className={styles.logoText}>HOOKO</span>
         </Link>
-        <Link className={styles.accountLink} href="/login">
-          Trocar conta
+        <Link className={styles.accountLink} href={upgradeMode ? "/perfil" : "/login"}>
+          {upgradeMode ? "Voltar ao perfil" : "Trocar conta"}
         </Link>
       </header>
 
       <div className={styles.split}>
         <section className={styles.plansCol} aria-label="Planos disponíveis">
           <div className={styles.plansIntro}>
-            <p className={styles.eyebrow}>Escolha o seu plano</p>
-            <h1 className={styles.title}>Eleve a sua operação de criativos</h1>
+            <p className={styles.eyebrow}>{upgradeMode ? "Alterar plano" : "Escolha o seu plano"}</p>
+            <h1 className={styles.title}>
+              {upgradeMode ? "Upgrade ou mudança de plano" : "Eleve a sua operação de criativos"}
+            </h1>
             <p className={styles.lead}>
-              Seleccione um plano. O resumo actualiza em tempo real — pagamento seguro online.
+              {upgradeMode
+                ? "Planos públicos e exclusivos da sua organização. O plano actual está assinalado."
+                : "Seleccione um plano. O resumo actualiza em tempo real — pagamento seguro online."}
             </p>
           </div>
 
@@ -220,20 +186,25 @@ export default function CheckoutPage() {
             <ul className={styles.planList}>
               {plans.map((plan, index) => {
                 const selected = plan.id === selectedPlanId;
-                const popular = isPopularPlan(plan, index, plans.length);
+                const isCurrent = currentPlanId && plan.id === currentPlanId;
+                const popular = !isCurrent && isPopularPlan(plan, index, plans.length);
                 const features = planFeatures(plan);
 
                 return (
                   <li key={plan.id} className={styles.planItem} style={{ "--i": index }}>
                     <button
                       type="button"
-                      className={`${styles.planCard} ${selected ? styles.planCardSelected : ""}`}
+                      className={`${styles.planCard} ${selected ? styles.planCardSelected : ""} ${isCurrent ? styles.planCardCurrent : ""}`}
                       onClick={() => setSelectedPlanId(plan.id)}
                       aria-pressed={selected}
                     >
                       <div className={styles.planCardTop}>
                         <div className={styles.planCardHead}>
-                          {popular ? <span className={styles.popularBadge}>Mais escolhido</span> : null}
+                          {isCurrent ? (
+                            <span className={styles.currentBadge}>Plano actual</span>
+                          ) : popular ? (
+                            <span className={styles.popularBadge}>Mais escolhido</span>
+                          ) : null}
                           <h2 className={styles.planName}>{plan.displayName}</h2>
                           {formatPlanPrice(plan) ? (
                             <p className={styles.planPrice}>
@@ -306,30 +277,36 @@ export default function CheckoutPage() {
                 </div>
                 <div className={styles.summaryRow}>
                   <span>Activar</span>
-                  <span>Imediato após pagamento</span>
+                  <span>{isCurrentPlan ? "Já activo" : "Imediato após pagamento"}</span>
                 </div>
 
                 <button
                   type="button"
                   className={styles.checkoutBtn}
-                  disabled={Boolean(busyPlanId) || !selectedPlan.canCheckout}
+                  disabled={Boolean(busyPlanId) || !selectedPlan.canCheckout || isCurrentPlan}
                   onClick={handleContinue}
                 >
-                  {busyPlanId
-                    ? "A abrir pagamento…"
-                    : selectedPlan.canCheckout
-                      ? "Continuar para pagamento"
-                      : "Plano indisponível para pagamento"}
+                  {isCurrentPlan
+                    ? "Plano actual"
+                    : busyPlanId
+                      ? "A abrir pagamento…"
+                      : selectedPlan.canCheckout
+                        ? "Continuar para pagamento"
+                        : "Plano indisponível para pagamento"}
                 </button>
 
                 {!selectedPlan.canCheckout ? (
                   <p className={styles.secureNote}>
                     Este plano ainda não tem preço activo no Stripe. Peça ao administrador para guardar o plano com valor mensal.
                   </p>
+                ) : isCurrentPlan ? (
+                  <p className={styles.secureNote}>
+                    Este é o seu plano actual. Escolha outro plano para fazer upgrade ou alteração.
+                  </p>
                 ) : (
-                <p className={styles.secureNote}>
-                  Pagamento encriptado. Pode cancelar ou alterar plano no portal de facturação.
-                </p>
+                  <p className={styles.secureNote}>
+                    Pagamento encriptado. Pode cancelar ou alterar plano no portal de facturação.
+                  </p>
                 )}
               </div>
             ) : (
@@ -341,3 +318,20 @@ export default function CheckoutPage() {
     </main>
   );
 }
+
+export default function CheckoutPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className={styles.page}>
+          <div className={styles.loadingState}>
+            <p>A carregar planos…</p>
+          </div>
+        </main>
+      }
+    >
+      <CheckoutPageInner />
+    </Suspense>
+  );
+}
+

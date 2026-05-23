@@ -1,29 +1,25 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import {
+  fetchBillingStatus,
+  fetchMeProfile,
+  formatPlanPrice,
+  formatSubscriptionRenewal,
+  openBillingPortal,
+  planFeatureList,
+  planPitch,
+  subscriptionBadgeLabel,
+} from "@/lib/billing";
+import { getStoredOrganizationId } from "@/lib/hooko-session";
 import styles from "./page.module.css";
 
-const MOCK_SAVED_PROFILE = {
-  fullName: "Conta demo",
-  email: "demo@hooko.ai",
-  phone: "+351 912 345 678",
-  organization: "Hooko Labs",
-};
-
-const MOCK_PLAN = {
-  id: "growth",
-  name: "Growth",
-  priceLabel: "49 € / mês",
-  renewalLabel: "Próxima renovação estimada · 12 jun. 2026",
-  creativesUsed: 14,
-  creativesLimit: 50,
-  features: [
-    "Importação Meta & Drive com créditos de criativos",
-    "Análise IA dos vídeos importados",
-    "Integrações (Meta, Drive) e webhooks Stripe",
-    "Suporte por email",
-  ],
+const EMPTY_PROFILE = {
+  fullName: "",
+  email: "",
+  phone: "",
+  organization: "",
 };
 
 function deepEqualProfiles(a, b) {
@@ -35,16 +31,81 @@ function deepEqualProfiles(a, b) {
   );
 }
 
+function profileFromMe(me) {
+  const orgId = getStoredOrganizationId();
+  const memberships = me?.organizationsByMembership || me?.memberships || [];
+  const match =
+    memberships.find((m) => String(m.organizationId || m.organization?.id) === String(orgId)) ||
+    memberships[0];
+
+  return {
+    fullName: match?.organization?.name || "",
+    email: me?.email || "",
+    phone: "",
+    organization: match?.organization?.name || "",
+  };
+}
+
 export default function PerfilPage() {
+  const router = useRouter();
   const cancelDialogTitleId = useId();
   const closeBtnRef = useRef(null);
 
-  const [saved, setSaved] = useState(MOCK_SAVED_PROFILE);
-  const [draft, setDraft] = useState(MOCK_SAVED_PROFILE);
+  const [saved, setSaved] = useState(EMPTY_PROFILE);
+  const [draft, setDraft] = useState(EMPTY_PROFILE);
   const [savedFlash, setSavedFlash] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [cancelBusy, setCancelBusy] = useState(false);
+  const [cancelErr, setCancelErr] = useState("");
+  const [planLoading, setPlanLoading] = useState(true);
+  const [billing, setBilling] = useState(null);
 
   const dirty = useMemo(() => !deepEqualProfiles(draft, saved), [draft, saved]);
+
+  const sub = billing?.subscription;
+  const plan = sub?.plan;
+  const usage = billing?.usage;
+
+  const planName = plan?.displayName || (billing?.hasActiveSubscription ? "HOOKO" : "Nenhum plano activo");
+  const planTagline = plan ? planPitch(plan) : "Escolha um plano para activar créditos e integrações.";
+  const priceLabel = formatPlanPrice(plan) ? `${formatPlanPrice(plan)} / mês` : "—";
+  const renewalLabel = formatSubscriptionRenewal(sub);
+  const badgeLabel = subscriptionBadgeLabel(billing);
+  const features = plan ? planFeatureList(plan) : ["Importação Meta & Drive", "Análise IA", "Integrações e webhooks"];
+
+  const creativesUsed = Number(usage?.used || 0);
+  const creativesLimit = usage?.limitless ? null : usage?.limit;
+  const pct =
+    creativesLimit != null && creativesLimit > 0
+      ? Math.min(100, (creativesUsed / creativesLimit) * 100)
+      : usage?.limitless
+        ? 100
+        : 0;
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setPlanLoading(true);
+      try {
+        const [me, status] = await Promise.all([
+          fetchMeProfile().catch(() => null),
+          fetchBillingStatus().catch(() => null),
+        ]);
+        if (cancelled) return;
+        if (me) {
+          const profile = profileFromMe(me);
+          setSaved(profile);
+          setDraft(profile);
+        }
+        setBilling(status);
+      } finally {
+        if (!cancelled) setPlanLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (!savedFlash) return;
@@ -55,6 +116,7 @@ export default function PerfilPage() {
   useEffect(() => {
     if (!cancelOpen) return;
     document.body.style.overflow = "hidden";
+    setCancelErr("");
     const onKey = (e) => {
       if (e.key === "Escape") setCancelOpen(false);
     };
@@ -83,9 +145,24 @@ export default function PerfilPage() {
     setSavedFlash(true);
   }, [draft]);
 
-  const pct = MOCK_PLAN.creativesLimit
-    ? Math.min(100, (MOCK_PLAN.creativesUsed / MOCK_PLAN.creativesLimit) * 100)
-    : 0;
+  const handleUpgrade = useCallback(() => {
+    router.push("/checkout?mode=upgrade");
+  }, [router]);
+
+  const handleOpenCancelPortal = useCallback(async () => {
+    setCancelErr("");
+    setCancelBusy(true);
+    try {
+      const data = await openBillingPortal("/perfil");
+      if (!data?.portalUrl) {
+        setCancelErr("Portal de facturação indisponível. Confirme se já tem subscrição activa.");
+      }
+    } catch (e) {
+      setCancelErr(e?.message || "Não foi possível abrir o portal Stripe.");
+    } finally {
+      setCancelBusy(false);
+    }
+  }, []);
 
   return (
     <div className={styles.page}>
@@ -133,6 +210,7 @@ export default function PerfilPage() {
                 value={draft.email}
                 onChange={onField("email")}
                 autoComplete="email"
+                readOnly
               />
             </div>
             <div className={styles.field}>
@@ -146,6 +224,7 @@ export default function PerfilPage() {
                 value={draft.phone}
                 onChange={onField("phone")}
                 autoComplete="tel"
+                placeholder="Opcional"
               />
             </div>
             <div className={styles.field}>
@@ -183,7 +262,7 @@ export default function PerfilPage() {
             <div className={styles.planAccent} aria-hidden />
 
             <div className={styles.planTop}>
-              <span className={styles.planBadge}>Subscrição activa</span>
+              <span className={styles.planBadge}>{planLoading ? "A carregar…" : badgeLabel}</span>
               <h2 id="profile-plan-head" className={styles.planSectionTitle}>
                 O teu plano
               </h2>
@@ -191,37 +270,50 @@ export default function PerfilPage() {
 
             <div className={styles.planHero}>
               <div className={styles.planHeroMain}>
-                <h3 className={styles.planName}>{MOCK_PLAN.name}</h3>
-                <p className={styles.planTagline}>Para equipas a crescer com criativos e IA</p>
+                <h3 className={styles.planName}>{planLoading ? "…" : planName}</h3>
+                <p className={styles.planTagline}>{planLoading ? "A sincronizar com Stripe…" : planTagline}</p>
               </div>
-              <div className={styles.planPriceTag} aria-label={`Preço ${MOCK_PLAN.priceLabel}`}>
-                {MOCK_PLAN.priceLabel}
+              <div className={styles.planPriceTag} aria-label={`Preço ${priceLabel}`}>
+                {planLoading ? "…" : priceLabel}
               </div>
             </div>
 
             <p className={styles.planRenewal}>
               <span className={styles.planRenewalDot} aria-hidden />
-              {MOCK_PLAN.renewalLabel}
+              {planLoading ? "A carregar renovação…" : renewalLabel}
             </p>
 
             <div className={styles.usageShell}>
               <div className={styles.usageHead}>
                 <span>Créditos de criativos</span>
                 <span className={styles.usageFraction}>
-                  {MOCK_PLAN.creativesUsed}
+                  {creativesUsed}
                   <span className={styles.usageOf}>/</span>
-                  {MOCK_PLAN.creativesLimit}
+                  {usage?.limitless ? "∞" : creativesLimit ?? "—"}
                 </span>
               </div>
-              <div className={styles.usageBar} role="progressbar" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100} aria-label="Utilização de créditos de criativos">
+              <div
+                className={styles.usageBar}
+                role="progressbar"
+                aria-valuenow={Math.round(pct)}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label="Utilização de créditos de criativos"
+              >
                 <div className={styles.usageFill} style={{ width: `${pct}%` }} />
               </div>
-              <p className={styles.usageFoot}>{Math.round(pct)}% do limite mensal utilizado</p>
+              <p className={styles.usageFoot}>
+                {usage?.limitless
+                  ? "Importações ilimitadas neste plano"
+                  : creativesLimit
+                    ? `${Math.round(pct)}% do limite mensal utilizado`
+                    : "Sem limite activo — escolha um plano"}
+              </p>
             </div>
 
             <p className={styles.featureTitle}>Incluído no plano</p>
             <ul className={styles.featureBoard}>
-              {MOCK_PLAN.features.map((f) => (
+              {features.map((f) => (
                 <li key={f} className={styles.featureLi}>
                   <span className={styles.featureCheck} aria-hidden>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -234,13 +326,20 @@ export default function PerfilPage() {
             </ul>
 
             <div className={styles.planActions}>
-              <Link href="/checkout" className={styles.btnUpgrade}>
+              <button type="button" className={styles.btnUpgrade} onClick={handleUpgrade}>
                 Fazer upgrade
-              </Link>
-              <button type="button" className={styles.btnCancelSub} onClick={() => setCancelOpen(true)}>
+              </button>
+              <button
+                type="button"
+                className={styles.btnCancelSub}
+                onClick={() => setCancelOpen(true)}
+                disabled={!billing?.hasActiveSubscription && !billing?.bypass}
+              >
                 Cancelar subscrição
               </button>
-              <p className={styles.subNote}>Upgrade e gestão de pagamentos no checkout e no portal da Stripe.</p>
+              <p className={styles.subNote}>
+                Upgrade abre o checkout com planos públicos ou exclusivos da sua org. Cancelar abre o portal Stripe.
+              </p>
             </div>
           </div>
         </aside>
@@ -248,7 +347,7 @@ export default function PerfilPage() {
 
       {cancelOpen ? (
         <div className={styles.overlay} role="presentation">
-          <div className={styles.backdrop} aria-hidden onClick={() => setCancelOpen(false)} />
+          <div className={styles.backdrop} aria-hidden onClick={() => !cancelBusy && setCancelOpen(false)} />
           <div
             className={styles.dialog}
             role="dialog"
@@ -259,17 +358,27 @@ export default function PerfilPage() {
               Cancelar subscrição
             </h3>
             <p className={styles.dialogBody}>
-              Quando integrarmos Stripe, será aberto o portal de cliente para rever faturação e dar baixa ao plano. Por
-              agora só confirmamos aqui este fluxo.
+              Vais ser redireccionado para o portal seguro da Stripe para gerir pagamentos, alterar plano ou cancelar a
+              subscrição. O acesso mantém-se até ao fim do período já pago.
             </p>
+            {cancelErr ? <p className={styles.dialogError}>{cancelErr}</p> : null}
             <div className={styles.dialogActions}>
+              <button
+                type="button"
+                className={styles.btnPrimary}
+                disabled={cancelBusy}
+                onClick={handleOpenCancelPortal}
+              >
+                {cancelBusy ? "A abrir portal…" : "Abrir portal de facturação"}
+              </button>
               <button
                 ref={closeBtnRef}
                 type="button"
-                className={styles.btnPrimary}
+                className={styles.btnGhost}
+                disabled={cancelBusy}
                 onClick={() => setCancelOpen(false)}
               >
-                Está bem
+                Voltar
               </button>
             </div>
           </div>

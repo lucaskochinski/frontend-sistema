@@ -550,7 +550,16 @@
 
 .dialogActions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
+  gap: 0.55rem;
+}
+
+.dialogError {
+  margin: 0 0 0.85rem;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: rgb(252, 165, 165);
 }
 
 @media (prefers-reduced-motion: reduce) {

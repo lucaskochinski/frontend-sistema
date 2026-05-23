@@ -260,6 +260,24 @@
   box-shadow: 0 4px 14px rgba(212, 175, 55, 0.28);
 }
 
+.currentBadge {
+  display: inline-flex;
+  margin-bottom: 0.6rem;
+  padding: 0.24rem 0.58rem;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgb(251, 245, 216);
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  background: rgba(212, 175, 55, 0.18);
+}
+
+.planCardCurrent {
+  border-color: rgba(212, 175, 55, 0.42) !important;
+}
+
 .planName {
   margin: 0;
   font-size: clamp(1.18rem, 2vw, 1.38rem);
