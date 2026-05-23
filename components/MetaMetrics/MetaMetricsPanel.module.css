@@ -1,0 +1,117 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.rootCompact {
+  gap: 1rem;
+}
+
+.sectionTitle {
+  margin: 0 0 0.85rem;
+  padding-bottom: 0.45rem;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--hooko-text);
+  border-bottom: 1px solid var(--hooko-divider);
+}
+
+.metricGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.65rem;
+}
+
+.metricGridVideo {
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+}
+
+.metricCard {
+  background: var(--hooko-card-bg);
+  border: 1px solid var(--hooko-border);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+}
+
+.metricLabel {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--hooko-text-muted);
+}
+
+.metricValue {
+  margin: 0.25rem 0 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--hooko-text);
+}
+
+.metricSub {
+  margin: 0.2rem 0 0;
+  font-size: 0.68rem;
+  color: var(--hooko-text-subtle);
+}
+
+.chartsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.chartsGridSingle {
+  grid-template-columns: 1fr;
+}
+
+.chartBox {
+  background: var(--hooko-surface-elevated);
+  border: 1px solid var(--hooko-border);
+  border-radius: 12px;
+  padding: 1rem;
+  min-height: 260px;
+}
+
+.chartTitle {
+  margin: 0 0 0.75rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--hooko-text);
+}
+
+.breakdownTable {
+  overflow-x: auto;
+  border: 1px solid var(--hooko-border);
+  border-radius: 10px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+
+.tableHead {
+  background: var(--hooko-surface);
+  color: var(--hooko-text-muted);
+  text-align: left;
+}
+
+.tableHead th {
+  padding: 0.6rem;
+}
+
+.tableRow {
+  border-top: 1px solid var(--hooko-divider);
+  color: var(--hooko-text);
+}
+
+.tableRow td {
+  padding: 0.6rem;
+}
+
+@media (max-width: 900px) {
+  .chartsGrid {
+    grid-template-columns: 1fr;
+  }
+}

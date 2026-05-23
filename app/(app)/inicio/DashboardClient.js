@@ -21,7 +21,6 @@ import {
   MetaDailySpendChart,
   MetaMetricsSection,
   MetaRankingsGrid,
-  MetaExtendedSection,
   MetaSecondaryMetrics,
   MetaCumulativeRevenueSpendChart,
   FutureFeatureLock,
@@ -349,19 +348,18 @@ export default function DashboardClient() {
           />
         </DashboardSection>
 
+        <DashboardSection title="Métricas Meta completas">
+          <MetaMetricsSection overview={overview} />
+        </DashboardSection>
+
         <DashboardSection title="Performance dos criativos">
           <MetaRankingsGrid items={overview?.rankingItems} />
-          <MetaMetricsSection overview={overview} />
         </DashboardSection>
 
         <DashboardSection title="Horários & tráfego Meta">
           <SalesBySourceList metaItems={overview?.metaTrafficSources} />
           <SalesByHourChart data={metaHourly} variant="meta" />
           <SalesByDayOfWeekChart data={metaDayOfWeek} variant="meta" />
-        </DashboardSection>
-
-        <DashboardSection title="Marketing API Meta (completo)">
-          <MetaExtendedSection metaExtended={overview?.metaExtended} />
         </DashboardSection>
 
         <DashboardSection title="Gateway PagTrust / Vturb / Utmify">

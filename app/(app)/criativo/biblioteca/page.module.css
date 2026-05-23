@@ -36,6 +36,37 @@
     0 0 80px rgba(37, 99, 235, 0.08);
 }
 
+[data-theme="light"] .metaHeader {
+  border-color: rgba(37, 99, 235, 0.18);
+  background:
+    radial-gradient(
+      ellipse 100% 90% at 0% 50%,
+      rgba(59, 130, 246, 0.1),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 90% 70% at 92% 18%,
+      rgba(37, 99, 235, 0.08),
+      transparent 48%
+    ),
+    linear-gradient(165deg, #ffffff 0%, #f8fafc 52%, #f1f5f9 100%);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.04) inset,
+    0 16px 40px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .metaPageTitle {
+  color: var(--hooko-text);
+}
+
+[data-theme="light"] .metaHint {
+  color: var(--hooko-text-muted);
+}
+
+[data-theme="light"] .metaHintAccent {
+  color: var(--hooko-gold);
+}
+
 .metaHeaderGlow {
   position: absolute;
   inset: -40%;

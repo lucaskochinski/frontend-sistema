@@ -331,6 +331,7 @@ export default function DashboardCreativesPage() {
       if (insights && Array.isArray(insights.items)) {
         const mapped = insights.items.map((item) => {
           const ai = normalizeAiCreativeAnalysis(item.aiAnalysis, { aiUi: item.aiUi });
+          const processing = item.aiProcessing || {};
           return {
             id: item.adId,
             ad_id: item.adId,
@@ -341,8 +342,9 @@ export default function DashboardCreativesPage() {
             headline: item.adName || "Sem título",
             thumbnail_url: item.thumbnailUrl || "/imagens/meta.png",
             ai_score: ai.performanceScore,
-            ai_pending: ai.pending,
-            status: ai.pending ? "processing" : "processed",
+            ai_pending: processing.pending ?? ai.pending,
+            ai_processing_label: processing.label || null,
+            status: (processing.pending ?? ai.pending) ? "processing" : "processed",
           };
         });
         setImportedCreatives(mapped);

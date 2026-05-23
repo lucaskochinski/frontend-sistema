@@ -1,0 +1,102 @@
+.section {
+  margin-bottom: 1.5rem;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--hooko-gold);
+}
+
+.sectionHint {
+  margin: 0.35rem 0 0;
+  font-size: 0.82rem;
+  color: var(--hooko-text-muted);
+}
+
+.metaBadge {
+  flex-shrink: 0;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--hooko-gold);
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  background: rgba(212, 175, 55, 0.08);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.chartCard {
+  background: var(--hooko-card-bg);
+  border: 1px solid var(--hooko-border);
+  border-radius: 14px;
+  padding: 1rem 1.1rem 0.85rem;
+  box-shadow: var(--hooko-shadow-premium);
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chartHead {
+  margin-bottom: 0.65rem;
+}
+
+.chartTitle {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--hooko-text);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.emoji {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.chartSubtitle {
+  margin: 0.25rem 0 0;
+  font-size: 0.72rem;
+  color: var(--hooko-text-muted);
+}
+
+.chartBody {
+  flex: 1;
+  min-height: 220px;
+}
+
+.empty {
+  margin: 0;
+  padding: 2.5rem 0;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--hooko-text-subtle);
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

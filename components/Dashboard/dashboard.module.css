@@ -335,7 +335,7 @@
   width: 1.1rem;
   height: 1.1rem;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--hooko-border-strong);
   display: grid;
   place-items: center;
   font-size: 0.65rem;
@@ -380,8 +380,13 @@
 .funnelFlowPct {
   font-size: 0.95rem;
   font-weight: 700;
-  color: var(--hooko-gold-bright);
+  color: #fff;
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="light"] .funnelFlowPct {
+  color: #1c1917;
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.85);
 }
 
 .funnelFlowValues {
@@ -626,11 +631,15 @@ a.rankingCardAd:hover {
 
 .sectionTitle {
   margin: 0;
-  font-size: 0.72rem;
-  letter-spacing: 0.22em;
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   font-weight: 700;
-  color: rgba(212, 175, 55, 0.82);
+  color: var(--hooko-gold);
+}
+
+[data-theme="light"] .sectionTitle {
+  color: var(--hooko-gold);
 }
 
 .sectionBody {

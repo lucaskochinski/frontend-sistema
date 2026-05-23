@@ -20,7 +20,6 @@ import {
   PolarAngleAxis,
 } from "recharts";
 import Skeleton from "@/components/Skeleton/Skeleton";
-import MetaMetricsPanel from "@/components/MetaMetrics/MetaMetricsPanel";
 import ExternalImage from "@/components/ExternalMedia/ExternalImage";
 import ExternalVideo from "@/components/ExternalMedia/ExternalVideo";
 import { WinningCreativeCard, AiInsightsPanel, HookoAiCoach } from "@/components/CreativeAi";
@@ -530,9 +529,6 @@ export default function CreativeDetailPage() {
   const [copyExpanded, setCopyExpanded] = useState(false);
   const [rangeKey, setRangeKey] = useState("30d");
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [breakdownKey, setBreakdownKey] = useState("platform_position");
-  const [breakdownData, setBreakdownData] = useState(null);
-  const [breakdownLoading, setBreakdownLoading] = useState(false);
 
   const lastDay = data?.performance_daily?.[data.performance_daily.length - 1]?.date || toYMD(new Date());
   const [customFrom, setCustomFrom] = useState(() => toYMD(addDays(parseYMD(lastDay) || new Date(), -29)));
@@ -580,7 +576,7 @@ export default function CreativeDetailPage() {
         setData(res);
       } catch (err) {
         console.error("Erro ao carregar detalhes do criativo:", err);
-        setData(null);
+        if (!data) setData(null);
       } finally {
         setLoading(false);
       }
@@ -589,24 +585,42 @@ export default function CreativeDetailPage() {
   }, [routeId]);
 
   useEffect(() => {
-    async function loadBreakdowns() {
-      if (!routeId) return;
-      setBreakdownLoading(true);
+    if (!routeId || !data?.ai_processing?.pending) return undefined;
+    const orgId = getStoredOrganizationId();
+    if (!orgId) return undefined;
+
+    const timer = setInterval(async () => {
       try {
-        const orgId = getStoredOrganizationId();
-        const period = rangeKey === "7d" ? "week" : rangeKey === "90d" ? "month" : "month";
-        const res = await apiFetch(
-          `/api/dashboard/insights/${routeId}/meta-breakdowns?organizationId=${orgId}&breakdown=${breakdownKey}&period=${period}`,
-        );
-        setBreakdownData(res);
-      } catch {
-        setBreakdownData(null);
-      } finally {
-        setBreakdownLoading(false);
+        const res = await apiFetch(`/api/dashboard/insights/${routeId}?organizationId=${orgId}`);
+        setData(res);
+      } catch (_) {
+        /** polling silencioso */
       }
-    }
-    loadBreakdowns();
-  }, [routeId, breakdownKey, rangeKey]);
+    }, 8000);
+
+    return () => clearInterval(timer);
+  }, [routeId, data?.ai_processing?.pending, data?.ai_processing?.status]);
+
+  const triggerAnalysis = useCallback(
+    async (force = false) => {
+      if (!routeId) return;
+      const orgId = getStoredOrganizationId();
+      if (!orgId) return;
+      try {
+        await apiFetch(`/api/dashboard/insights/${routeId}/analyze?organizationId=${orgId}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ force }),
+        });
+        const res = await apiFetch(`/api/dashboard/insights/${routeId}?organizationId=${orgId}`);
+        setData(res);
+      } catch (err) {
+        console.error("Erro ao enfileirar análise IA:", err);
+        alert(err.message || "Não foi possível iniciar a análise.");
+      }
+    },
+    [routeId],
+  );
 
   const filteredDaily = useMemo(() => {
     const series = data?.performance_daily;
@@ -627,41 +641,6 @@ export default function CreativeDetailPage() {
     }
     return "Não há dados de performance da Meta no período selecionado. Tente ampliar o intervalo de datas.";
   }, [data, hasPeriodPerformance, hasSyncedPerformance]);
-
-  const periodMeta = useMemo(() => {
-    if (!filteredDaily.length) return data;
-    const totals = {
-      impressions: 0,
-      reach: 0,
-      clicks: 0,
-      spend: 0,
-      videoPlays: 0,
-      video3s: 0,
-      video75: 0,
-    };
-    for (const row of filteredDaily) {
-      totals.impressions += Number(row.impressions || 0);
-      totals.clicks += Number(row.clicks || 0);
-      totals.spend += Number(row.spend || 0);
-      totals.reach += Number(row.reach || 0);
-      totals.videoPlays += Number(row.video?.plays || 0);
-      totals.video3s += Number(row.video?.watched3s || 0);
-      totals.video75 += Number(row.video?.watched75 || 0);
-    }
-    return {
-      delivery: data?.delivery || {
-        impressions: totals.impressions,
-        reach: totals.reach,
-        clicks: totals.clicks,
-        spend: totals.spend,
-        ctr: totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0,
-      },
-      videoMetrics: data?.video_metrics,
-      videoRetention: data?.video_retention,
-      videoPlayCurve: data?.video_play_curve,
-      creativeHealth: data?.creative_health,
-    };
-  }, [data, filteredDaily]);
 
   const radarData = useMemo(() => {
     const normalized = normalizeAiCreativeAnalysis(data?.ai_analysis, {
@@ -715,6 +694,13 @@ export default function CreativeDetailPage() {
 
   const ai = data.ai_analysis || {};
   const aiScoresForBars = aiNormalized.scores;
+  const aiProcessing = data.ai_processing || {};
+  const coachMessage =
+    aiNormalized.verdict ||
+    aiProcessing.label ||
+    (aiProcessing.pending
+      ? "Estou transcrevendo o vídeo e cruzando com a copy do anúncio. Em instantes mostro scores e sugestões."
+      : "Importe um vídeo ou dispare a análise para eu avaliar gancho, oferta, prova social e CTA.");
 
   return (
     <div className={styles.page}>
@@ -751,6 +737,37 @@ export default function CreativeDetailPage() {
         </div>
       ) : null}
 
+      {aiProcessing.pending ? (
+        <div className={styles.noDataBanner} role="status">
+          <p className={styles.noDataTitle}>Análise IA em andamento</p>
+          <p className={styles.noDataText}>{aiProcessing.label || "Processando transcrição e insights…"}</p>
+        </div>
+      ) : null}
+
+      {!aiProcessing.pending && !aiNormalized.performanceScore && data.meta_video_id ? (
+        <div className={styles.noDataBanner}>
+          <p className={styles.noDataTitle}>Análise IA pendente</p>
+          <p className={styles.noDataText}>
+            Este anúncio ainda não foi analisado. Dispare a análise para gerar transcrição e scores.
+          </p>
+          <button type="button" className={styles.presetBtn} onClick={() => triggerAnalysis(false)}>
+            Analisar com Gemini
+          </button>
+        </div>
+      ) : null}
+
+      {aiProcessing.status === "failed" || aiProcessing.status === "failed_ai" ? (
+        <div className={styles.noDataBanner} role="alert">
+          <p className={styles.noDataTitle}>Falha na análise IA</p>
+          <p className={styles.noDataText}>
+            {aiProcessing.error || "Verifique GEMINI_API_KEY, worker de vídeo e Redis."}
+          </p>
+          <button type="button" className={styles.presetBtn} onClick={() => triggerAnalysis(true)}>
+            Tentar novamente
+          </button>
+        </div>
+      ) : null}
+
       <section style={{ marginBottom: "1.25rem" }} aria-label="Painéis de análise IA">
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1rem" }}>
           <WinningCreativeCard
@@ -761,8 +778,19 @@ export default function CreativeDetailPage() {
           />
           <AiInsightsPanel analysis={aiNormalized} />
         </div>
-        <HookoAiCoach />
+        <HookoAiCoach message={coachMessage} />
       </section>
+
+      {data.transcript ? (
+        <section className={styles.verdictBox} style={{ marginBottom: "1.25rem" }} aria-label="Transcrição do vídeo">
+          <div className={styles.verdictSection}>
+            <h3 className={styles.verdictHeading}>Transcrição (Deepgram / Gemini)</h3>
+            <p className={styles.verdictBody} style={{ whiteSpace: "pre-wrap" }}>
+              {data.transcript}
+            </p>
+          </div>
+        </section>
+      ) : null}
 
       <section className={styles.analyticsBand} aria-label="Performance e período">
         <div className={styles.filterRow}>
@@ -941,37 +969,6 @@ export default function CreativeDetailPage() {
           </div>
         </div>
 
-        <div className={styles.chartCard} style={{ gridColumn: "1 / -1" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "1rem", flexWrap: "wrap", marginBottom: "0.75rem" }}>
-            <h2 className={styles.chartTitle} style={{ margin: 0 }}>Métricas Meta completas</h2>
-            <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.8rem", color: "#a1a1aa" }}>
-              Breakdown
-              <select
-                value={breakdownKey}
-                onChange={(e) => setBreakdownKey(e.target.value)}
-                style={{ background: "#161822", color: "#fff", border: "1px solid rgba(255,255,255,0.12)", borderRadius: "8px", padding: "0.35rem 0.5rem" }}
-              >
-                <option value="platform_position">Posição (Feed/Stories/Reels)</option>
-                <option value="publisher_platform">Plataforma (FB/IG)</option>
-                <option value="device_platform">Dispositivo</option>
-                <option value="age">Idade</option>
-                <option value="gender">Gênero</option>
-                <option value="body_asset">Variação de copy</option>
-                <option value="title_asset">Variação de headline</option>
-                <option value="video_asset">Variação de vídeo</option>
-              </select>
-            </label>
-          </div>
-          <MetaMetricsPanel
-            delivery={periodMeta.delivery}
-            videoMetrics={periodMeta.videoMetrics}
-            videoRetention={periodMeta.videoRetention}
-            videoPlayCurve={periodMeta.videoPlayCurve}
-            creativeHealth={periodMeta.creativeHealth}
-            breakdownItems={breakdownLoading ? [] : breakdownData?.items}
-            breakdownLabel={breakdownData?.breakdown}
-          />
-        </div>
       </section>
 
       <div className={styles.split}>

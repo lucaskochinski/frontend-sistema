@@ -2,8 +2,6 @@
 
 import {
   ResponsiveContainer,
-  BarChart,
-  Bar,
   LineChart,
   Line,
   XAxis,
@@ -11,21 +9,15 @@ import {
   CartesianGrid,
   Tooltip,
 } from "recharts";
-
-const chartTooltip = {
-  backgroundColor: "#1f2937",
-  border: "none",
-  borderRadius: "8px",
-  fontSize: "12px",
-  color: "#fff",
-};
+import { chartTooltipStyle } from "@/components/Dashboard/dashboardTheme";
+import styles from "./MetaMetricsPanel.module.css";
 
 function MetricCard({ label, value, sub }) {
   return (
-    <div style={{ background: "#161822", border: "1px solid #2d3042", borderRadius: "10px", padding: "0.85rem 1rem" }}>
-      <p style={{ margin: 0, fontSize: "0.72rem", color: "#9ca3af" }}>{label}</p>
-      <p style={{ margin: "0.25rem 0 0", fontSize: "1.15rem", fontWeight: 700, color: "#f3f4f6" }}>{value}</p>
-      {sub ? <p style={{ margin: "0.2rem 0 0", fontSize: "0.68rem", color: "#6b7280" }}>{sub}</p> : null}
+    <div className={styles.metricCard}>
+      <p className={styles.metricLabel}>{label}</p>
+      <p className={styles.metricValue}>{value}</p>
+      {sub ? <p className={styles.metricSub}>{sub}</p> : null}
     </div>
   );
 }
@@ -81,11 +73,17 @@ export default function MetaMetricsPanel({
     h.creativeDiversityScore ||
     h.creativeFatigueSummary;
 
+  const hasPlayCurve = Array.isArray(videoPlayCurve) && videoPlayCurve.length > 0;
+  const showRetentionBars =
+    !hasPlayCurve &&
+    Array.isArray(videoRetention) &&
+    videoRetention.some((s) => s.value > 0);
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: compact ? "1rem" : "1.25rem" }}>
+    <div className={`${styles.root} ${compact ? styles.rootCompact : ""}`}>
       <section>
-        <h3 style={{ margin: "0 0 0.75rem", fontSize: "0.9rem", color: "#e5e7eb" }}>Entrega (Meta Ads)</h3>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: "0.65rem" }}>
+        <h3 className={styles.sectionTitle}>Entrega (Meta Ads)</h3>
+        <div className={styles.metricGrid}>
           <MetricCard label="Impressões" value={formatNum(d.impressions)} />
           <MetricCard label="Alcance" value={formatNum(d.reach)} />
           <MetricCard label="Frequência" value={d.frequency != null ? Number(d.frequency).toFixed(2) : "—"} />
@@ -103,8 +101,8 @@ export default function MetaMetricsPanel({
 
       {v.plays > 0 || v.watched3s > 0 ? (
         <section>
-          <h3 style={{ margin: "0 0 0.75rem", fontSize: "0.9rem", color: "#e5e7eb" }}>Vídeo (Meta)</h3>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: "0.65rem" }}>
+          <h3 className={styles.sectionTitle}>Vídeo (Meta)</h3>
+          <div className={`${styles.metricGrid} ${styles.metricGridVideo}`}>
             <MetricCard label="Plays" value={formatNum(v.plays)} />
             <MetricCard label="Hook 3s" value={formatNum(v.watched3s)} sub={v.hookRatePct != null ? `${v.hookRatePct}% / impr.` : null} />
             <MetricCard label="2s contínuos" value={formatNum(v.watched2s)} />
@@ -121,8 +119,8 @@ export default function MetaMetricsPanel({
 
       {showCreativeHealth ? (
         <section>
-          <h3 style={{ margin: "0 0 0.75rem", fontSize: "0.9rem", color: "#e5e7eb" }}>Saúde do criativo (Meta)</h3>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: "0.65rem" }}>
+          <h3 className={styles.sectionTitle}>Saúde do criativo (Meta)</h3>
+          <div className={styles.metricGrid}>
             {qualityRanking ? <MetricCard label="Quality ranking" value={qualityRanking} /> : null}
             {engagementRanking ? <MetricCard label="Engagement ranking" value={engagementRanking} /> : null}
             {conversionRanking ? <MetricCard label="Conversion ranking" value={conversionRanking} /> : null}
@@ -132,66 +130,53 @@ export default function MetaMetricsPanel({
         </section>
       ) : null}
 
-      <div style={{ display: "grid", gridTemplateColumns: compact ? "1fr" : "1fr 1fr", gap: "1rem" }}>
-        {Array.isArray(videoRetention) && videoRetention.some((s) => s.value > 0) ? (
-          <div style={{ background: "#1e202e", border: "1px solid #2d3042", borderRadius: "12px", padding: "1rem", minHeight: 260 }}>
-            <h4 style={{ margin: "0 0 0.75rem", fontSize: "0.85rem", color: "#d1d5db" }}>Retenção por quartis</h4>
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={videoRetention}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" vertical={false} />
-                <XAxis dataKey="label" tick={{ fill: "#9ca3af", fontSize: 10 }} />
-                <YAxis tick={{ fill: "#9ca3af", fontSize: 10 }} tickFormatter={(x) => `${x}%`} domain={[0, 100]} />
-                <Tooltip contentStyle={chartTooltip} formatter={(val, _n, p) => [`${Number(val).toFixed(1)}% (${formatNum(p.payload.value)} views)`, "Retenção"]} />
-                <Bar dataKey="pct" fill="#d4af37" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        ) : null}
-
-        {Array.isArray(videoPlayCurve) && videoPlayCurve.length > 0 ? (
-          <div style={{ background: "#1e202e", border: "1px solid #2d3042", borderRadius: "12px", padding: "1rem", minHeight: 260 }}>
-            <h4 style={{ margin: "0 0 0.75rem", fontSize: "0.85rem", color: "#d1d5db" }}>Curva de retenção (Meta)</h4>
-            <ResponsiveContainer width="100%" height={220}>
-              <LineChart data={videoPlayCurve}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" vertical={false} />
-                <XAxis dataKey="label" tick={{ fill: "#9ca3af", fontSize: 9 }} interval="preserveStartEnd" />
-                <YAxis tick={{ fill: "#9ca3af", fontSize: 10 }} tickFormatter={(x) => `${x}%`} domain={[0, 100]} />
-                <Tooltip contentStyle={chartTooltip} formatter={(val) => [`${Number(val).toFixed(1)}%`, "Audiência"]} />
-                <Line type="monotone" dataKey="pct" stroke="#60a5fa" strokeWidth={2} dot={false} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        ) : null}
-      </div>
+      {showRetentionBars || hasPlayCurve ? (
+        <div className={`${styles.chartsGrid} ${!showRetentionBars || !hasPlayCurve ? styles.chartsGridSingle : ""}`}>
+          {hasPlayCurve ? (
+            <div className={styles.chartBox}>
+              <h4 className={styles.chartTitle}>Curva de retenção (Meta)</h4>
+              <ResponsiveContainer width="100%" height={220}>
+                <LineChart data={videoPlayCurve}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--hooko-divider)" vertical={false} />
+                  <XAxis dataKey="label" tick={{ fill: "var(--hooko-text-muted)", fontSize: 9 }} interval="preserveStartEnd" />
+                  <YAxis tick={{ fill: "var(--hooko-text-muted)", fontSize: 10 }} tickFormatter={(x) => `${x}%`} domain={[0, 100]} width={42} />
+                  <Tooltip contentStyle={chartTooltipStyle()} formatter={(val) => [`${Number(val).toFixed(1)}%`, "Audiência"]} />
+                  <Line type="monotone" dataKey="pct" stroke="#60a5fa" strokeWidth={2} dot={false} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
 
       {Array.isArray(breakdownItems) && breakdownItems.length > 0 ? (
         <section>
-          <h3 style={{ margin: "0 0 0.75rem", fontSize: "0.9rem", color: "#e5e7eb" }}>
+          <h3 className={styles.sectionTitle}>
             Breakdown Meta {breakdownLabel ? `· ${breakdownLabel}` : ""}
           </h3>
-          <div style={{ overflowX: "auto", border: "1px solid #2d3042", borderRadius: "10px" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.78rem" }}>
-              <thead>
-                <tr style={{ background: "#161822", color: "#9ca3af", textAlign: "left" }}>
-                  <th style={{ padding: "0.6rem" }}>Segmento</th>
-                  <th style={{ padding: "0.6rem" }}>Gasto</th>
-                  <th style={{ padding: "0.6rem" }}>Impr.</th>
-                  <th style={{ padding: "0.6rem" }}>CTR</th>
-                  <th style={{ padding: "0.6rem" }}>Hook 3s</th>
-                  <th style={{ padding: "0.6rem" }}>Ret. 75%</th>
-                  <th style={{ padding: "0.6rem" }}>Compras</th>
+          <div className={styles.breakdownTable}>
+            <table className={styles.table}>
+              <thead className={styles.tableHead}>
+                <tr>
+                  <th>Segmento</th>
+                  <th>Gasto</th>
+                  <th>Impr.</th>
+                  <th>CTR</th>
+                  <th>Hook 3s</th>
+                  <th>Ret. 75%</th>
+                  <th>Compras</th>
                 </tr>
               </thead>
               <tbody>
                 {breakdownItems.map((row) => (
-                  <tr key={row.dimension} style={{ borderTop: "1px solid #2d3042", color: "#e5e7eb" }}>
-                    <td style={{ padding: "0.6rem" }}>{row.dimension}</td>
-                    <td style={{ padding: "0.6rem" }}>{formatBRL(row.spend)}</td>
-                    <td style={{ padding: "0.6rem" }}>{formatNum(row.impressions)}</td>
-                    <td style={{ padding: "0.6rem" }}>{row.ctr != null ? `${Number(row.ctr).toFixed(2)}%` : "—"}</td>
-                    <td style={{ padding: "0.6rem" }}>{row.hookRatePct != null ? `${row.hookRatePct}%` : "—"}</td>
-                    <td style={{ padding: "0.6rem" }}>{row.retention75Pct != null ? `${row.retention75Pct}%` : "—"}</td>
-                    <td style={{ padding: "0.6rem" }}>{formatNum(row.purchases)}</td>
+                  <tr key={row.dimension} className={styles.tableRow}>
+                    <td>{row.dimension}</td>
+                    <td>{formatBRL(row.spend)}</td>
+                    <td>{formatNum(row.impressions)}</td>
+                    <td>{row.ctr != null ? `${Number(row.ctr).toFixed(2)}%` : "—"}</td>
+                    <td>{row.hookRatePct != null ? `${row.hookRatePct}%` : "—"}</td>
+                    <td>{row.retention75Pct != null ? `${row.retention75Pct}%` : "—"}</td>
+                    <td>{formatNum(row.purchases)}</td>
                   </tr>
                 ))}
               </tbody>

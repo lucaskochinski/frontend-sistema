@@ -12,7 +12,6 @@ export default function MetaRankingCard({ item }) {
     adId,
     hasData,
     accent = "#d4af37",
-    metaFields = [],
   } = item || {};
 
   return (
@@ -34,12 +33,6 @@ export default function MetaRankingCard({ item }) {
       ) : (
         <p className={styles.rankingCardEmpty}>Importe anúncios com entrega no período</p>
       )}
-      {metaFields?.length ? (
-        <p className={styles.rankingCardFields} title={metaFields.join(", ")}>
-          API: {metaFields.slice(0, 2).join(" · ")}
-          {metaFields.length > 2 ? "…" : ""}
-        </p>
-      ) : null}
     </article>
   );
 }

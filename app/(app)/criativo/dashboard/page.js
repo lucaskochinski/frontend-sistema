@@ -4,13 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { apiFetch, getStoredOrganizationId } from "@/lib/hooko-session";
 import NotImplementedModal from "@/components/NotImplementedModal/NotImplementedModal";
-import {
-  DashboardSection,
-  MetaRankingsGrid,
-  MetaMetricsSection,
-  MetaDailySpendChart,
-  MetaConversionFunnel,
-} from "@/components/Dashboard";
+import { DashboardSection, MetaRankingsGrid } from "@/components/Dashboard";
 import { CreativeAiSection } from "@/components/CreativeAi";
 import dash from "@/components/Dashboard/dashboard.module.css";
 import styles from "./page.module.css";
@@ -72,9 +66,9 @@ export default function CriativosDashboardPage() {
       <header className={styles.header}>
         <div>
           <p className={styles.kicker}>Criativos</p>
-          <h1 className={styles.title}>Dashboard de performance</h1>
+          <h1 className={styles.title}>Análise de criativos</h1>
           <p className={styles.sub}>
-            Rankings, funil e resumo IA dos criativos importados da Meta Ads.
+            Scores IA, rankings e insights por anúncio importado. Métricas gerais da Meta estão no Início.
           </p>
         </div>
         <div className={styles.headerActions}>
@@ -100,6 +94,8 @@ export default function CriativosDashboardPage() {
           </Link>
         </div>
       </header>
+
+      <CreativeRankingsCharts charts={overview?.rankingCharts} />
 
       <CreativeAiSection insights={insights} showCoach />
 
@@ -143,21 +139,6 @@ export default function CriativosDashboardPage() {
           </div>
         </div>
       </section>
-
-      <div className={dash.dashboardGrid}>
-        <DashboardSection title="Rankings por criativo">
-          <MetaRankingsGrid items={overview?.rankingItems} />
-        </DashboardSection>
-
-        <DashboardSection title="Funil de conversão">
-          <MetaConversionFunnel funnel={overview?.conversionFunnel || overview?.funnel} />
-        </DashboardSection>
-
-        <DashboardSection title="Gasto diário Meta">
-          <MetaDailySpendChart data={overview?.dailyMeta} />
-          <MetaMetricsSection overview={overview} />
-        </DashboardSection>
-      </div>
 
       <NotImplementedModal
         open={vturbModalOpen}
