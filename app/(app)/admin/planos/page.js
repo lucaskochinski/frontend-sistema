@@ -15,7 +15,22 @@ const DEFAULT_LIMITS = {
   videoDurationMin: 5,
 };
 
-/** @typedef {{ id: string, tierKey: string, displayName: string, stripePriceId: string, trialDays: number, limits: typeof DEFAULT_LIMITS, isPublic: boolean, isActive: boolean, customOrganizationId: string | null, orgName?: string }} PlanRow */
+/** @typedef {{ id: string, tierKey: string, displayName: string, stripePriceId: string, priceAmountCents: number | null, priceCurrency: string, trialDays: number, limits: typeof DEFAULT_LIMITS, isPublic: boolean, isActive: boolean, customOrganizationId: string | null, orgName?: string }} PlanRow */
+
+function formatPriceBrl(cents, currency = "brl") {
+  if (cents == null || !Number.isFinite(Number(cents))) return "—";
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: String(currency || "brl").toUpperCase(),
+  }).format(Number(cents) / 100);
+}
+
+function centsFromReaisInput(raw) {
+  const normalized = String(raw ?? "").trim().replace(",", ".");
+  const n = Number(normalized);
+  if (!Number.isFinite(n)) return null;
+  return Math.round(n * 100);
+}
 
 function limitsFromApi(raw) {
   const L = raw && typeof raw === "object" ? raw : {};
@@ -46,6 +61,13 @@ function mapPlanItem(item) {
     tierKey: item.tierKey ?? item.tier_key ?? "",
     displayName: item.displayName ?? item.name ?? "",
     stripePriceId: item.stripePriceId ?? item.stripe_price_id ?? "",
+    priceAmountCents:
+      item.priceAmountCents != null
+        ? Number(item.priceAmountCents)
+        : item.price_amount_cents != null
+          ? Number(item.price_amount_cents)
+          : null,
+    priceCurrency: item.priceCurrency ?? item.price_currency ?? "brl",
     trialDays: Number(item.trialDays ?? item.trial_days) || 0,
     limits: limitsFromApi(item.limits),
     isPublic: item.isPublic !== false && item.is_public !== false,
@@ -79,7 +101,7 @@ export default function AdminPlanosPage() {
 
   const [tierKey, setTierKey] = useState("");
   const [displayName, setDisplayName] = useState("");
-  const [stripePriceId, setStripePriceId] = useState("");
+  const [priceReais, setPriceReais] = useState("");
   const [trialDays, setTrialDays] = useState("0");
   const [limitCreativeImports, setLimitCreativeImports] = useState(String(DEFAULT_LIMITS.creativeImports));
   const [limitTranscriptionMinutes, setLimitTranscriptionMinutes] = useState(String(DEFAULT_LIMITS.transcriptionMinutes));
@@ -143,7 +165,7 @@ export default function AdminPlanosPage() {
   const resetWizard = () => {
     setTierKey("");
     setDisplayName("");
-    setStripePriceId("");
+    setPriceReais("");
     setTrialDays("0");
     setLimitCreativeImports(String(DEFAULT_LIMITS.creativeImports));
     setLimitTranscriptionMinutes(String(DEFAULT_LIMITS.transcriptionMinutes));
@@ -168,7 +190,7 @@ export default function AdminPlanosPage() {
     setEditingId(row.id);
     setTierKey(row.tierKey);
     setDisplayName(row.displayName);
-    setStripePriceId(row.stripePriceId);
+    setPriceReais(row.priceAmountCents != null ? (row.priceAmountCents / 100).toFixed(2) : "");
     setTrialDays(String(row.trialDays));
     setLimitCreativeImports(String(row.limits.creativeImports));
     setLimitTranscriptionMinutes(String(row.limits.transcriptionMinutes));
@@ -193,8 +215,9 @@ export default function AdminPlanosPage() {
       }
     }
     if (step === 1) {
-      if (!stripePriceId.trim()) {
-        setFormErr("ID do preço na Stripe é obrigatório.");
+      const cents = centsFromReaisInput(priceReais);
+      if (cents == null || cents < 50) {
+        setFormErr("Indique um preço mensal válido (mínimo R$ 0,50).");
         return false;
       }
     }
@@ -247,7 +270,8 @@ export default function AdminPlanosPage() {
     return {
       tier_key: tierKey.trim().toLowerCase(),
       name: displayName.trim(),
-      stripe_price_id: stripePriceId.trim(),
+      price_amount_cents: centsFromReaisInput(priceReais),
+      price_currency: "brl",
       limits,
       trial_days: Number(trialDays) || 0,
       is_public: isPublic,
@@ -354,23 +378,29 @@ export default function AdminPlanosPage() {
       },
       {
         key: "stripe",
-        label: "Pagamento",
+        label: "Preço",
         content: (
           <div className={p.formSection}>
             {formErr && wizardStep === 1 ? <p className={s.err}>{formErr}</p> : null}
+            <p className={p.formIntro}>
+              O produto e o preço recorrente são criados automaticamente no Stripe — não precisa copiar IDs manualmente.
+            </p>
             <div className={p.formGrid}>
-              <div className={`${s.field} ${p.formGridWide}`}>
+              <div className={s.field}>
                 <label className={s.label} htmlFor="pf-price">
-                  ID do preço (Stripe)
+                  Preço mensal (R$)
                 </label>
                 <input
                   id="pf-price"
                   className={`${s.input} ${p.inputLg}`}
-                  value={stripePriceId}
-                  onChange={(e) => setStripePriceId(e.target.value)}
-                  placeholder="price_…"
+                  type="number"
+                  min={0.5}
+                  step={0.01}
+                  value={priceReais}
+                  onChange={(e) => setPriceReais(e.target.value)}
+                  placeholder="ex.: 97.00"
                 />
-                <p className={s.hint}>Copie o ID do preço mensal criado no painel Stripe.</p>
+                <p className={s.hint}>Valor cobrado mensalmente após o período de teste (se houver).</p>
               </div>
               <div className={s.field}>
                 <label className={s.label} htmlFor="pf-trial">
@@ -509,7 +539,7 @@ export default function AdminPlanosPage() {
           <div className={p.reviewWrap}>
             <ReviewRow label="Chave" value={tierKey || "—"} />
             <ReviewRow label="Nome" value={displayName || "—"} />
-            <ReviewRow label="Preço Stripe" value={stripePriceId || "—"} />
+            <ReviewRow label="Preço mensal" value={`${formatPriceBrl(centsFromReaisInput(priceReais), "brl")} / mês`} />
             <ReviewRow label="Teste grátis (dias)" value={String(trialDays)} />
             <ReviewRow
               label="Limites"
@@ -530,7 +560,7 @@ export default function AdminPlanosPage() {
       wizardStep,
       tierKey,
       displayName,
-      stripePriceId,
+      priceReais,
       trialDays,
       limitCreativeImports,
       limitTranscriptionMinutes,
@@ -606,7 +636,7 @@ export default function AdminPlanosPage() {
                         </span>
                       </td>
                       <td>{row.isActive ? "Activo" : "Inactivo"}</td>
-                      <td className={s.mono}>{row.stripePriceId || "—"}</td>
+                      <td>{formatPriceBrl(row.priceAmountCents, row.priceCurrency)}{row.priceAmountCents != null ? " / mês" : ""}</td>
                       <td>{row.trialDays ?? "—"}</td>
                       <td className={p.tdActions}>
                         <button type="button" className={`${s.btnGhost} ${s.btnSm}`} onClick={() => openEdit(row)}>
@@ -630,7 +660,7 @@ export default function AdminPlanosPage() {
       <AdminStepModal
         open={wizardOpen}
         title={wizardMode === "create" ? "Novo plano" : "Editar plano"}
-        subtitle="Configure identidade, pagamento, limites e visibilidade do plano comercial."
+        subtitle="Configure identidade, preço mensal, limites e visibilidade — o Stripe é sincronizado automaticamente."
         size="xl"
         steps={wizardSteps}
         step={wizardStep}

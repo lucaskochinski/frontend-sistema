@@ -68,6 +68,16 @@ function isPopularPlan(tierKey, index, total) {
   return total >= 3 && index === 1;
 }
 
+function formatPlanPrice(plan) {
+  const cents = plan?.priceAmountCents ?? plan?.price_amount_cents;
+  if (cents == null || !Number.isFinite(Number(cents))) return null;
+  const currency = plan?.priceCurrency ?? plan?.price_currency ?? "brl";
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: String(currency).toUpperCase(),
+  }).format(Number(cents) / 100);
+}
+
 export default function CheckoutPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -219,6 +229,12 @@ export default function CheckoutPage() {
                         <div className={styles.planCardHead}>
                           {popular ? <span className={styles.popularBadge}>Mais escolhido</span> : null}
                           <h2 className={styles.planName}>{plan.displayName}</h2>
+                          {formatPlanPrice(plan) ? (
+                            <p className={styles.planPrice}>
+                              {formatPlanPrice(plan)}
+                              <span className={styles.planPricePeriod}>/ mês</span>
+                            </p>
+                          ) : null}
                           <p className={styles.planPitch}>{planPitch(plan.tierKey)}</p>
                         </div>
                         <span className={`${styles.radio} ${selected ? styles.radioOn : ""}`} aria-hidden />
@@ -270,6 +286,11 @@ export default function CheckoutPage() {
                     <span>Só será cobrado após o período de teste.</span>
                   </div>
                 ) : null}
+
+                <div className={styles.summaryRow}>
+                  <span>Total mensal</span>
+                  <strong>{formatPlanPrice(selectedPlan) || "—"}</strong>
+                </div>
 
                 <div className={styles.summaryDivider} />
 

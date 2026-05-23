@@ -282,7 +282,7 @@ function AdminUsuariosPageContent() {
   const orgSelect = useMemo(() => {
     if (orgs.length === 0) return null;
     return (
-      <select className={s.input} style={{ width: "100%", minWidth: 0 }} value={formOrgId} onChange={(e) => setFormOrgId(e.target.value)} required>
+      <select className={`${s.input} ${u.inputLg}`} value={formOrgId} onChange={(e) => setFormOrgId(e.target.value)} required>
         <option value="">Seleccionar organização…</option>
         {orgs.map((o) => (
           <option key={o.id} value={o.id}>
@@ -315,9 +315,15 @@ function AdminUsuariosPageContent() {
         setFormErr("Selecciona uma organização.");
         return false;
       }
-    } else if (step === 0 && !formOrgId.trim()) {
-      setFormErr("Selecciona uma organização.");
-      return false;
+    } else {
+      if (step === 0 && formPassword.trim() && formPassword.trim().length < 8) {
+        setFormErr("Palavra-passe com mínimo 8 caracteres.");
+        return false;
+      }
+      if (step === 1 && !formOrgId.trim()) {
+        setFormErr("Selecciona uma organização.");
+        return false;
+      }
     }
     setFormErr("");
     return true;
@@ -329,64 +335,105 @@ function AdminUsuariosPageContent() {
         key: "account",
         label: "Conta",
         content: (
-          <>
-            {formErr && createStep === 0 ? <p className={s.err} style={{ marginBottom: "0.75rem" }}>{formErr}</p> : null}
-            <div className={s.field}>
-              <label className={s.label} htmlFor="um-email">
-                E-mail
-              </label>
-              <input id="um-email" className={s.input} style={{ width: "100%" }} value={formEmail} onChange={(e) => setFormEmail(e.target.value)} required type="email" autoComplete="off" />
+          <div className={u.formSection}>
+            {formErr && createStep === 0 ? <p className={s.err}>{formErr}</p> : null}
+            <p className={u.formIntro}>Credenciais de acesso do novo utilizador na plataforma.</p>
+            <div className={u.formGrid}>
+              <div className={`${s.field} ${u.formGridWide}`}>
+                <label className={s.label} htmlFor="um-email">
+                  E-mail
+                </label>
+                <input
+                  id="um-email"
+                  className={`${s.input} ${u.inputLg}`}
+                  value={formEmail}
+                  onChange={(e) => setFormEmail(e.target.value)}
+                  required
+                  type="email"
+                  autoComplete="off"
+                />
+              </div>
+              <div className={`${s.field} ${u.formGridWide}`}>
+                <label className={s.label} htmlFor="um-pass">
+                  Palavra-passe
+                </label>
+                <input
+                  id="um-pass"
+                  className={`${s.input} ${u.inputLg}`}
+                  value={formPassword}
+                  onChange={(e) => setFormPassword(e.target.value)}
+                  type="password"
+                  minLength={8}
+                  autoComplete="new-password"
+                />
+              </div>
             </div>
-            <div className={s.field}>
-              <label className={s.label} htmlFor="um-pass">
-                Palavra-passe
-              </label>
-              <input id="um-pass" className={s.input} style={{ width: "100%" }} value={formPassword} onChange={(e) => setFormPassword(e.target.value)} type="password" minLength={8} autoComplete="new-password" />
-            </div>
-          </>
+          </div>
         ),
       },
       {
         key: "org",
         label: "Organização",
         content: (
-          <>
-            {formErr && createStep === 1 ? <p className={s.err} style={{ marginBottom: "0.75rem" }}>{formErr}</p> : null}
-            <div className={s.field}>
-              <label className={s.label} htmlFor="um-org">
-                Organização
-              </label>
-              {orgSelect || (
-                <input id="um-org" className={s.input} style={{ width: "100%" }} value={formOrgId} onChange={(e) => setFormOrgId(e.target.value)} placeholder="UUID" required />
-              )}
+          <div className={u.formSection}>
+            {formErr && createStep === 1 ? <p className={s.err}>{formErr}</p> : null}
+            <div className={u.formGrid}>
+              <div className={`${s.field} ${u.formGridWide}`}>
+                <label className={s.label} htmlFor="um-org">
+                  Organização
+                </label>
+                {orgSelect || (
+                  <input
+                    id="um-org"
+                    className={`${s.input} ${u.inputLg}`}
+                    value={formOrgId}
+                    onChange={(e) => setFormOrgId(e.target.value)}
+                    placeholder="UUID"
+                    required
+                  />
+                )}
+              </div>
+              <div className={s.field}>
+                <label className={s.label} htmlFor="um-ms">
+                  Estado da membership
+                </label>
+                <select
+                  id="um-ms"
+                  className={`${s.input} ${u.inputLg}`}
+                  value={formMembershipStatus}
+                  onChange={(e) => setFormMembershipStatus(e.target.value)}
+                >
+                  <option value="active">Activo</option>
+                  <option value="invited">Convidado</option>
+                  <option value="suspended">Suspenso</option>
+                </select>
+              </div>
             </div>
-            <div className={s.field}>
-              <label className={s.label} htmlFor="um-ms">
-                Estado da membership
-              </label>
-              <select id="um-ms" className={s.input} style={{ width: "100%" }} value={formMembershipStatus} onChange={(e) => setFormMembershipStatus(e.target.value)}>
-                <option value="active">active</option>
-                <option value="invited">invited</option>
-                <option value="suspended">suspended</option>
-              </select>
-            </div>
-          </>
+          </div>
         ),
       },
       {
         key: "roles",
         label: "Papéis",
         content: (
-          <div className={s.field}>
-            <span className={s.label}>Papéis</span>
-            <div className={s.checkboxRow}>
-              <label className={s.checkbox}>
+          <div className={u.formSection}>
+            <p className={u.formIntro}>Defina as permissões administrativas deste utilizador.</p>
+            <div className={u.roleGrid}>
+              <label className={`${u.roleCard} ${formRoleAdmin ? u.roleCardActive : ""}`}>
                 <input type="checkbox" checked={formRoleAdmin} onChange={(e) => setFormRoleAdmin(e.target.checked)} />
-                Admin da org. (<span className={s.mono}>admin</span>)
+                <span>
+                  <strong>Admin da organização</strong>
+                  <span className={u.roleHint}>Gere utilizadores, integrações e definições do tenant.</span>
+                </span>
               </label>
-              <label className={s.checkbox}>
+              <label className={`${u.roleCard} ${formRolePlatform ? u.roleCardActive : ""}`}>
                 <input type="checkbox" checked={formRolePlatform} onChange={(e) => setFormRolePlatform(e.target.checked)} />
-                Admin plataforma (<span className={s.mono}>{HOOKO_PLATFORM_ADMIN_ROLE_KEY}</span>)
+                <span>
+                  <strong>Admin da plataforma</strong>
+                  <span className={u.roleHint}>
+                    Acesso global HOOKO (<span className={s.mono}>{HOOKO_PLATFORM_ADMIN_ROLE_KEY}</span>).
+                  </span>
+                </span>
               </label>
             </div>
           </div>
@@ -396,12 +443,15 @@ function AdminUsuariosPageContent() {
         key: "review",
         label: "Revisão",
         content: (
-          <>
+          <div className={u.reviewWrap}>
             <ReviewRow label="E-mail" value={formEmail.trim().toLowerCase()} />
             <ReviewRow label="Organização" value={orgLabel} />
             <ReviewRow label="Membership" value={formMembershipStatus} />
-            <ReviewRow label="Papéis" value={[formRoleAdmin && "admin", formRolePlatform && HOOKO_PLATFORM_ADMIN_ROLE_KEY].filter(Boolean).join(", ") || "—"} />
-          </>
+            <ReviewRow
+              label="Papéis"
+              value={[formRoleAdmin && "admin", formRolePlatform && HOOKO_PLATFORM_ADMIN_ROLE_KEY].filter(Boolean).join(", ") || "—"}
+            />
+          </div>
         ),
       },
     ],
@@ -411,65 +461,113 @@ function AdminUsuariosPageContent() {
   const editSteps = useMemo(
     () => [
       {
-        key: "data",
-        label: "Dados",
+        key: "account",
+        label: "Conta",
         content: modalEdit ? (
-          <>
-            {formErr && editStep === 0 ? <p className={s.err} style={{ marginBottom: "0.75rem" }}>{formErr}</p> : null}
-            <div className={s.field}>
-              <span className={s.label}>E-mail</span>
-              <p className={u.readonlyEmail}>{modalEdit.email}</p>
-            </div>
-            <div className={s.field}>
-              <label className={s.label} htmlFor="ue-pass">
-                Nova palavra-passe (opcional)
-              </label>
-              <input id="ue-pass" className={s.input} style={{ width: "100%" }} value={formPassword} onChange={(e) => setFormPassword(e.target.value)} type="password" minLength={8} autoComplete="new-password" />
-            </div>
-            <div className={s.field}>
-              <label className={s.label} htmlFor="ue-org">
-                Organização
-              </label>
-              {orgSelect || (
-                <input id="ue-org" className={s.input} style={{ width: "100%" }} value={formOrgId} onChange={(e) => setFormOrgId(e.target.value)} required placeholder="UUID" />
-              )}
-            </div>
-            <div className={s.field}>
-              <span className={s.label}>Papéis</span>
-              <div className={s.checkboxRow}>
-                <label className={s.checkbox}>
-                  <input type="checkbox" checked={formRoleAdmin} onChange={(e) => setFormRoleAdmin(e.target.checked)} />
-                  Admin da org.
+          <div className={u.formSection}>
+            {formErr && editStep === 0 ? <p className={s.err}>{formErr}</p> : null}
+            <div className={u.formGrid}>
+              <div className={`${s.field} ${u.formGridWide}`}>
+                <span className={s.label}>E-mail</span>
+                <p className={u.readonlyEmail}>{modalEdit.email}</p>
+              </div>
+              <div className={`${s.field} ${u.formGridWide}`}>
+                <label className={s.label} htmlFor="ue-pass">
+                  Nova palavra-passe (opcional)
                 </label>
-                <label className={s.checkbox}>
-                  <input type="checkbox" checked={formRolePlatform} onChange={(e) => setFormRolePlatform(e.target.checked)} />
-                  Admin plataforma
-                </label>
+                <input
+                  id="ue-pass"
+                  className={`${s.input} ${u.inputLg}`}
+                  value={formPassword}
+                  onChange={(e) => setFormPassword(e.target.value)}
+                  type="password"
+                  minLength={8}
+                  autoComplete="new-password"
+                />
               </div>
             </div>
-            <div className={s.field}>
-              <label className={s.label} htmlFor="ue-ms">
-                Estado da membership
-              </label>
-              <select id="ue-ms" className={s.input} style={{ width: "100%" }} value={formMembershipStatus} onChange={(e) => setFormMembershipStatus(e.target.value)}>
-                <option value="active">active</option>
-                <option value="invited">invited</option>
-                <option value="suspended">suspended</option>
-              </select>
+          </div>
+        ) : null,
+      },
+      {
+        key: "org",
+        label: "Organização",
+        content: modalEdit ? (
+          <div className={u.formSection}>
+            {formErr && editStep === 1 ? <p className={s.err}>{formErr}</p> : null}
+            <div className={u.formGrid}>
+              <div className={`${s.field} ${u.formGridWide}`}>
+                <label className={s.label} htmlFor="ue-org">
+                  Organização
+                </label>
+                {orgSelect || (
+                  <input
+                    id="ue-org"
+                    className={`${s.input} ${u.inputLg}`}
+                    value={formOrgId}
+                    onChange={(e) => setFormOrgId(e.target.value)}
+                    required
+                    placeholder="UUID"
+                  />
+                )}
+              </div>
+              <div className={s.field}>
+                <label className={s.label} htmlFor="ue-ms">
+                  Estado da membership
+                </label>
+                <select
+                  id="ue-ms"
+                  className={`${s.input} ${u.inputLg}`}
+                  value={formMembershipStatus}
+                  onChange={(e) => setFormMembershipStatus(e.target.value)}
+                >
+                  <option value="active">Activo</option>
+                  <option value="invited">Convidado</option>
+                  <option value="suspended">Suspenso</option>
+                </select>
+              </div>
             </div>
-          </>
+          </div>
+        ) : null,
+      },
+      {
+        key: "roles",
+        label: "Papéis",
+        content: modalEdit ? (
+          <div className={u.formSection}>
+            <p className={u.formIntro}>Permissões administrativas do utilizador.</p>
+            <div className={u.roleGrid}>
+              <label className={`${u.roleCard} ${formRoleAdmin ? u.roleCardActive : ""}`}>
+                <input type="checkbox" checked={formRoleAdmin} onChange={(e) => setFormRoleAdmin(e.target.checked)} />
+                <span>
+                  <strong>Admin da organização</strong>
+                  <span className={u.roleHint}>Gere utilizadores e definições do tenant.</span>
+                </span>
+              </label>
+              <label className={`${u.roleCard} ${formRolePlatform ? u.roleCardActive : ""}`}>
+                <input type="checkbox" checked={formRolePlatform} onChange={(e) => setFormRolePlatform(e.target.checked)} />
+                <span>
+                  <strong>Admin da plataforma</strong>
+                  <span className={u.roleHint}>Acesso global HOOKO.</span>
+                </span>
+              </label>
+            </div>
+          </div>
         ) : null,
       },
       {
         key: "review",
         label: "Revisão",
         content: modalEdit ? (
-          <>
+          <div className={u.reviewWrap}>
             <ReviewRow label="E-mail" value={modalEdit.email} />
             <ReviewRow label="Organização" value={orgLabel} />
             <ReviewRow label="Membership" value={formMembershipStatus} />
-            <ReviewRow label="Papéis" value={[formRoleAdmin && "admin", formRolePlatform && HOOKO_PLATFORM_ADMIN_ROLE_KEY].filter(Boolean).join(", ") || "—"} />
-          </>
+            <ReviewRow
+              label="Papéis"
+              value={[formRoleAdmin && "admin", formRolePlatform && HOOKO_PLATFORM_ADMIN_ROLE_KEY].filter(Boolean).join(", ") || "—"}
+            />
+          </div>
         ) : null,
       },
     ],
@@ -556,7 +654,8 @@ function AdminUsuariosPageContent() {
       <AdminStepModal
         open={modalCreate}
         title="Novo utilizador"
-        size="wide"
+        subtitle="Configure conta, organização e permissões do novo cliente ou membro da equipa."
+        size="xl"
         steps={createSteps}
         step={createStep}
         onStepChange={(next) => {
@@ -583,7 +682,8 @@ function AdminUsuariosPageContent() {
       <AdminStepModal
         open={Boolean(modalEdit)}
         title="Editar utilizador"
-        size="wide"
+        subtitle="Actualize credenciais, organização e papéis administrativos."
+        size="xl"
         steps={editSteps}
         step={editStep}
         onStepChange={(next) => {
@@ -597,6 +697,10 @@ function AdminUsuariosPageContent() {
         onSubmit={() => {
           if (!validateUserStep("edit", 0)) {
             setEditStep(0);
+            return;
+          }
+          if (!validateUserStep("edit", 1)) {
+            setEditStep(1);
             return;
           }
           submitCreateEdit("edit", modalEdit);
