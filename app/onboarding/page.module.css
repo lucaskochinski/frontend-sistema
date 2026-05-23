@@ -106,7 +106,7 @@
   height: 9px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--hooko-border);
   transition:
     transform 0.35s ease,
     background 0.35s ease,
@@ -169,7 +169,7 @@
 .stepPane {
   border-radius: 22px;
   padding: clamp(1.65rem, 5vw, 2.35rem);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--hooko-border);
   background: rgba(12, 12, 18, 0.55);
   backdrop-filter: blur(22px) saturate(1.35);
   -webkit-backdrop-filter: blur(22px) saturate(1.35);
@@ -239,14 +239,14 @@
   font-weight: 700;
   letter-spacing: -0.035em;
   line-height: 1.2;
-  color: #fafafa;
+  color: var(--hooko-text);
 }
 
 .sub {
   margin: 0.75rem 0 0;
   font-size: 0.9rem;
   line-height: 1.55;
-  color: #a1a1aa;
+  color: var(--hooko-text-muted);
 }
 
 /* ─── Plano (passo 1) ─── */
@@ -267,7 +267,7 @@
   margin: 0;
   font-size: 1.02rem;
   font-weight: 700;
-  color: #f5e6b8;
+  color: var(--hooko-gold-bright);
   letter-spacing: -0.02em;
 }
 
@@ -296,7 +296,7 @@
   gap: 0.65rem;
   font-size: 0.84rem;
   line-height: 1.45;
-  color: #e4e4e7;
+  color: var(--hooko-text-muted);
 }
 
 .featureIcon {
@@ -312,7 +312,7 @@
 }
 
 .featureMuted {
-  color: #a1a1aa;
+  color: var(--hooko-text-muted);
   font-size: 0.78rem;
 }
 
@@ -375,9 +375,9 @@
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
-  color: #e4e4e7;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--hooko-text-muted);
+  background: var(--hooko-surface);
+  border: 1px solid var(--hooko-border);
   transition:
     border-color 0.2s ease,
     background 0.2s ease;
@@ -554,7 +554,7 @@
   width: min(100%, 34rem);
   border-radius: 22px;
   padding: clamp(1.65rem, 5vw, 2.35rem);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--hooko-border);
   background: rgba(12, 12, 18, 0.45);
   display: flex;
   flex-direction: column;

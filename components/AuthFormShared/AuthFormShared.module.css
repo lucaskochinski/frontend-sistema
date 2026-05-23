@@ -13,7 +13,7 @@
 .cardSub {
   margin: 0.28rem 0 0;
   font-size: 0.82rem;
-  color: #a1a1aa;
+  color: var(--hooko-text-muted);
 }
 
 .form {
@@ -40,7 +40,7 @@
   font-size: 0.66rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(161, 161, 170, 0.95);
+  color: var(--hooko-text-muted);
   font-weight: 600;
 }
 
@@ -48,9 +48,9 @@
   width: 100%;
   padding: 0.65rem 0.85rem;
   font-size: 0.9rem;
-  color: #fafafa;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--hooko-text);
+  background: var(--hooko-input-bg);
+  border: 1px solid var(--hooko-border);
   border-radius: 10px;
   outline: none;
   transition:
@@ -64,7 +64,7 @@
 }
 
 .input:hover {
-  border-color: rgba(255, 255, 255, 0.16);
+  border-color: var(--hooko-border-strong);
 }
 
 .input:focus {
@@ -137,7 +137,7 @@
   padding-top: 1.05rem;
   text-align: center;
   font-size: 0.81rem;
-  color: #a1a1aa;
+  color: var(--hooko-text-muted);
 }
 
 .link {

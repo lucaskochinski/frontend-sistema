@@ -53,7 +53,7 @@
     rgba(212, 175, 55, 0.08) 100%
   );
   border: 1px solid rgba(96, 165, 250, 0.26);
-  color: #bfdbfe;
+  color: var(--hooko-gold);
 }
 
 .topIconSvg {
@@ -71,14 +71,14 @@
   margin: 0;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #fafafa;
+  color: var(--hooko-text);
   letter-spacing: -0.03em;
 }
 
 .topHint {
   margin: 0;
   font-size: 0.85rem;
-  color: #a1a1aa;
+  color: var(--hooko-text-muted);
 }
 
 .workspace {
@@ -105,7 +105,7 @@
   margin: 0;
   font-size: 1.15rem;
   font-weight: 700;
-  color: #fafafa;
+  color: var(--hooko-text);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   padding-bottom: 0.75rem;
 }
@@ -132,23 +132,95 @@
   color: var(--hooko-gold, #d4af37);
 }
 
+.infoBox {
+  margin-bottom: 1.25rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--hooko-border);
+  background: var(--hooko-surface);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--hooko-text-muted);
+}
+
+.infoBox strong {
+  color: var(--hooko-text);
+}
+
+.infoFormat {
+  margin: 0.5rem 0 0;
+}
+
+.infoFormat a,
+.baseCreativeLink {
+  color: var(--hooko-gold);
+}
+
+.baseCreativeLink {
+  display: inline-block;
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+  text-decoration: none;
+}
+
+.baseCreativeLink:hover {
+  text-decoration: underline;
+}
+
+.loadingFallback {
+  padding: 2rem;
+  color: var(--hooko-text-muted);
+}
+
+.mediaPreviewImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.mediaPlaceholderSub {
+  font-size: 0.72rem;
+  margin: 0.35rem 0 0;
+  opacity: 0.85;
+  color: var(--hooko-text-muted);
+}
+
 .input {
   appearance: none;
   font-family: inherit;
   font-size: 0.88rem;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--hooko-input-bg);
+  border: 1px solid var(--hooko-border);
   border-radius: 8px;
-  color: #f1f5f9;
+  color: var(--hooko-text);
   padding: 0.65rem 0.85rem;
   transition: all 0.2s ease;
 }
 
 .input:focus {
   outline: none;
-  border-color: rgba(96, 165, 250, 0.4);
-  background: rgba(0, 0, 0, 0.45);
-  box-shadow: 0 0 8px rgba(59, 130, 246, 0.1);
+  border-color: rgba(212, 175, 55, 0.45);
+  background: var(--hooko-input-bg);
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.12);
+}
+
+.ratioRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.ratioBtn {
+  flex: 1;
+  background: var(--hooko-surface);
+  border: 1px solid var(--hooko-border);
+  color: var(--hooko-text);
+}
+
+.ratioBtnActive {
+  background: rgba(212, 175, 55, 0.2);
+  border-color: var(--hooko-gold);
+  color: var(--hooko-text);
 }
 
 .textarea {
@@ -161,8 +233,8 @@
 }
 
 .select option {
-  background: #0f1015;
-  color: #f1f5f9;
+  background: var(--hooko-surface-elevated);
+  color: var(--hooko-text);
 }
 
 .previewPane {
@@ -178,7 +250,7 @@
   margin: 0;
   font-size: 1rem;
   font-weight: 600;
-  color: #94a3b8;
+  color: var(--hooko-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -188,12 +260,12 @@
   width: 100%;
   max-width: 25rem;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: #18191a;
+  border: 1px solid var(--hooko-border);
+  background: var(--hooko-surface-elevated);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
   overflow: hidden;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  color: #e4e6eb;
+  color: var(--hooko-text-muted);
 }
 
 .cardTop {
@@ -208,11 +280,11 @@
   height: 2.35rem;
   border-radius: 50%;
   background: linear-gradient(135deg, #2563eb 0%, #d4af37 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--hooko-border);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
+  color: var(--hooko-text);
   font-weight: 700;
   font-size: 0.8rem;
   flex-shrink: 0;
@@ -227,7 +299,7 @@
 .pageName {
   font-size: 0.88rem;
   font-weight: 600;
-  color: #e4e6eb;
+  color: var(--hooko-text-muted);
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -236,7 +308,7 @@
 
 .sponsoredLabel {
   font-size: 0.72rem;
-  color: #b0b3b8;
+  color: var(--hooko-text-muted);
   margin-top: 0.1rem;
   display: flex;
   align-items: center;
@@ -250,7 +322,7 @@
 .postBody {
   font-size: 0.88rem;
   line-height: 1.45;
-  color: #e4e6eb;
+  color: var(--hooko-text-muted);
   padding: 0.25rem 0.85rem 0.75rem;
   white-space: pre-wrap;
   word-break: break-word;
@@ -258,7 +330,7 @@
 
 .mediaContainer {
   width: 100%;
-  background: #000000;
+  background: var(--hooko-bg-deep);
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
@@ -285,7 +357,7 @@
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, rgba(37, 99, 235, 0.15) 0%, rgba(212, 175, 55, 0.05) 100%);
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--hooko-text-subtle);
   gap: 0.5rem;
   padding: 2rem;
   text-align: center;
@@ -302,7 +374,7 @@
   margin: 0;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #f1f5f9;
+  color: var(--hooko-text);
 }
 
 .cardBottom {
@@ -323,7 +395,7 @@
 
 .displayLink {
   font-size: 0.72rem;
-  color: #b0b3b8;
+  color: var(--hooko-text-muted);
   text-transform: uppercase;
   white-space: nowrap;
   overflow: hidden;
@@ -333,7 +405,7 @@
 .adHeadline {
   font-size: 0.92rem;
   font-weight: 600;
-  color: #e4e6eb;
+  color: var(--hooko-text-muted);
   margin: 0.15rem 0 0;
   white-space: nowrap;
   overflow: hidden;
@@ -345,7 +417,7 @@
   background: #3a3b3c;
   border: none;
   border-radius: 6px;
-  color: #e4e6eb;
+  color: var(--hooko-text-muted);
   padding: 0.45rem 0.85rem;
   font-size: 0.8rem;
   font-weight: 600;
@@ -361,7 +433,7 @@
 .btnPrimary {
   border: 1px solid rgba(212, 175, 55, 0.4);
   background: rgba(212, 175, 55, 0.12);
-  color: #f5e6b8;
+  color: var(--hooko-gold-bright);
   font-weight: 600;
   border-radius: 8px;
   padding: 0.65rem;

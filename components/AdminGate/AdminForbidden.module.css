@@ -3,7 +3,7 @@
   margin: 2rem auto;
   padding: 1.5rem 1.35rem;
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--hooko-border);
   background: linear-gradient(168deg, rgba(28, 24, 18, 0.95), rgba(10, 10, 12, 0.98));
   text-align: center;
 }
@@ -12,14 +12,14 @@
   margin: 0;
   font-size: 1.1rem;
   font-weight: 700;
-  color: #fafafa;
+  color: var(--hooko-text);
 }
 
 .lede {
   margin: 0.55rem 0 0;
   font-size: 0.84rem;
   line-height: 1.55;
-  color: rgba(161, 161, 170, 0.98);
+  color: var(--hooko-text-muted);
 }
 
 .link {

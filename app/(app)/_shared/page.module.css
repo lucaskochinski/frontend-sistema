@@ -22,7 +22,7 @@
   margin: 0.85rem 0 0;
   font-size: 0.9rem;
   line-height: 1.6;
-  color: #a1a1aa;
+  color: var(--hooko-text-muted);
   max-width: 36rem;
 }
 

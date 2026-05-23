@@ -26,7 +26,7 @@ export default function SalesBySourceList({ pagtrustItems = [], metaItems = [] }
             borderRadius: "8px",
             border: "1px solid rgba(255,255,255,0.12)",
             background: tab === "pagtrust" ? "rgba(212,175,55,0.15)" : "transparent",
-            color: "#e4e4e7",
+            color: "var(--hooko-text-muted)",
             fontSize: "0.72rem",
             cursor: "pointer",
           }}
@@ -41,7 +41,7 @@ export default function SalesBySourceList({ pagtrustItems = [], metaItems = [] }
             borderRadius: "8px",
             border: "1px solid rgba(255,255,255,0.12)",
             background: tab === "meta" ? "rgba(212,175,55,0.15)" : "transparent",
-            color: "#e4e4e7",
+            color: "var(--hooko-text-muted)",
             fontSize: "0.72rem",
             cursor: "pointer",
           }}

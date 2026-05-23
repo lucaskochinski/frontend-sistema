@@ -5,7 +5,7 @@
 
 .tableWrap {
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--hooko-border);
   overflow: hidden;
   background:
     radial-gradient(100% 80% at 100% -8%, rgba(212, 175, 55, 0.1), transparent 45%),
@@ -28,7 +28,7 @@
   text-transform: uppercase;
   color: rgba(212, 175, 55, 0.82);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--hooko-surface);
 }
 
 .table td {
@@ -58,8 +58,8 @@
   border-radius: 999px;
   font-size: 0.72rem;
   font-weight: 650;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--hooko-border);
+  background: var(--hooko-surface);
 }
 
 .badgeActive {
@@ -99,7 +99,7 @@
   margin: 0;
   padding: 0.5rem 0.65rem;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--hooko-border);
   background: rgba(0, 0, 0, 0.25);
   font-size: 0.88rem;
   font-weight: 600;

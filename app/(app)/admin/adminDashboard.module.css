@@ -20,14 +20,14 @@
   font-size: clamp(1.38rem, 2.6vw, 1.75rem);
   font-weight: 700;
   letter-spacing: -0.03em;
-  color: #fafafa;
+  color: var(--hooko-text);
 }
 
 .lede {
   margin: 0.45rem 0 0;
   font-size: 0.87rem;
   line-height: 1.55;
-  color: rgba(161, 161, 170, 0.98);
+  color: var(--hooko-text-muted);
   max-width: 40rem;
 }
 
@@ -70,7 +70,7 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(161, 161, 170, 0.92);
+  color: var(--hooko-text-muted);
 }
 
 .kpiStrong {
@@ -85,7 +85,7 @@
 .kpiSub {
   margin: 0.32rem 0 0;
   font-size: 0.72rem;
-  color: rgba(161, 161, 170, 0.9);
+  color: var(--hooko-text-muted);
 }
 
 .chartCard {
@@ -113,7 +113,7 @@
 .chartSub {
   margin: 0 0 1rem;
   font-size: 0.8rem;
-  color: rgba(161, 161, 170, 0.94);
+  color: var(--hooko-text-muted);
 }
 
 .chartFrame {

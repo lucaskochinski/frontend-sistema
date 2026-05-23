@@ -24,14 +24,14 @@
 .label {
   font-size: 0.74rem;
   font-weight: 650;
-  color: rgba(228, 228, 231, 0.92);
+  color: var(--hooko-text);
 }
 
 .hint {
   margin: 0;
   font-size: 0.74rem;
   line-height: 1.5;
-  color: rgba(161, 161, 170, 0.95);
+  color: var(--hooko-text-muted);
 }
 
 .timeInput {
@@ -39,7 +39,7 @@
   border-radius: 12px;
   border: 1px solid rgba(212, 175, 55, 0.32);
   background: rgba(0, 0, 0, 0.45);
-  color: #fafafa;
+  color: var(--hooko-text);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 1.15rem;
   font-weight: 600;

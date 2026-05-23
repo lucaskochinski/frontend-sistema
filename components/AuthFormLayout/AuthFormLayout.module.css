@@ -36,8 +36,8 @@
   min-height: clamp(23.25rem, 48vh, 30rem);
   padding: clamp(1.25rem, 4vw, 1.75rem);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--hooko-surface);
+  border: 1px solid var(--hooko-border);
   box-shadow:
     0 0 0 1px rgba(0, 0, 0, 0.35) inset,
     0 24px 48px rgba(0, 0, 0, 0.45),

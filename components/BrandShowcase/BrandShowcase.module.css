@@ -104,7 +104,7 @@
   font-weight: 700;
   line-height: 1.05;
   letter-spacing: -0.03em;
-  color: #fafafa;
+  color: var(--hooko-text);
 }
 
 .titleAccent {
@@ -130,7 +130,7 @@
   margin: 0.95rem 0 0;
   font-size: clamp(0.72rem, 1.5vw, 0.81rem);
   line-height: 1.55;
-  color: #a1a1aa;
+  color: var(--hooko-text-muted);
   max-width: 16.5rem;
 }
 
@@ -148,8 +148,8 @@
   font-size: 0.57rem;
   font-weight: 500;
   color: rgba(250, 250, 250, 0.88);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--hooko-surface);
+  border: 1px solid var(--hooko-border);
   border-radius: 999px;
   backdrop-filter: blur(12px);
   transition:

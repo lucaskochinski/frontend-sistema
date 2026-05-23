@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import styles from "./page.module.css";
 import { apiFetch, getStoredOrganizationId } from "@/lib/hooko-session";
+import FormatAdThumb from "./FormatAdThumb";
 
 const CATEGORY_LABELS = {
   ugc: "UGC",
@@ -20,6 +21,15 @@ const CATEGORY_LABELS = {
   bofu: "Fundo de funil",
   vsl: "VSL",
 };
+
+function aspectToRatioLabel(aspectRatio) {
+  if (!aspectRatio) return null;
+  const v = String(aspectRatio);
+  if (v === "9:16" || v.startsWith("9:")) return "9:16 vertical";
+  if (v === "1:1") return "1:1 quadrado";
+  if (v === "4:5") return "4:5 feed";
+  return v;
+}
 
 export default function FormatosPage() {
   const [formats, setFormats] = useState([]);
@@ -98,7 +108,8 @@ export default function FormatosPage() {
             <div className={styles.topTitleBlock}>
               <h1 className={styles.topPageTitle}>Formatos de Criativos</h1>
               <p className={styles.topHint}>
-                Biblioteca fixa de 50 formatos HOOKO + agrupamento real dos criativos importados da Meta.
+                <strong>Biblioteca</strong> = modelos fixos HOOKO (referência para gravar).{" "}
+                <strong>Meta importados</strong> = agrupa os anúncios que você já importou por dimensão real da Meta.
               </p>
             </div>
           </div>
@@ -106,6 +117,14 @@ export default function FormatosPage() {
             {loading ? "A carregar…" : "Atualizar"}
           </button>
         </div>
+      </div>
+
+      <div className={styles.infoBox}>
+        <p>
+          <strong>Como isto se liga ao Criador de anúncio?</strong> Escolha um modelo na Biblioteca → abre o Criador com
+          proporção sugerida. No Criador, você monta copy/CTA e pode usar um criativo importado como base. Os formatos Meta
+          abaixo são só leitura dos seus imports — clique no anúncio para ver detalhe, métricas e vídeo.
+        </p>
       </div>
 
       <div className={styles.viewToggle}>
@@ -137,7 +156,7 @@ export default function FormatosPage() {
         <>
           {driveFolderUrl ? (
             <p className={styles.summaryText}>
-              Assets no{" "}
+              Referência visual no{" "}
               <a href={driveFolderUrl} target="_blank" rel="noopener noreferrer" className={styles.driveLink}>
                 Google Drive HOOKO
               </a>
@@ -177,7 +196,7 @@ export default function FormatosPage() {
                   <span>{item.aspectRatio}</span>
                   {item.durationSec ? <span>{item.durationSec}s</span> : <span>Estático</span>}
                 </div>
-                <Link href="/criador-de-anuncio" className={`${styles.btn} ${styles.btnPrimary}`}>
+                <Link href={`/criador-de-anuncio?formato=${encodeURIComponent(item.id)}`} className={`${styles.btn} ${styles.btnPrimary}`}>
                   Usar no criador
                 </Link>
               </article>
@@ -217,7 +236,7 @@ export default function FormatosPage() {
 
           <div className={styles.grid}>
             {filteredFormats.map((item) => (
-              <div key={item.id} className={styles.card}>
+              <article key={item.id} className={styles.card}>
                 <div className={styles.cardHeader}>
                   <h2 className={styles.formatTitle}>{item.label}</h2>
                   {item.objectType ? <span className={`${styles.badge} ${styles.badgeBlue}`}>{item.objectType}</span> : null}
@@ -236,13 +255,42 @@ export default function FormatosPage() {
                     ) : (
                       <h3 className={styles.dimensionText}>{item.label}</h3>
                     )}
+                    <p className={styles.descriptionText}>
+                      {aspectToRatioLabel(item.aspectRatio) || "Dimensão detectada na importação Meta"}
+                    </p>
                   </div>
                 </div>
                 <div className={styles.statRow}>
                   <span className={styles.statLabel}>Criativos neste grupo</span>
                   <span className={styles.statValue}>{item.syncedCount}</span>
                 </div>
-              </div>
+
+                {item.ads?.length > 0 ? (
+                  <ul className={styles.adPreviewList}>
+                    {item.ads.map((ad) => (
+                      <li key={ad.adId}>
+                        <Link href={`/criativo/${ad.adId}`} className={styles.adPreviewRow}>
+                          <FormatAdThumb
+                            adId={ad.adId}
+                            mediaId={ad.mediaId}
+                            initialSrc={ad.thumbnailUrl}
+                            alt={ad.adName}
+                          />
+                          <span className={styles.adPreviewText}>
+                            <span className={styles.adPreviewName}>{ad.adName}</span>
+                            <span className={styles.adPreviewCampaign}>
+                              {ad.campaignName ? ad.campaignName : "Sem campanha"}
+                              {ad.videoLengthSeconds ? ` · ${Math.round(ad.videoLengthSeconds)}s` : ""}
+                            </span>
+                          </span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className={styles.adPreviewEmpty}>Nenhum anúncio listado neste grupo.</p>
+                )}
+              </article>
             ))}
           </div>
         </>

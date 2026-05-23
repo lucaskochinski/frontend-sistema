@@ -22,14 +22,14 @@
   font-size: clamp(1.35rem, 2.8vw, 1.75rem);
   font-weight: 700;
   letter-spacing: -0.03em;
-  color: #fafafa;
+  color: var(--hooko-text);
 }
 
 .lede {
   margin: 0.55rem 0 0;
   font-size: 0.86rem;
   line-height: 1.55;
-  color: rgba(161, 161, 170, 0.98);
+  color: var(--hooko-text-muted);
   max-width: 42rem;
 }
 
@@ -98,7 +98,7 @@
 .label {
   font-size: 0.74rem;
   font-weight: 600;
-  color: rgba(228, 228, 231, 0.92);
+  color: var(--hooko-text);
 }
 
 .input {
@@ -106,8 +106,8 @@
   box-sizing: border-box;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.11);
-  background: rgba(0, 0, 0, 0.35);
-  color: #fafafa;
+  background: var(--hooko-input-bg);
+  color: var(--hooko-text);
   font-family: inherit;
   font-size: 0.86rem;
   padding: 0.55rem 0.75rem;
@@ -134,7 +134,7 @@
   margin: -0.2rem 0 0;
   font-size: 0.72rem;
   line-height: 1.45;
-  color: rgba(113, 113, 122, 0.95);
+  color: var(--hooko-text-subtle);
 }
 
 .formActions {
@@ -143,7 +143,7 @@
   gap: 0.55rem;
   margin-top: 0.25rem;
   padding-top: 0.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--hooko-divider);
 }
 
 .btnPrimary {
@@ -185,7 +185,7 @@
   font-weight: 600;
   padding: 0.55rem 1.05rem;
   border-radius: 11px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--hooko-border);
   background: transparent;
   color: rgba(228, 228, 231, 0.9);
   transition:
@@ -194,7 +194,7 @@
 }
 
 .btnGhost:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--hooko-surface);
 }
 
 .btnGhost:disabled {
@@ -272,7 +272,7 @@
   padding: 1rem 1.05rem;
   margin-bottom: 0.85rem;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--hooko-border);
   background: rgba(0, 0, 0, 0.28);
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35) inset;
 }
@@ -286,7 +286,7 @@
   margin: 0;
   font-size: clamp(1.2rem, 2.4vw, 1.42rem);
   font-weight: 700;
-  color: #fafafa;
+  color: var(--hooko-text);
   letter-spacing: -0.03em;
   line-height: 1.15;
 }
@@ -295,7 +295,7 @@
   margin: 0.35rem 0 0;
   font-size: 0.78rem;
   line-height: 1.45;
-  color: rgba(161, 161, 170, 0.98);
+  color: var(--hooko-text-muted);
 }
 
 .planPriceTag {
@@ -317,7 +317,7 @@
   margin: 0 0 1.05rem;
   font-size: 0.78rem;
   line-height: 1.5;
-  color: rgba(161, 161, 170, 0.98);
+  color: var(--hooko-text-muted);
 }
 
 .planRenewalDot {
@@ -335,7 +335,7 @@
   margin-bottom: 1.1rem;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.07);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--hooko-surface);
 }
 
 .usageHead {
@@ -348,7 +348,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.09em;
-  color: rgba(161, 161, 170, 0.95);
+  color: var(--hooko-text-muted);
 }
 
 .usageFraction {
@@ -368,7 +368,7 @@
 .usageBar {
   height: 7px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--hooko-surface-hover);
   overflow: hidden;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35) inset;
 }
@@ -500,7 +500,7 @@
   margin: 0.25rem 0 0;
   font-size: 0.7rem;
   line-height: 1.5;
-  color: rgba(113, 113, 122, 0.95);
+  color: var(--hooko-text-subtle);
 }
 
 /* Modal stubs */
@@ -527,7 +527,7 @@
   width: min(100%, 24rem);
   padding: 1.25rem 1.3rem;
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--hooko-border);
   background: rgba(18, 18, 22, 0.96);
   box-shadow:
     0 0 0 1px rgba(0, 0, 0, 0.5) inset,
@@ -538,14 +538,14 @@
   margin: 0 0 0.6rem;
   font-size: 1rem;
   font-weight: 700;
-  color: #fafafa;
+  color: var(--hooko-text);
 }
 
 .dialogBody {
   margin: 0 0 1rem;
   font-size: 0.82rem;
   line-height: 1.55;
-  color: rgba(161, 161, 170, 0.98);
+  color: var(--hooko-text-muted);
 }
 
 .dialogActions {

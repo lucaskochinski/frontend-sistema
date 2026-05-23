@@ -13,7 +13,7 @@
 @media (prefers-reduced-motion: reduce) {
   .root {
     animation: none;
-    background: rgba(255, 255, 255, 0.07);
+    background: var(--hooko-surface-hover);
   }
 }
 
@@ -46,7 +46,7 @@
 
 .chart {
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--hooko-border);
   padding: 1.25rem;
   min-height: 280px;
 }
