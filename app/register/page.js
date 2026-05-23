@@ -18,9 +18,9 @@ const EXIT_MS = 520;
 function RegisterPageInner() {
   const searchParams = useSearchParams();
   const planId = readPlanIdFromSearchParams(searchParams);
-  const checkoutHref = buildCheckoutHref(planId);
 
   const [phase, setPhase] = useState("form");
+  const [checkoutHref, setCheckoutHref] = useState(() => buildCheckoutHref(planId));
   const timer = useRef(null);
 
   useEffect(() => {
