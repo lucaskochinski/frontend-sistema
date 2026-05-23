@@ -319,172 +319,174 @@ export default function AdminPlanosPage() {
         key: "identity",
         label: "Identidade",
         content: (
-          <>
-            {formErr && wizardStep === 0 ? <p className={s.err} style={{ marginBottom: "0.75rem" }}>{formErr}</p> : null}
-            <div className={s.field}>
-              <label className={s.label} htmlFor="pf-tier">
-                Chave do plano
-              </label>
-              <input
-                id="pf-tier"
-                className={s.input}
-                style={{ width: "100%" }}
-                value={tierKey}
-                onChange={(e) => setTierKey(e.target.value)}
-                disabled={wizardMode === "edit"}
-                placeholder="ex.: crescimento_2026"
-              />
-              {wizardMode === "edit" ? <p className={s.hint}>Identificador fixo — não alterável.</p> : null}
+          <div className={p.formSection}>
+            {formErr && wizardStep === 0 ? <p className={s.err}>{formErr}</p> : null}
+            <div className={p.formGrid}>
+              <div className={s.field}>
+                <label className={s.label} htmlFor="pf-tier">
+                  Chave do plano
+                </label>
+                <input
+                  id="pf-tier"
+                  className={`${s.input} ${p.inputLg}`}
+                  value={tierKey}
+                  onChange={(e) => setTierKey(e.target.value)}
+                  disabled={wizardMode === "edit"}
+                  placeholder="ex.: crescimento_2026"
+                />
+                {wizardMode === "edit" ? <p className={s.hint}>Identificador fixo — não alterável.</p> : null}
+              </div>
+              <div className={s.field}>
+                <label className={s.label} htmlFor="pf-name">
+                  Nome exibido
+                </label>
+                <input
+                  id="pf-name"
+                  className={`${s.input} ${p.inputLg}`}
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  placeholder="ex.: HOOKO Pro"
+                />
+              </div>
             </div>
-            <div className={s.field}>
-              <label className={s.label} htmlFor="pf-name">
-                Nome exibido
-              </label>
-              <input
-                id="pf-name"
-                className={s.input}
-                style={{ width: "100%" }}
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-              />
-            </div>
-          </>
+          </div>
         ),
       },
       {
         key: "stripe",
         label: "Pagamento",
         content: (
-          <>
-            {formErr && wizardStep === 1 ? <p className={s.err} style={{ marginBottom: "0.75rem" }}>{formErr}</p> : null}
-            <div className={s.field}>
-              <label className={s.label} htmlFor="pf-price">
-                ID do preço (Stripe)
-              </label>
-              <input
-                id="pf-price"
-                className={s.input}
-                style={{ width: "100%" }}
-                value={stripePriceId}
-                onChange={(e) => setStripePriceId(e.target.value)}
-                placeholder="price_…"
-              />
-              <p className={s.hint}>Copie o ID do preço mensal criado no painel Stripe.</p>
+          <div className={p.formSection}>
+            {formErr && wizardStep === 1 ? <p className={s.err}>{formErr}</p> : null}
+            <div className={p.formGrid}>
+              <div className={`${s.field} ${p.formGridWide}`}>
+                <label className={s.label} htmlFor="pf-price">
+                  ID do preço (Stripe)
+                </label>
+                <input
+                  id="pf-price"
+                  className={`${s.input} ${p.inputLg}`}
+                  value={stripePriceId}
+                  onChange={(e) => setStripePriceId(e.target.value)}
+                  placeholder="price_…"
+                />
+                <p className={s.hint}>Copie o ID do preço mensal criado no painel Stripe.</p>
+              </div>
+              <div className={s.field}>
+                <label className={s.label} htmlFor="pf-trial">
+                  Dias de teste grátis
+                </label>
+                <input
+                  id="pf-trial"
+                  className={`${s.input} ${p.inputLg}`}
+                  type="number"
+                  min={0}
+                  max={730}
+                  value={trialDays}
+                  onChange={(e) => setTrialDays(e.target.value)}
+                />
+              </div>
             </div>
-            <div className={s.field}>
-              <label className={s.label} htmlFor="pf-trial">
-                Dias de teste grátis
-              </label>
-              <input
-                id="pf-trial"
-                className={s.input}
-                type="number"
-                min={0}
-                max={730}
-                value={trialDays}
-                onChange={(e) => setTrialDays(e.target.value)}
-              />
-            </div>
-          </>
+          </div>
         ),
       },
       {
         key: "limits",
         label: "Limites",
         content: (
-          <>
-            {formErr && wizardStep === 2 ? <p className={s.err} style={{ marginBottom: "0.75rem" }}>{formErr}</p> : null}
-            <div className={s.field}>
-              <label className={s.label} htmlFor="pf-imports">
-                Importações de criativos por mês
-              </label>
-              <input
-                id="pf-imports"
-                className={s.input}
-                type="number"
-                min={0}
-                style={{ width: "100%" }}
-                value={limitCreativeImports}
-                onChange={(e) => setLimitCreativeImports(e.target.value)}
-              />
+          <div className={p.formSection}>
+            {formErr && wizardStep === 2 ? <p className={s.err}>{formErr}</p> : null}
+            <p className={p.formIntro}>Defina os limites mensais incluídos neste plano.</p>
+            <div className={p.formGrid}>
+              <div className={s.field}>
+                <label className={s.label} htmlFor="pf-imports">
+                  Importações de criativos / mês
+                </label>
+                <input
+                  id="pf-imports"
+                  className={`${s.input} ${p.inputLg}`}
+                  type="number"
+                  min={0}
+                  value={limitCreativeImports}
+                  onChange={(e) => setLimitCreativeImports(e.target.value)}
+                />
+              </div>
+              <div className={s.field}>
+                <label className={s.label} htmlFor="pf-transcription">
+                  Minutos de transcrição / mês
+                </label>
+                <input
+                  id="pf-transcription"
+                  className={`${s.input} ${p.inputLg}`}
+                  type="number"
+                  min={0}
+                  value={limitTranscriptionMinutes}
+                  onChange={(e) => setLimitTranscriptionMinutes(e.target.value)}
+                />
+              </div>
+              <div className={s.field}>
+                <label className={s.label} htmlFor="pf-video-size">
+                  Tamanho máximo de vídeo (MB)
+                </label>
+                <input
+                  id="pf-video-size"
+                  className={`${s.input} ${p.inputLg}`}
+                  type="number"
+                  min={1}
+                  value={limitVideoSizeMb}
+                  onChange={(e) => setLimitVideoSizeMb(e.target.value)}
+                />
+              </div>
+              <div className={s.field}>
+                <label className={s.label} htmlFor="pf-video-dur">
+                  Duração máxima de vídeo (min)
+                </label>
+                <input
+                  id="pf-video-dur"
+                  className={`${s.input} ${p.inputLg}`}
+                  type="number"
+                  min={1}
+                  value={limitVideoDurationMin}
+                  onChange={(e) => setLimitVideoDurationMin(e.target.value)}
+                />
+              </div>
             </div>
-            <div className={s.field}>
-              <label className={s.label} htmlFor="pf-transcription">
-                Minutos de transcrição por mês
-              </label>
-              <input
-                id="pf-transcription"
-                className={s.input}
-                type="number"
-                min={0}
-                style={{ width: "100%" }}
-                value={limitTranscriptionMinutes}
-                onChange={(e) => setLimitTranscriptionMinutes(e.target.value)}
-              />
-            </div>
-            <div className={s.field}>
-              <label className={s.label} htmlFor="pf-video-size">
-                Tamanho máximo de vídeo (MB)
-              </label>
-              <input
-                id="pf-video-size"
-                className={s.input}
-                type="number"
-                min={1}
-                style={{ width: "100%" }}
-                value={limitVideoSizeMb}
-                onChange={(e) => setLimitVideoSizeMb(e.target.value)}
-              />
-            </div>
-            <div className={s.field}>
-              <label className={s.label} htmlFor="pf-video-dur">
-                Duração máxima de vídeo (minutos)
-              </label>
-              <input
-                id="pf-video-dur"
-                className={s.input}
-                type="number"
-                min={1}
-                style={{ width: "100%" }}
-                value={limitVideoDurationMin}
-                onChange={(e) => setLimitVideoDurationMin(e.target.value)}
-              />
-            </div>
-          </>
+          </div>
         ),
       },
       {
         key: "visibility",
         label: "Visibilidade",
         content: (
-          <>
-            {formErr && wizardStep === 3 ? <p className={s.err} style={{ marginBottom: "0.75rem" }}>{formErr}</p> : null}
+          <div className={p.formSection}>
+            {formErr && wizardStep === 3 ? <p className={s.err}>{formErr}</p> : null}
             <fieldset className={p.fieldset}>
               <legend className={s.label}>Quem pode escolher este plano</legend>
-              <label className={p.radioOpt}>
+              <div className={p.radioGrid}>
+              <label className={`${p.radioOpt} ${visibility === "public" ? p.radioOptActive : ""}`}>
                 <input type="radio" name="vis" checked={visibility === "public"} onChange={() => setVisibility("public")} />
                 <span>
                   <strong>Público na vitrine</strong>
                   <span className={p.radioHint}>Aparece para qualquer organização na página de planos.</span>
                 </span>
               </label>
-              <label className={p.radioOpt}>
+              <label className={`${p.radioOpt} ${visibility === "org" ? p.radioOptActive : ""}`}>
                 <input type="radio" name="vis" checked={visibility === "org"} onChange={() => setVisibility("org")} />
                 <span>
                   <strong>Exclusivo para organização</strong>
                   <span className={p.radioHint}>Só a organização seleccionada pode pagar este plano.</span>
                 </span>
               </label>
+              </div>
             </fieldset>
             {visibility === "org" ? (
-              <div className={s.field} style={{ marginTop: "1rem" }}>
+              <div className={`${s.field} ${p.orgField}`}>
                 <label className={s.label} htmlFor="pf-org">
                   Organização
                 </label>
                 <select
                   id="pf-org"
-                  className={s.input}
-                  style={{ width: "100%" }}
+                  className={`${s.input} ${p.inputLg}`}
                   value={customOrgId}
                   onChange={(e) => setCustomOrgId(e.target.value)}
                 >
@@ -497,7 +499,7 @@ export default function AdminPlanosPage() {
                 </select>
               </div>
             ) : null}
-          </>
+          </div>
         ),
       },
       {
@@ -628,6 +630,8 @@ export default function AdminPlanosPage() {
       <AdminStepModal
         open={wizardOpen}
         title={wizardMode === "create" ? "Novo plano" : "Editar plano"}
+        subtitle="Configure identidade, pagamento, limites e visibilidade do plano comercial."
+        size="xl"
         steps={wizardSteps}
         step={wizardStep}
         onStepChange={handleStepChange}

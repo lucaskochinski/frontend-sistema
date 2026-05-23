@@ -7,10 +7,21 @@ import s from "./AdminModal.module.css";
 
 /**
  * Modal premium para admin (portal, ESC, motion enter/exit).
+ * @param {'default' | 'wide' | 'xl'} [size]
  */
-export default function AdminModal({ open, title, onClose, children, footer, wide = false }) {
+export default function AdminModal({
+  open,
+  title,
+  subtitle,
+  onClose,
+  children,
+  footer,
+  wide = false,
+  size,
+}) {
   const titleId = useId();
   const { mounted, closing } = useModalMotion(open);
+  const resolvedSize = size || (wide ? "wide" : "default");
 
   useEffect(() => {
     if (!mounted) return undefined;
@@ -39,24 +50,27 @@ export default function AdminModal({ open, title, onClose, children, footer, wid
       onMouseDown={(e) => e.target === e.currentTarget && onClose?.()}
     >
       <div
-        className={`${s.dialog} ${wide ? s.dialogWide : ""} ${closing ? s.dialogOut : s.dialogIn}`}
+        className={`${s.dialog} ${s[`dialog_${resolvedSize}`] || ""} ${closing ? s.dialogOut : s.dialogIn}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
       >
         <div className={s.glow} aria-hidden />
         <div className={s.header}>
-          <h2 className={s.title} id={titleId}>
-            {title}
-          </h2>
+          <div className={s.headerText}>
+            <h2 className={s.title} id={titleId}>
+              {title}
+            </h2>
+            {subtitle ? <p className={s.subtitle}>{subtitle}</p> : null}
+          </div>
           <button type="button" className={s.close} onClick={onClose} aria-label="Fechar">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
               <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
             </svg>
           </button>
         </div>
-        <div className={s.body}>{children}</div>
-        {footer ? <div className={s.footer}>{footer}</div> : null}
+        <div className={`${s.body} ${resolvedSize === "xl" ? s.bodyXl : ""}`}>{children}</div>
+        {footer ? <div className={`${s.footer} ${resolvedSize === "xl" ? s.footerXl : ""}`}>{footer}</div> : null}
       </div>
     </div>,
     document.body,

@@ -11,6 +11,7 @@ import s from "./AdminStepModal.module.css";
 export default function AdminStepModal({
   open,
   title,
+  subtitle,
   steps = [],
   step = 0,
   onStepChange,
@@ -19,27 +20,31 @@ export default function AdminStepModal({
   busy = false,
   submitLabel = "Concluir",
   wide = true,
+  size = "xl",
 }) {
   const safeStep = Math.min(Math.max(step, 0), Math.max(steps.length - 1, 0));
   const current = steps[safeStep];
   const isFirst = safeStep === 0;
   const isLast = safeStep >= steps.length - 1;
+  const isXl = size === "xl";
 
   return (
     <AdminModal
       open={open}
       title={title}
+      subtitle={subtitle}
       onClose={onClose}
-      wide={wide}
+      size={size}
+      wide={wide && !isXl}
       footer={
         <>
-          <button type="button" className={shared.btnGhost} onClick={onClose} disabled={busy}>
+          <button type="button" className={`${shared.btnGhost} ${s.footerBtn}`} onClick={onClose} disabled={busy}>
             Cancelar
           </button>
           {!isFirst ? (
             <button
               type="button"
-              className={shared.btnGhost}
+              className={`${shared.btnGhost} ${s.footerBtn}`}
               onClick={() => onStepChange?.(safeStep - 1)}
               disabled={busy}
             >
@@ -47,13 +52,13 @@ export default function AdminStepModal({
             </button>
           ) : null}
           {isLast ? (
-            <button type="button" className={shared.btnPrimary} onClick={onSubmit} disabled={busy}>
+            <button type="button" className={`${shared.btnPrimary} ${s.footerBtnPrimary}`} onClick={onSubmit} disabled={busy}>
               {busy ? "A guardar…" : submitLabel}
             </button>
           ) : (
             <button
               type="button"
-              className={shared.btnPrimary}
+              className={`${shared.btnPrimary} ${s.footerBtnPrimary}`}
               onClick={() => onStepChange?.(safeStep + 1)}
               disabled={busy}
             >
@@ -63,25 +68,39 @@ export default function AdminStepModal({
         </>
       }
     >
-      <div className={s.stepBar} aria-label="Progresso">
-        {steps.map((st, i) => {
-          const done = i < safeStep;
-          const active = i === safeStep;
-          return (
-            <div key={st.key} className={s.stepItem}>
-              <div className={s.stepTrack} aria-hidden>
-                <div className={s.stepTrackFill} style={{ width: done || active ? "100%" : "0%" }} />
-              </div>
-              <span
-                className={`${s.stepLabel} ${active ? s.stepLabelActive : ""} ${done ? s.stepLabelDone : ""}`}
+      <div className={`${s.shell} ${isXl ? s.shellXl : ""}`}>
+        <nav className={s.stepNav} aria-label="Progresso">
+          {steps.map((st, i) => {
+            const done = i < safeStep;
+            const active = i === safeStep;
+            return (
+              <button
+                key={st.key}
+                type="button"
+                className={`${s.stepNavItem} ${active ? s.stepNavItemActive : ""} ${done ? s.stepNavItemDone : ""}`}
+                onClick={() => !busy && i < safeStep && onStepChange?.(i)}
+                disabled={busy || i > safeStep}
+                aria-current={active ? "step" : undefined}
               >
-                {i + 1}. {st.label}
-              </span>
-            </div>
-          );
-        })}
+                <span className={s.stepNum}>{done ? "✓" : i + 1}</span>
+                <span className={s.stepNavLabel}>{st.label}</span>
+              </button>
+            );
+          })}
+        </nav>
+
+        <div className={s.stepMain}>
+          <div className={s.stepHead}>
+            <p className={s.stepKicker}>
+              Passo {safeStep + 1} de {steps.length}
+            </p>
+            <h3 className={s.stepTitle}>{current?.label}</h3>
+          </div>
+          <div key={current?.key} className={s.stepContent}>
+            {current?.content}
+          </div>
+        </div>
       </div>
-      {current?.content}
     </AdminModal>
   );
 }
@@ -90,9 +109,7 @@ export function ReviewRow({ label, value }) {
   return (
     <div className={s.reviewRow}>
       <span className={s.reviewKey}>{label}</span>
-      <span className={`${s.reviewVal} ${typeof value === "string" && value.includes("_") ? s.mono : ""}`}>
-        {value ?? "—"}
-      </span>
+      <span className={s.reviewVal}>{value ?? "—"}</span>
     </div>
   );
 }

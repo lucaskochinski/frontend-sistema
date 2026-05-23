@@ -556,6 +556,7 @@ function AdminUsuariosPageContent() {
       <AdminStepModal
         open={modalCreate}
         title="Novo utilizador"
+        size="wide"
         steps={createSteps}
         step={createStep}
         onStepChange={(next) => {
@@ -582,6 +583,7 @@ function AdminUsuariosPageContent() {
       <AdminStepModal
         open={Boolean(modalEdit)}
         title="Editar utilizador"
+        size="wide"
         steps={editSteps}
         step={editStep}
         onStepChange={(next) => {
