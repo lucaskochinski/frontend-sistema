@@ -1,0 +1,107 @@
+.section {
+  position: relative;
+  overflow: hidden;
+}
+
+.glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 70% 80% at 50% 50%,
+    rgba(212, 175, 55, 0.1) 0%,
+    transparent 68%
+  );
+  pointer-events: none;
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: clamp(2.5rem, 5vw, 3.75rem) 1.5rem;
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.75rem, 4.2vw, 2.75rem);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  color: var(--lp-text);
+}
+
+.lede {
+  margin: 1rem 0 0;
+  font-size: clamp(0.95rem, 1.7vw, 1.08rem);
+  line-height: 1.65;
+  color: var(--lp-text-muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem 1rem;
+  margin-top: 1.75rem;
+}
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.85rem 1.45rem;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  background: linear-gradient(145deg, #f5e0a0 0%, #d4af37 42%, #9a7b28 100%);
+  color: #1a1408;
+  font-size: 0.9rem;
+  font-weight: 750;
+  text-decoration: none;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.35) inset,
+    0 16px 40px rgba(0, 0, 0, 0.4);
+  transition:
+    transform 0.18s var(--lp-ease),
+    filter 0.18s var(--lp-ease);
+}
+
+.btnPrimary:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+.btnGhost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.82rem 1.25rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--lp-text);
+  font-size: 0.88rem;
+  font-weight: 650;
+  text-decoration: none;
+  transition:
+    border-color 0.18s var(--lp-ease),
+    background 0.18s var(--lp-ease);
+}
+
+.btnGhost:hover {
+  border-color: rgba(212, 175, 55, 0.28);
+  background: rgba(212, 175, 55, 0.06);
+}
+
+@media (max-width: 560px) {
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btnPrimary,
+  .btnGhost {
+    justify-content: center;
+  }
+}

@@ -1,0 +1,135 @@
+.section {
+  position: relative;
+  overflow: hidden;
+}
+
+.glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(56rem, 95vw);
+  height: min(24rem, 50vw);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(212, 175, 55, 0.09) 0%,
+    rgba(90, 70, 25, 0.05) 42%,
+    transparent 72%
+  );
+  pointer-events: none;
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  max-width: var(--lp-max);
+  margin: 0 auto;
+  padding: clamp(2.5rem, 5vw, 4rem) 1.5rem clamp(3rem, 6vw, 4.5rem);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  padding: clamp(1.35rem, 2.5vw, 2rem) clamp(1.25rem, 2.2vw, 1.75rem);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.02);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.cardBefore {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cardAfter {
+  border: 1px solid rgba(212, 175, 55, 0.38);
+  background: rgba(212, 175, 55, 0.04);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 0 0 1px rgba(212, 175, 55, 0.06);
+}
+
+.label {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.labelBefore {
+  color: rgba(161, 161, 170, 0.85);
+}
+
+.labelAfter {
+  color: var(--lp-gold);
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.35rem, 2.4vw, 1.85rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--lp-text);
+  line-height: 1.15;
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.65rem;
+  align-items: start;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.itemBefore {
+  color: rgba(161, 161, 170, 0.92);
+}
+
+.itemAfter {
+  color: var(--lp-text);
+}
+
+.iconBefore {
+  margin-top: 0.15rem;
+  color: rgba(113, 113, 122, 0.95);
+  font-size: 0.82rem;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.iconAfter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-top: 0.12rem;
+  border-radius: 999px;
+  background: rgba(212, 175, 55, 0.16);
+  color: var(--lp-gold);
+  font-size: 0.62rem;
+  line-height: 1;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .inner {
+    grid-template-columns: 1fr;
+  }
+}

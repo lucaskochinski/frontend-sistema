@@ -1,0 +1,11 @@
+export { default as LandingHeader } from "./LandingHeader/LandingHeader";
+export { default as LandingHero } from "./LandingHero/LandingHero";
+export { default as LandingFormula } from "./LandingFormula/LandingFormula";
+export { default as LandingMarketTruth } from "./LandingMarketTruth/LandingMarketTruth";
+export { default as LandingProblem } from "./LandingProblem/LandingProblem";
+export { default as LandingDifferentiator } from "./LandingDifferentiator/LandingDifferentiator";
+export { default as LandingComparison } from "./LandingComparison/LandingComparison";
+export { default as LandingAudience } from "./LandingAudience/LandingAudience";
+export { default as LandingCta } from "./LandingCta/LandingCta";
+export { default as LandingPricing } from "./LandingPricing/LandingPricing";
+export { default as LandingFooter } from "./LandingFooter/LandingFooter";

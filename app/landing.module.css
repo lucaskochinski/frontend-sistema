@@ -1,0 +1,25 @@
+.page {
+  min-height: 100dvh;
+  color: #fafafa;
+  background-color: #000000;
+  background-image: linear-gradient(225deg, #1f1e1c 0%, #121110 42%, #070706 78%, #000000 100%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  --lp-bg: #121110;
+  --lp-bg-glow: rgba(212, 175, 55, 0.14);
+  --lp-gold: #d4af37;
+  --lp-gold-bright: #f5e6a8;
+  --lp-gold-muted: rgba(212, 175, 55, 0.55);
+  --lp-text: #fafafa;
+  --lp-text-muted: #a1a1aa;
+  --lp-border: rgba(212, 175, 55, 0.22);
+  --lp-border-soft: rgba(255, 255, 255, 0.08);
+  --lp-max: 76rem;
+  --lp-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.page main :is(section[id]) {
+  scroll-margin-top: 5rem;
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -10,27 +10,23 @@ import {
   fetchCheckoutPlans,
   formatPlanPrice,
   hasActiveBillingAccess,
+  isPopularPlan,
+  pickDefaultCheckoutPlan,
   planFeatureList,
   planPitch,
+  resolvePreferredPlanId,
+  setPendingPlanId,
   startCheckout,
 } from "@/lib/billing";
 import { getStoredAccessToken, getStoredOrganizationId } from "@/lib/hooko-session";
 import styles from "./page.module.css";
 
-function isPopularPlan(plan, index, total) {
-  const tag = `${plan?.displayName || ""} ${plan?.tierKey || ""}`.toLowerCase();
-  if (tag.includes("pro")) return true;
-  return total >= 3 && index === 1;
-}
-
-function planFeatures(plan) {
-  return planFeatureList(plan);
-}
-
 function CheckoutPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const upgradeMode = searchParams.get("mode") === "upgrade";
+  const preferredPlanId = resolvePreferredPlanId(searchParams);
+  const appliedPreferredRef = useRef(false);
 
   const [loading, setLoading] = useState(true);
   const [plans, setPlans] = useState([]);
@@ -82,15 +78,25 @@ function CheckoutPageInner() {
         const items = Array.isArray(res.items) ? res.items : [];
         setPlans(items);
 
+        const resolvedPreferredId = resolvePreferredPlanId(searchParams);
+        if (resolvedPreferredId) {
+          setPendingPlanId(resolvedPreferredId);
+        }
+
         if (items.length > 0) {
-          const current = planId ? items.find((p) => p.id === String(planId)) : null;
-          const pro = items.find((p) => {
-            const tag = `${p.displayName || ""} ${p.tierKey || ""}`.toLowerCase();
-            return tag.includes("pro");
+          const defaultPlan = pickDefaultCheckoutPlan(items, {
+            preferredPlanId: resolvedPreferredId,
+            currentPlanId: planId,
           });
-          const defaultPlan =
-            current || pro || items.find((p) => p.canCheckout) || items[0];
-          setSelectedPlanId(defaultPlan?.id || items[0].id);
+          if (defaultPlan) {
+            setSelectedPlanId(defaultPlan.id);
+            if (
+              resolvedPreferredId &&
+              defaultPlan.id === String(resolvedPreferredId)
+            ) {
+              appliedPreferredRef.current = true;
+            }
+          }
         }
       } catch (e) {
         if (!cancelled) setErr(e?.message || "Erro ao carregar planos");
@@ -102,7 +108,20 @@ function CheckoutPageInner() {
     return () => {
       cancelled = true;
     };
-  }, [router, upgradeMode]);
+  }, [router, searchParams, upgradeMode]);
+
+  useEffect(() => {
+    if (appliedPreferredRef.current || !plans.length) return;
+    const resolvedPreferredId = resolvePreferredPlanId(searchParams);
+    if (!resolvedPreferredId) return;
+
+    const match = plans.find((p) => p.id === String(resolvedPreferredId));
+    if (!match) return;
+
+    setPendingPlanId(resolvedPreferredId);
+    setSelectedPlanId(match.id);
+    appliedPreferredRef.current = true;
+  }, [plans, searchParams]);
 
   useEffect(() => {
     if (!loading && !hasPlan) {
@@ -171,7 +190,9 @@ function CheckoutPageInner() {
             <p className={styles.lead}>
               {upgradeMode
                 ? "Planos públicos e exclusivos da sua organização. O plano actual está assinalado."
-                : "Seleccione um plano. O resumo actualiza em tempo real — pagamento seguro online."}
+                : preferredPlanId
+                  ? "Plano pré-seleccionado no registo — pode trocar abaixo antes de pagar."
+                  : "Seleccione um plano. O resumo actualiza em tempo real — pagamento seguro online."}
             </p>
           </div>
 
@@ -188,7 +209,7 @@ function CheckoutPageInner() {
                 const selected = plan.id === selectedPlanId;
                 const isCurrent = currentPlanId && plan.id === currentPlanId;
                 const popular = !isCurrent && isPopularPlan(plan, index, plans.length);
-                const features = planFeatures(plan);
+                const features = planFeatureList(plan);
 
                 return (
                   <li key={plan.id} className={styles.planItem} style={{ "--i": index }}>
@@ -247,7 +268,7 @@ function CheckoutPageInner() {
                 </div>
 
                 <ul className={styles.summaryFeatures}>
-                  {planFeatures(selectedPlan).map((feat) => (
+                  {planFeatureList(selectedPlan).map((feat) => (
                     <li key={feat}>
                       <span className={styles.checkIcon} aria-hidden>
                         ✓

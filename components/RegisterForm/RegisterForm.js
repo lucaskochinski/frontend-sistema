@@ -2,12 +2,13 @@
 
 import styles from "@/components/AuthFormShared/AuthFormShared.module.css";
 import AuthFormLayout from "@/components/AuthFormLayout/AuthFormLayout";
+import RegisterPlanPanel from "@/components/RegisterPlanPanel/RegisterPlanPanel";
 import Link from "next/link";
 import { useState } from "react";
 import Skeleton from "@/components/Skeleton/Skeleton";
 import AuthPasswordField from "@/components/AuthPasswordField/AuthPasswordField";
 import { translateApiMessage } from "@/lib/api-messages";
-import { markCheckoutRequired } from "@/lib/billing";
+import { markCheckoutRequired, setPendingPlanId } from "@/lib/billing";
 import { persistSession, getApiBase } from "@/lib/hooko-session";
 
 const USE_MOCK = false;
@@ -66,7 +67,7 @@ async function registerRequest(payload) {
   return data;
 }
 
-export default function RegisterForm({ onSuccess }) {
+export default function RegisterForm({ onSuccess, selectedPlanId = null }) {
   const [organizationName, setOrganizationName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -89,6 +90,7 @@ export default function RegisterForm({ onSuccess }) {
         accessToken: data.accessToken,
         organizationId: data.organizationId,
       });
+      if (selectedPlanId) setPendingPlanId(selectedPlanId);
       markCheckoutRequired();
       onSuccess?.();
     } catch (err) {
@@ -110,9 +112,15 @@ export default function RegisterForm({ onSuccess }) {
         </div>
       ) : (
         <>
+          {selectedPlanId ? <RegisterPlanPanel planId={selectedPlanId} /> : null}
+
           <header className={styles.header}>
             <h2 className={styles.cardTitle}>Criar conta</h2>
-            <p className={styles.cardSub}>Workspace + identidade em um fluxo único.</p>
+            <p className={styles.cardSub}>
+              {selectedPlanId
+                ? "Preencha os dados abaixo para continuar ao checkout."
+                : "Workspace + identidade em um fluxo único."}
+            </p>
           </header>
 
           <form className={styles.form} onSubmit={onSubmit} noValidate>
