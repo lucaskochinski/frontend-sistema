@@ -562,6 +562,13 @@
   color: rgb(252, 165, 165);
 }
 
+.dialogSuccess {
+  margin: 0 0 0.85rem;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: rgb(134, 239, 172);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .btnUpgrade:hover {
     transform: none;

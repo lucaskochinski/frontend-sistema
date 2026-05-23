@@ -1,9 +1,18 @@
 .formPage {
-  max-width: 30rem;
+  max-width: 56rem;
 }
 
-.card {
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
   margin-top: 0.5rem;
+}
+
+.splitCard {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem 1.75rem;
   padding: 1.45rem 1.4rem 1.55rem;
   border-radius: 18px;
   border: 1px solid rgba(212, 175, 55, 0.22);
@@ -13,6 +22,57 @@
   box-shadow:
     0 0 0 1px rgba(0, 0, 0, 0.45) inset,
     0 22px 56px rgba(0, 0, 0, 0.45);
+}
+
+.splitExplain {
+  min-width: 0;
+}
+
+.splitControl {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding-left: 0.25rem;
+  border-left: 1px solid rgba(212, 175, 55, 0.14);
+}
+
+.splitTitle {
+  margin: 0 0 0.65rem;
+  font-size: 1rem;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  color: var(--hooko-text);
+}
+
+.explainBody {
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--hooko-text-muted);
+}
+
+.explainBody p {
+  margin: 0 0 0.65rem;
+}
+
+.explainBody p:last-child {
+  margin-bottom: 0;
+}
+
+.explainList {
+  margin: 0.75rem 0 0;
+  padding-left: 1.15rem;
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+.explainList li + li {
+  margin-top: 0.35rem;
+}
+
+.explainList strong {
+  color: rgba(253, 230, 168, 0.92);
+  font-weight: 650;
 }
 
 .field {
@@ -54,11 +114,16 @@
   box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
 }
 
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+}
+
 .btnPlatinum {
   appearance: none;
   cursor: pointer;
-  margin-top: 1.35rem;
-  width: 100%;
   font-family: inherit;
   font-size: 0.88rem;
   font-weight: 700;
@@ -88,7 +153,7 @@
 }
 
 .success {
-  margin-top: 1rem;
+  margin: 0;
   padding: 0.62rem 0.75rem;
   border-radius: 11px;
   border: 1px solid rgba(167, 243, 208, 0.35);
@@ -97,20 +162,19 @@
   color: rgb(204, 251, 229);
 }
 
-.mockPill {
-  display: inline-flex;
-  margin-top: 0.45rem;
-  padding: 0.28rem 0.55rem;
-  border-radius: 999px;
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  border: 1px solid rgba(212, 175, 55, 0.38);
-  background: rgba(212, 175, 55, 0.1);
-  color: rgba(253, 230, 138, 0.95);
-}
-
 .skeletonBlock {
   margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .splitCard {
+    grid-template-columns: 1fr;
+  }
+
+  .splitControl {
+    padding-left: 0;
+    padding-top: 1rem;
+    border-left: none;
+    border-top: 1px solid rgba(212, 175, 55, 0.14);
+  }
 }

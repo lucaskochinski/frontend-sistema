@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { apiFetch, getStoredOrganizationId } from "@/lib/hooko-session";
 import styles from "./page.module.css";
 import dash from "@/components/Dashboard/dashboard.module.css";
@@ -115,11 +115,121 @@ function GatewayLockedBlock({ overview }) {
   );
 }
 
+function AdMultiSelect({ ads, selectedIds, onChange }) {
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) return undefined;
+
+    function onPointerDown(event) {
+      if (wrapRef.current && !wrapRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", onPointerDown);
+    return () => document.removeEventListener("mousedown", onPointerDown);
+  }, [open]);
+
+  const summary = useMemo(() => {
+    if (!ads.length) return "Nenhum anúncio importado";
+    if (!selectedIds.length) return "Todos os anúncios";
+    if (selectedIds.length === 1) {
+      const ad = ads.find((item) => item.adId === selectedIds[0]);
+      return ad?.adName || "1 anúncio";
+    }
+    return `${selectedIds.length} anúncios selecionados`;
+  }, [ads, selectedIds]);
+
+  function toggleAd(adId) {
+    if (selectedIds.includes(adId)) {
+      onChange(selectedIds.filter((id) => id !== adId));
+      return;
+    }
+    onChange([...selectedIds, adId]);
+  }
+
+  return (
+    <div className={styles.dropWrap} ref={wrapRef}>
+      <button
+        type="button"
+        className={styles.dropTrigger}
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        disabled={!ads.length}
+        onClick={() => setOpen((prev) => !prev)}
+      >
+        <span className={styles.dropSummary}>{summary}</span>
+      </button>
+
+      {open && ads.length ? (
+        <div className={styles.dropPanel} role="listbox" aria-multiselectable="true">
+          <div className={styles.checkboxGrid}>
+            {ads.map((ad) => (
+              <label key={ad.adId} className={styles.chkLabel}>
+                <input
+                  type="checkbox"
+                  checked={selectedIds.includes(ad.adId)}
+                  onChange={() => toggleAd(ad.adId)}
+                />
+                <span>{ad.adName || `Anúncio ${ad.adId.slice(0, 8)}`}</span>
+              </label>
+            ))}
+          </div>
+          <div className={styles.dropPanelFooter}>
+            <button
+              type="button"
+              className={styles.linkBtn}
+              onClick={() => {
+                onChange([]);
+                setOpen(false);
+              }}
+            >
+              Todos
+            </button>
+            <button
+              type="button"
+              className={styles.linkBtn}
+              onClick={() => {
+                onChange(ads.map((ad) => ad.adId));
+              }}
+            >
+              Seleccionar todos
+            </button>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 export default function DashboardClient() {
   const [loading, setLoading] = useState(true);
   const [overview, setOverview] = useState(null);
   const [sales, setSales] = useState(null);
+  const [ads, setAds] = useState([]);
+  const [selectedAdIds, setSelectedAdIds] = useState([]);
   const [dateFilter, setDateFilter] = useState("month");
+
+  useEffect(() => {
+    async function loadAds() {
+      try {
+        const orgId = getStoredOrganizationId();
+        if (!orgId) return;
+
+        const res = await apiFetch(
+          `/api/dashboard/insights?organizationId=${orgId}&limit=200&sort=roas`,
+        ).catch(() => null);
+
+        setAds(res?.items || []);
+      } catch (err) {
+        console.error("Erro ao carregar anúncios:", err);
+      }
+    }
+
+    loadAds();
+  }, []);
 
   useEffect(() => {
     async function loadRealData() {
@@ -129,8 +239,15 @@ export default function DashboardClient() {
         if (!orgId) return;
 
         const periodParam = encodeURIComponent(dateFilter);
+        const adIdsParam =
+          selectedAdIds.length > 0
+            ? `&adIds=${encodeURIComponent(selectedAdIds.join(","))}`
+            : "";
+
         const [overviewRes, salesRes] = await Promise.all([
-          apiFetch(`/api/dashboard/overview?organizationId=${orgId}&period=${periodParam}`).catch(() => null),
+          apiFetch(
+            `/api/dashboard/overview?organizationId=${orgId}&period=${periodParam}${adIdsParam}`,
+          ).catch(() => null),
           apiFetch(`/api/dashboard/external-sales/pagtrust?organizationId=${orgId}&period=${periodParam}`).catch(
             () => null,
           ),
@@ -145,7 +262,7 @@ export default function DashboardClient() {
       }
     }
     loadRealData();
-  }, [dateFilter]);
+  }, [dateFilter, selectedAdIds]);
 
   const totalSpend = Number(overview?.totalSpend || 0);
   const metaPurchaseRevenue = Number(overview?.delivery?.purchaseRevenue || 0);
@@ -181,9 +298,16 @@ export default function DashboardClient() {
           <p className={styles.sub}>
             Meta Ads — gráficos activos; gateway bloqueado no final.
             {overview?.dateRange ? ` Período: ${overview.dateRange.since} → ${overview.dateRange.until}.` : ""}
+            {selectedAdIds.length
+              ? ` Filtrando ${selectedAdIds.length} anúncio${selectedAdIds.length > 1 ? "s" : ""}.`
+              : ""}
           </p>
         </div>
-        <div className={styles.filters}>
+        <div className={styles.filtersBlock}>
+          <label className={`${styles.field} ${styles.campaignField}`}>
+            <span className={styles.fieldLabel}>Anúncios</span>
+            <AdMultiSelect ads={ads} selectedIds={selectedAdIds} onChange={setSelectedAdIds} />
+          </label>
           <label className={styles.field}>
             <span className={styles.fieldLabel}>Período</span>
             <select

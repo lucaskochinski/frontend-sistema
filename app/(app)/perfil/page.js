@@ -3,11 +3,11 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import {
+  cancelSubscriptionAtPeriodEnd,
   fetchBillingStatus,
   fetchMeProfile,
   formatPlanPrice,
   formatSubscriptionRenewal,
-  openBillingPortal,
   planFeatureList,
   planPitch,
   subscriptionBadgeLabel,
@@ -57,6 +57,7 @@ export default function PerfilPage() {
   const [cancelOpen, setCancelOpen] = useState(false);
   const [cancelBusy, setCancelBusy] = useState(false);
   const [cancelErr, setCancelErr] = useState("");
+  const [cancelSuccess, setCancelSuccess] = useState("");
   const [planLoading, setPlanLoading] = useState(true);
   const [billing, setBilling] = useState(null);
 
@@ -117,6 +118,7 @@ export default function PerfilPage() {
     if (!cancelOpen) return;
     document.body.style.overflow = "hidden";
     setCancelErr("");
+    setCancelSuccess("");
     const onKey = (e) => {
       if (e.key === "Escape") setCancelOpen(false);
     };
@@ -149,20 +151,23 @@ export default function PerfilPage() {
     router.push("/checkout?mode=upgrade");
   }, [router]);
 
-  const handleOpenCancelPortal = useCallback(async () => {
+  const handleConfirmCancel = useCallback(async () => {
     setCancelErr("");
     setCancelBusy(true);
     try {
-      const data = await openBillingPortal("/perfil");
-      if (!data?.portalUrl) {
-        setCancelErr("Portal de facturação indisponível. Confirme se já tem subscrição activa.");
-      }
+      const data = await cancelSubscriptionAtPeriodEnd();
+      const status = await fetchBillingStatus();
+      if (status) setBilling(status);
+      setCancelSuccess(data?.message || "Renovação automática cancelada com sucesso.");
+      window.setTimeout(() => setCancelOpen(false), 1800);
     } catch (e) {
-      setCancelErr(e?.message || "Não foi possível abrir o portal Stripe.");
+      setCancelErr(e?.message || "Não foi possível cancelar a renovação automática.");
     } finally {
       setCancelBusy(false);
     }
   }, []);
+
+  const cancelAlreadyScheduled = Boolean(sub?.cancelAtPeriodEnd);
 
   return (
     <div className={styles.page}>
@@ -333,12 +338,12 @@ export default function PerfilPage() {
                 type="button"
                 className={styles.btnCancelSub}
                 onClick={() => setCancelOpen(true)}
-                disabled={!billing?.hasActiveSubscription && !billing?.bypass}
+                disabled={(!billing?.hasActiveSubscription && !billing?.bypass) || cancelAlreadyScheduled}
               >
-                Cancelar subscrição
+                {cancelAlreadyScheduled ? "Renovação já cancelada" : "Cancelar subscrição"}
               </button>
               <p className={styles.subNote}>
-                Upgrade abre o checkout com planos públicos ou exclusivos da sua org. Cancelar abre o portal Stripe.
+                Upgrade abre o checkout com planos públicos ou exclusivos da sua org. Cancelar para a cobrança automática no fim do período.
               </p>
             </div>
           </div>
@@ -355,21 +360,22 @@ export default function PerfilPage() {
             aria-labelledby={cancelDialogTitleId}
           >
             <h3 id={cancelDialogTitleId} className={styles.dialogTitle}>
-              Cancelar subscrição
+              Cancelar renovação automática
             </h3>
             <p className={styles.dialogBody}>
-              Vais ser redireccionado para o portal seguro da Stripe para gerir pagamentos, alterar plano ou cancelar a
-              subscrição. O acesso mantém-se até ao fim do período já pago.
+              O teu plano continua activo até ao fim do período já pago. Depois disso não haverá nova cobrança no cartão
+              — o pagamento recorrente fica cancelado aqui no HOOKO.
             </p>
+            {cancelSuccess ? <p className={styles.dialogSuccess}>{cancelSuccess}</p> : null}
             {cancelErr ? <p className={styles.dialogError}>{cancelErr}</p> : null}
             <div className={styles.dialogActions}>
               <button
                 type="button"
-                className={styles.btnPrimary}
-                disabled={cancelBusy}
-                onClick={handleOpenCancelPortal}
+                className={styles.btnCancelSub}
+                disabled={cancelBusy || Boolean(cancelSuccess)}
+                onClick={handleConfirmCancel}
               >
-                {cancelBusy ? "A abrir portal…" : "Abrir portal de facturação"}
+                {cancelBusy ? "A cancelar…" : "Confirmar cancelamento"}
               </button>
               <button
                 ref={closeBtnRef}
