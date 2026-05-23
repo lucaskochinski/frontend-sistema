@@ -114,20 +114,32 @@ export default function AdminConfiguracoesPage() {
               </div>
 
               <div className={c.splitControl}>
-                <label className={c.field} htmlFor="cron-sync">
-                  <span className={c.label}>Horário (UTC)</span>
-                  <input
-                    id="cron-sync"
-                    className={c.timeInput}
-                    type="time"
-                    value={syncTime}
-                    onChange={(e) => setSyncTime(e.target.value)}
-                    step={60}
-                  />
-                  <p className={c.hint}>
-                    Ex.: <span className={s.mono}>03:00</span> UTC ≈ 00:00 em Brasília (sem horário de verão).
-                  </p>
-                </label>
+                <div className={c.controlPanel}>
+                  <p className={c.controlKicker}>Controlo</p>
+                  <label className={c.field} htmlFor="cron-sync">
+                    <span className={c.label}>Horário de execução (UTC)</span>
+                    <div className={c.timeRow}>
+                      <input
+                        id="cron-sync"
+                        className={c.timeInput}
+                        type="time"
+                        value={syncTime}
+                        onChange={(e) => setSyncTime(e.target.value)}
+                        step={60}
+                      />
+                      <div className={c.timePreview} aria-hidden="true">
+                        <span className={c.timePreviewValue}>{syncTime}</span>
+                        <span className={c.timePreviewTz}>UTC</span>
+                      </div>
+                    </div>
+                    <p className={c.hint}>
+                      Chave na API: <span className={s.mono}>DAILY_SYNC_TIME</span>
+                    </p>
+                    <p className={c.hint}>
+                      Ex.: <span className={s.mono}>03:00</span> UTC ≈ 00:00 em Brasília (sem horário de verão).
+                    </p>
+                  </label>
+                </div>
               </div>
             </section>
           ))}
