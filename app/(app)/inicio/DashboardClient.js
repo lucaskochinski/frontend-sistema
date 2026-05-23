@@ -23,7 +23,6 @@ import {
   MetaRankingsGrid,
   MetaExtendedSection,
   MetaSecondaryMetrics,
-  MetaRevenueChart,
   MetaCumulativeRevenueSpendChart,
   FutureFeatureLock,
 } from "@/components/Dashboard";
@@ -68,17 +67,12 @@ function buildMetaProfitByHour(metaExtended, purchaseRevenue) {
   });
 }
 
-function GatewayLockedBlock({ overview }) {
+function GatewayLockedBlock() {
   return (
     <>
       <p className={dash.gatewayIntro}>
-        Estes blocos dependem de webhook PagTrust / Vturb / Utmify (faturamento real do checkout).
-        A Meta cobre gasto, conversões atribuídas e breakdowns — já visíveis acima.
+        Blocos abaixo dependem de integrações ainda não activas (Vturb / Utmify).
       </p>
-
-      <FutureFeatureLock {...GATEWAY_LOCK}>
-        <PagTrustRevenueChart data={[]} dateRange={overview?.dateRange} />
-      </FutureFeatureLock>
 
       <div className={dash.row2}>
         <FutureFeatureLock {...GATEWAY_LOCK}>
@@ -93,10 +87,6 @@ function GatewayLockedBlock({ overview }) {
         <SecondaryMetricsGrid metrics={{}} />
       </FutureFeatureLock>
 
-      <FutureFeatureLock {...GATEWAY_LOCK}>
-        <ProfitByHourChart data={[]} />
-      </FutureFeatureLock>
-
       <div className={dash.row3}>
         <FutureFeatureLock {...GATEWAY_LOCK}>
           <SalesByProductList items={[]} />
@@ -105,14 +95,6 @@ function GatewayLockedBlock({ overview }) {
           <ApprovalRateChart rates={[]} />
         </FutureFeatureLock>
       </div>
-
-      <FutureFeatureLock {...GATEWAY_LOCK}>
-        <SalesByHourChart data={[]} variant="pagtrust" />
-      </FutureFeatureLock>
-
-      <FutureFeatureLock {...GATEWAY_LOCK}>
-        <SalesByDayOfWeekChart data={[]} variant="pagtrust" />
-      </FutureFeatureLock>
     </>
   );
 }
@@ -120,6 +102,7 @@ function GatewayLockedBlock({ overview }) {
 export default function DashboardClient() {
   const [loading, setLoading] = useState(true);
   const [overview, setOverview] = useState(null);
+  const [sales, setSales] = useState(null);
   const [dateFilter, setDateFilter] = useState("month");
 
   useEffect(() => {
@@ -130,11 +113,15 @@ export default function DashboardClient() {
         if (!orgId) return;
 
         const periodParam = encodeURIComponent(dateFilter);
-        const overviewRes = await apiFetch(
-          `/api/dashboard/overview?organizationId=${orgId}&period=${periodParam}`,
-        ).catch(() => null);
+        const [overviewRes, salesRes] = await Promise.all([
+          apiFetch(`/api/dashboard/overview?organizationId=${orgId}&period=${periodParam}`).catch(() => null),
+          apiFetch(`/api/dashboard/external-sales/pagtrust?organizationId=${orgId}&period=${periodParam}`).catch(
+            () => null,
+          ),
+        ]);
 
         setOverview(overviewRes);
+        setSales(salesRes);
       } catch (err) {
         console.error("Erro ao puxar dados do Dashboard:", err);
       } finally {
@@ -145,11 +132,20 @@ export default function DashboardClient() {
   }, [dateFilter]);
 
   const totalSpend = Number(overview?.totalSpend || 0);
+  const totalRevenue = Number(sales?.totalRevenue || 0);
   const metaPurchaseRevenue = Number(overview?.delivery?.purchaseRevenue || 0);
   const metaRoas =
     overview?.delivery?.roas ??
     overview?.globalRoasWeighted ??
     (totalSpend > 0 ? metaPurchaseRevenue / totalSpend : null);
+
+  const secondaryMetrics = useMemo(
+    () => ({
+      ...(sales?.secondaryMetrics || {}),
+      creativeAnalyses: overview?.creativeAnalysesCount ?? sales?.secondaryMetrics?.creativeAnalyses ?? 0,
+    }),
+    [sales, overview],
+  );
 
   const metaHourly = useMemo(() => buildMetaHourlyChart(overview?.metaExtended), [overview]);
   const metaDayOfWeek = useMemo(() => buildMetaDayOfWeekChart(overview?.dailyMeta), [overview]);
@@ -163,7 +159,7 @@ export default function DashboardClient() {
       <div className={styles.page}>
         <div className={styles.loadingContainer}>
           <h2 className={styles.title}>Carregando dashboard…</h2>
-          <p className={styles.sub}>Meta Ads</p>
+          <p className={styles.sub}>Meta Ads + PagTrust</p>
         </div>
       </div>
     );
@@ -176,8 +172,8 @@ export default function DashboardClient() {
           <p className={styles.kicker}>Principal</p>
           <h1 className={styles.title}>Dashboard</h1>
           <p className={styles.sub}>
-            Meta Ads — gráficos activos com dados da API; gateway bloqueado no final.
-            {overview?.dateRange ? ` Período: ${overview.dateRange.since} → ${overview.dateRange.until}.` : ""}
+            Meta Ads + PagTrust
+            {overview?.dateRange ? ` · Período: ${overview.dateRange.since} → ${overview.dateRange.until}` : ""}
           </p>
         </div>
         <div className={styles.filters}>
@@ -197,26 +193,38 @@ export default function DashboardClient() {
       </header>
 
       <div className={dash.dashboardGrid}>
-        <DashboardSection title="Resumo Meta">
+        <DashboardSection title="Resumo">
           <SummaryKpiCards
+            revenue={totalRevenue}
             spend={totalSpend}
-            metaPurchaseRevenue={metaPurchaseRevenue}
+            roi={totalSpend > 0 ? totalRevenue / totalSpend : 0}
+            profit={totalRevenue - totalSpend}
             metaRoas={metaRoas != null ? Number(metaRoas) : null}
           />
-          <MetaRevenueChart data={overview?.dailyMeta} dateRange={overview?.dateRange} />
+
+          <PagTrustRevenueChart
+            data={sales?.revenueByDay}
+            dateRange={sales?.dateRange || overview?.dateRange}
+          />
+
           <div className={dash.row2}>
             <MetaDailySpendChart data={overview?.dailyMeta} />
             <MetaCumulativeRevenueSpendChart data={overview?.dailyMeta} />
           </div>
+
           <MetaSecondaryMetrics overview={overview} />
         </DashboardSection>
 
-        <DashboardSection title="Lucro Meta por horário">
-          <ProfitByHourChart data={metaProfitByHour} variant="meta" />
+        <DashboardSection title="Lucro e faturamento">
+          <ProfitByHourChart data={sales?.profitByHour?.length ? sales.profitByHour : metaProfitByHour} variant={sales?.profitByHour?.length ? "pagtrust" : "meta"} />
         </DashboardSection>
 
-        <DashboardSection title="Funil & conversão Meta">
-          <MetaConversionFunnel funnel={overview?.conversionFunnel || overview?.funnel} />
+        <DashboardSection title="Funil de conversão">
+          <MetaConversionFunnel
+            funnel={overview?.conversionFunnel || overview?.funnel}
+            salesInitiated={sales?.totalSales}
+            salesApproved={sales?.approvedSales}
+          />
         </DashboardSection>
 
         <DashboardSection title="Performance dos criativos">
@@ -224,18 +232,30 @@ export default function DashboardClient() {
           <MetaMetricsSection overview={overview} />
         </DashboardSection>
 
-        <DashboardSection title="Horários & tráfego Meta">
-          <SalesBySourceList metaItems={overview?.metaTrafficSources} />
-          <SalesByHourChart data={metaHourly} variant="meta" />
-          <SalesByDayOfWeekChart data={metaDayOfWeek} variant="meta" />
+        <DashboardSection title="Horários & tráfego">
+          <SalesBySourceList
+            pagtrustItems={sales?.salesBySource}
+            metaItems={overview?.metaTrafficSources}
+          />
+          <SalesByHourChart
+            data={sales?.revenueByHour?.length ? sales.revenueByHour : metaHourly}
+            variant={sales?.revenueByHour?.length ? "pagtrust" : "meta"}
+          />
+          <div className={dash.row2}>
+            <SalesByDayOfWeekChart
+              data={sales?.salesByDayOfWeek?.length ? sales.salesByDayOfWeek : metaDayOfWeek}
+              variant={sales?.salesByDayOfWeek?.length ? "pagtrust" : "meta"}
+            />
+            <MetaDailySpendChart data={overview?.dailyMeta} />
+          </div>
         </DashboardSection>
 
         <DashboardSection title="Marketing API Meta (completo)">
           <MetaExtendedSection metaExtended={overview?.metaExtended} />
         </DashboardSection>
 
-        <DashboardSection title="Gateway PagTrust / Vturb / Utmify">
-          <GatewayLockedBlock overview={overview} />
+        <DashboardSection title="Integrações em breve">
+          <GatewayLockedBlock />
         </DashboardSection>
       </div>
     </div>

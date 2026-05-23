@@ -394,15 +394,13 @@
   color: var(--hooko-text);
 }
 
-/* Receitas PagTrust — card com linha dourada (identidade HOOKO) */
+/* Receitas PagTrust — card roxo estilo UTMify */
 .pagtrustRevenueCard {
   border-radius: 16px;
   padding: 1.25rem 1.35rem 1.1rem;
-  background:
-    radial-gradient(ellipse 80% 60% at 100% 0%, rgba(212, 175, 55, 0.14), transparent 55%),
-    var(--hooko-card-bg);
-  border: 1px solid rgba(212, 175, 55, 0.32);
-  box-shadow: 0 16px 44px rgba(212, 175, 55, 0.1);
+  background: linear-gradient(to right, #4f46e5, #6366f1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 16px 44px rgba(79, 70, 229, 0.35);
 }
 
 .pagtrustRevenueHead {
@@ -417,14 +415,14 @@
   margin: 0;
   font-size: 1.05rem;
   font-weight: 700;
-  color: var(--hooko-text);
+  color: #fff;
   letter-spacing: -0.02em;
 }
 
 .pagtrustRevenueRange {
   margin: 0.25rem 0 0;
   font-size: 0.68rem;
-  color: var(--hooko-text-muted);
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .pagtrustRevenueMeta {
@@ -438,15 +436,15 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--hooko-gold-bright);
+  color: #fff;
   padding: 0.18rem 0.45rem;
   border-radius: 999px;
-  border: 1px solid rgba(212, 175, 55, 0.35);
-  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .pagtrustExpandBtn {
-  color: var(--hooko-gold);
+  color: rgba(255, 255, 255, 0.9);
   display: grid;
   place-items: center;
 }
@@ -459,7 +457,7 @@
   margin: 0;
   padding: 2.5rem 1rem;
   text-align: center;
-  color: var(--hooko-text-muted);
+  color: rgba(255, 255, 255, 0.85);
   font-size: 0.85rem;
   line-height: 1.5;
 }
@@ -468,7 +466,7 @@
   display: block;
   margin-top: 0.5rem;
   font-size: 0.72rem;
-  color: var(--hooko-text-muted);
+  color: rgba(255, 255, 255, 0.65);
 }
 
 .rankingsGrid {
