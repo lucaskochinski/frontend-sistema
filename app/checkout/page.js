@@ -38,18 +38,26 @@ function formatVideo(limits) {
   return parts.join(" · ");
 }
 
-function planPitch(tierKey) {
-  const key = String(tierKey || "").toLowerCase();
-  if (key.includes("starter") || key === "starter") {
+function planPitch(plan) {
+  const name = String(plan?.displayName || "").toLowerCase();
+  const key = String(plan?.tierKey || "").toLowerCase();
+  const tag = `${name} ${key}`;
+  if (tag.includes("starter")) {
     return "Ideal para validar criativos e começar a escalar com Meta Ads.";
   }
-  if (key.includes("pro") || key === "pro") {
+  if (tag.includes("pro")) {
     return "Para equipas que importam volume e precisam de insights consistentes.";
   }
-  if (key.includes("scale") || key === "scale") {
+  if (tag.includes("scale")) {
     return "Operação avançada, alto volume e limites generosos para crescer sem travas.";
   }
   return "Plano pensado para a sua operação de performance e criativos.";
+}
+
+function isPopularPlan(plan, index, total) {
+  const tag = `${plan?.displayName || ""} ${plan?.tierKey || ""}`.toLowerCase();
+  if (tag.includes("pro")) return true;
+  return total >= 3 && index === 1;
 }
 
 function planFeatures(plan) {
@@ -60,12 +68,6 @@ function planFeatures(plan) {
     formatVideo(limits),
     Number(plan?.trialDays) > 0 ? `${plan.trialDays} dias para testar grátis` : "Facturação mensal",
   ].filter(Boolean);
-}
-
-function isPopularPlan(tierKey, index, total) {
-  const key = String(tierKey || "").toLowerCase();
-  if (key.includes("pro")) return true;
-  return total >= 3 && index === 1;
 }
 
 function formatPlanPrice(plan) {
@@ -121,8 +123,12 @@ export default function CheckoutPage() {
         const items = Array.isArray(res.items) ? res.items : [];
         setPlans(items);
         if (items.length > 0) {
-          const pro = items.find((p) => String(p.tierKey || "").toLowerCase().includes("pro"));
-          setSelectedPlanId(pro?.id || items[0].id);
+          const pro = items.find((p) => {
+            const tag = `${p.displayName || ""} ${p.tierKey || ""}`.toLowerCase();
+            return tag.includes("pro");
+          });
+          const defaultPlan = pro || items.find((p) => p.canCheckout) || items[0];
+          setSelectedPlanId(defaultPlan?.id || items[0].id);
         }
       } catch (e) {
         if (!cancelled) setErr(e?.message || "Erro ao carregar planos");
@@ -146,7 +152,7 @@ export default function CheckoutPage() {
   }, [loading, hasPlan]);
 
   async function handleContinue() {
-    if (!selectedPlanId) return;
+    if (!selectedPlanId || !selectedPlan?.canCheckout) return;
     setErr("");
     setBusyPlanId(selectedPlanId);
     try {
@@ -214,7 +220,7 @@ export default function CheckoutPage() {
             <ul className={styles.planList}>
               {plans.map((plan, index) => {
                 const selected = plan.id === selectedPlanId;
-                const popular = isPopularPlan(plan.tierKey, index, plans.length);
+                const popular = isPopularPlan(plan, index, plans.length);
                 const features = planFeatures(plan);
 
                 return (
@@ -235,7 +241,7 @@ export default function CheckoutPage() {
                               <span className={styles.planPricePeriod}>/ mês</span>
                             </p>
                           ) : null}
-                          <p className={styles.planPitch}>{planPitch(plan.tierKey)}</p>
+                          <p className={styles.planPitch}>{planPitch(plan)}</p>
                         </div>
                         <span className={`${styles.radio} ${selected ? styles.radioOn : ""}`} aria-hidden />
                       </div>
@@ -266,7 +272,7 @@ export default function CheckoutPage() {
               <div key={selectedPlan.id} className={styles.summaryBody}>
                 <div className={styles.summaryPlanBlock}>
                   <p className={styles.summaryPlanName}>{selectedPlan.displayName}</p>
-                  <p className={styles.summaryPlanPitch}>{planPitch(selectedPlan.tierKey)}</p>
+                  <p className={styles.summaryPlanPitch}>{planPitch(selectedPlan)}</p>
                 </div>
 
                 <ul className={styles.summaryFeatures}>
@@ -306,15 +312,25 @@ export default function CheckoutPage() {
                 <button
                   type="button"
                   className={styles.checkoutBtn}
-                  disabled={Boolean(busyPlanId)}
+                  disabled={Boolean(busyPlanId) || !selectedPlan.canCheckout}
                   onClick={handleContinue}
                 >
-                  {busyPlanId ? "A abrir pagamento…" : "Continuar para pagamento"}
+                  {busyPlanId
+                    ? "A abrir pagamento…"
+                    : selectedPlan.canCheckout
+                      ? "Continuar para pagamento"
+                      : "Plano indisponível para pagamento"}
                 </button>
 
+                {!selectedPlan.canCheckout ? (
+                  <p className={styles.secureNote}>
+                    Este plano ainda não tem preço activo no Stripe. Peça ao administrador para guardar o plano com valor mensal.
+                  </p>
+                ) : (
                 <p className={styles.secureNote}>
                   Pagamento encriptado. Pode cancelar ou alterar plano no portal de facturação.
                 </p>
+                )}
               </div>
             ) : (
               <p className={styles.summaryEmpty}>Seleccione um plano para ver o resumo.</p>

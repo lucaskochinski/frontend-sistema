@@ -80,6 +80,7 @@ const ADMIN_NAV = [
   { href: "/admin/usuarios", label: "Usuários" },
   { href: "/admin/financas", label: "Finanças" },
   { href: "/admin/planos", label: "Planos" },
+  { href: "/admin/integracoes", label: "Integrações" },
   { href: "/admin/configuracoes", label: "Configurações" },
 ];
 
@@ -120,6 +121,15 @@ function IconLayers() {
   );
 }
 
+function IconPlug() {
+  return (
+    <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" aria-hidden>
+      <path d="M9 7V3M15 7V3M7 11h10v8a2 2 0 01-2 2H9a2 2 0 01-2-2v-8z" strokeLinejoin="round" />
+      <path d="M12 11v6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 function IconGearSmall() {
   return (
     <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
@@ -132,7 +142,7 @@ function IconGearSmall() {
   );
 }
 
-const ADMIN_ICONS = [IconPie, IconUsers, IconChart, IconLayers, IconGearSmall];
+const ADMIN_ICONS = [IconPie, IconUsers, IconChart, IconLayers, IconPlug, IconGearSmall];
 
 function IconLogout() {
   return (

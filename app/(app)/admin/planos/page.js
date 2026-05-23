@@ -99,7 +99,6 @@ export default function AdminPlanosPage() {
   const [modalDelete, setModalDelete] = useState(/** @type {PlanRow | null} */ (null));
   const [busy, setBusy] = useState(false);
 
-  const [tierKey, setTierKey] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [priceReais, setPriceReais] = useState("");
   const [trialDays, setTrialDays] = useState("0");
@@ -163,7 +162,6 @@ export default function AdminPlanosPage() {
   }, []);
 
   const resetWizard = () => {
-    setTierKey("");
     setDisplayName("");
     setPriceReais("");
     setTrialDays("0");
@@ -188,7 +186,6 @@ export default function AdminPlanosPage() {
     setFormErr("");
     setWizardMode("edit");
     setEditingId(row.id);
-    setTierKey(row.tierKey);
     setDisplayName(row.displayName);
     setPriceReais(row.priceAmountCents != null ? (row.priceAmountCents / 100).toFixed(2) : "");
     setTrialDays(String(row.trialDays));
@@ -204,13 +201,8 @@ export default function AdminPlanosPage() {
 
   const validateStep = (step) => {
     if (step === 0) {
-      const tk = tierKey.trim().toLowerCase();
-      if (wizardMode === "create" && !tk) {
-        setFormErr("Chave do plano é obrigatória.");
-        return false;
-      }
       if (!displayName.trim()) {
-        setFormErr("Nome exibido é obrigatório.");
+        setFormErr("Nome do plano é obrigatório.");
         return false;
       }
     }
@@ -268,7 +260,6 @@ export default function AdminPlanosPage() {
     const isPublic = visibility === "public";
     const customOrg = visibility === "org" && customOrgId.trim() ? customOrgId.trim() : null;
     return {
-      tier_key: tierKey.trim().toLowerCase(),
       name: displayName.trim(),
       price_amount_cents: centsFromReaisInput(priceReais),
       price_currency: "brl",
@@ -299,11 +290,10 @@ export default function AdminPlanosPage() {
         });
         setOk("Plano criado com sucesso.");
       } else if (editingId) {
-        const { tier_key: _tk, ...patch } = payload;
         await apiFetch(`/api/admin/plans/${editingId}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(patch),
+          body: JSON.stringify(payload),
         });
         setOk("Plano actualizado.");
       }
@@ -341,37 +331,22 @@ export default function AdminPlanosPage() {
     () => [
       {
         key: "identity",
-        label: "Identidade",
+        label: "Nome",
         content: (
           <div className={p.formSection}>
             {formErr && wizardStep === 0 ? <p className={s.err}>{formErr}</p> : null}
-            <div className={p.formGrid}>
-              <div className={s.field}>
-                <label className={s.label} htmlFor="pf-tier">
-                  Chave do plano
-                </label>
-                <input
-                  id="pf-tier"
-                  className={`${s.input} ${p.inputLg}`}
-                  value={tierKey}
-                  onChange={(e) => setTierKey(e.target.value)}
-                  disabled={wizardMode === "edit"}
-                  placeholder="ex.: crescimento_2026"
-                />
-                {wizardMode === "edit" ? <p className={s.hint}>Identificador fixo — não alterável.</p> : null}
-              </div>
-              <div className={s.field}>
-                <label className={s.label} htmlFor="pf-name">
-                  Nome exibido
-                </label>
-                <input
-                  id="pf-name"
-                  className={`${s.input} ${p.inputLg}`}
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="ex.: HOOKO Pro"
-                />
-              </div>
+            <p className={p.formIntro}>Nome comercial exibido na vitrine e no checkout.</p>
+            <div className={s.field}>
+              <label className={s.label} htmlFor="pf-name">
+                Nome do plano
+              </label>
+              <input
+                id="pf-name"
+                className={`${s.input} ${p.inputLg}`}
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder="ex.: HOOKO Pro"
+              />
             </div>
           </div>
         ),
@@ -537,7 +512,6 @@ export default function AdminPlanosPage() {
         label: "Revisão",
         content: (
           <div className={p.reviewWrap}>
-            <ReviewRow label="Chave" value={tierKey || "—"} />
             <ReviewRow label="Nome" value={displayName || "—"} />
             <ReviewRow label="Preço mensal" value={`${formatPriceBrl(centsFromReaisInput(priceReais), "brl")} / mês`} />
             <ReviewRow label="Teste grátis (dias)" value={String(trialDays)} />
@@ -558,7 +532,6 @@ export default function AdminPlanosPage() {
     [
       formErr,
       wizardStep,
-      tierKey,
       displayName,
       priceReais,
       trialDays,
@@ -609,7 +582,6 @@ export default function AdminPlanosPage() {
             <table className={s.table}>
               <thead>
                 <tr>
-                  <th>Chave</th>
                   <th>Nome</th>
                   <th>Visibilidade</th>
                   <th>Estado</th>
@@ -621,14 +593,13 @@ export default function AdminPlanosPage() {
               <tbody>
                 {plans.length === 0 ? (
                   <tr>
-                    <td colSpan={7} style={{ color: "rgba(161,161,170,0.9)", padding: "1.75rem 0.75rem" }}>
+                    <td colSpan={6} style={{ color: "rgba(161,161,170,0.9)", padding: "1.75rem 0.75rem" }}>
                       Nenhum plano. Clique em «Novo plano».
                     </td>
                   </tr>
                 ) : (
                   plans.map((row) => (
                     <tr key={row.id} style={row.isActive ? undefined : { opacity: 0.55 }}>
-                      <td className={s.mono}>{row.tierKey}</td>
                       <td>{row.displayName}</td>
                       <td>
                         <span className={row.isPublic && !row.customOrganizationId ? p.badgePub : p.badgeRest}>
@@ -660,7 +631,7 @@ export default function AdminPlanosPage() {
       <AdminStepModal
         open={wizardOpen}
         title={wizardMode === "create" ? "Novo plano" : "Editar plano"}
-        subtitle="Configure identidade, preço mensal, limites e visibilidade — o Stripe é sincronizado automaticamente."
+        subtitle="Defina nome, preço mensal, limites e visibilidade — o Stripe é sincronizado automaticamente."
         size="xl"
         steps={wizardSteps}
         step={wizardStep}
