@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import AuthSuccessTransition from "@/components/AuthSuccessTransition/AuthSuccessTransition";
-import { fetchBillingStatus } from "@/lib/billing";
+import { fetchBillingStatus, hasActiveBillingAccess, markCheckoutRequired } from "@/lib/billing";
 
 /**
  * Após login, envia para checkout se não houver plano activo; registo usa checkout directo.
@@ -14,15 +14,19 @@ export default function PostAuthRedirect({ variant = "login" }) {
     let cancelled = false;
     (async () => {
       if (variant === "register") {
+        markCheckoutRequired();
         if (!cancelled) setTarget("/checkout");
         return;
       }
       try {
         const status = await fetchBillingStatus();
         if (cancelled) return;
-        setTarget(status?.bypass || status?.hasActiveSubscription ? "/inicio" : "/checkout");
+        setTarget(hasActiveBillingAccess(status) ? "/inicio" : "/checkout");
+        if (!hasActiveBillingAccess(status)) markCheckoutRequired();
       } catch {
-        if (!cancelled) setTarget("/inicio");
+        if (cancelled) return;
+        markCheckoutRequired();
+        setTarget("/checkout");
       }
     })();
     return () => {

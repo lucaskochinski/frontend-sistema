@@ -21,7 +21,7 @@ export default function AuthSuccessTransition({ variant, href, durationMs = 2600
 
   useEffect(() => {
     const t = window.setTimeout(() => {
-      router.push(href);
+      router.replace(href);
     }, durationMs);
     return () => window.clearTimeout(t);
   }, [href, durationMs, router]);

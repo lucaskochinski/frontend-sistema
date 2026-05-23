@@ -27,7 +27,7 @@ export default function RegisterPage() {
   }, []);
 
   if (phase === "transition") {
-    return <AuthSuccessTransition variant="register" href="/checkout" />;
+    return <AuthSuccessTransition variant="register" href="/checkout" durationMs={900} />;
   }
 
   return (

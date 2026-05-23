@@ -2,7 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { fetchBillingStatus } from "@/lib/billing";
+import {
+  clearCheckoutRequired,
+  fetchBillingStatus,
+  hasActiveBillingAccess,
+  isCheckoutRequired,
+  markCheckoutRequired,
+} from "@/lib/billing";
 import { getStoredAccessToken } from "@/lib/hooko-session";
 import PlanAlertModals from "./PlanAlertModals";
 
@@ -18,9 +24,21 @@ export default function PlanBillingGate({ children }) {
   const [billingStatus, setBillingStatus] = useState(null);
 
   useEffect(() => {
-    const token = getStoredAccessToken();
-    if (!token || isAdminRoute) {
+    if (isAdminRoute) {
       setState("ok");
+      return;
+    }
+
+    const token = getStoredAccessToken();
+    if (!token) {
+      setState("redirect");
+      router.replace("/login");
+      return;
+    }
+
+    if (isCheckoutRequired()) {
+      setState("redirect");
+      router.replace("/checkout");
       return;
     }
 
@@ -31,15 +49,20 @@ export default function PlanBillingGate({ children }) {
         if (cancelled) return;
         setBillingStatus(status);
 
-        if (status?.bypass || status?.hasActiveSubscription) {
+        if (hasActiveBillingAccess(status)) {
+          clearCheckoutRequired();
           setState("ok");
           return;
         }
 
+        markCheckoutRequired();
         setState("redirect");
         router.replace("/checkout");
       } catch {
-        if (!cancelled) setState("ok");
+        if (cancelled) return;
+        markCheckoutRequired();
+        setState("redirect");
+        router.replace("/checkout");
       }
     })();
 

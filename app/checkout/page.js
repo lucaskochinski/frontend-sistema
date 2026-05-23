@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { fetchBillingStatus, fetchCheckoutPlans, startCheckout } from "@/lib/billing";
+import { clearCheckoutRequired, fetchBillingStatus, fetchCheckoutPlans, hasActiveBillingAccess, startCheckout } from "@/lib/billing";
 import { getStoredAccessToken, getStoredOrganizationId } from "@/lib/hooko-session";
 import styles from "./page.module.css";
 
@@ -39,7 +39,8 @@ export default function CheckoutPage() {
       try {
         const status = await fetchBillingStatus();
         if (cancelled) return;
-        if (status?.bypass || status?.hasActiveSubscription) {
+        if (hasActiveBillingAccess(status)) {
+          clearCheckoutRequired();
           setHasPlan(true);
           router.replace("/inicio");
           return;

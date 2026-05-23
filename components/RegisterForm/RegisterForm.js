@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useState } from "react";
 import Skeleton from "@/components/Skeleton/Skeleton";
 import AuthPasswordField from "@/components/AuthPasswordField/AuthPasswordField";
+import { markCheckoutRequired } from "@/lib/billing";
 import { persistSession, getApiBase } from "@/lib/hooko-session";
 
 const USE_MOCK = false;
@@ -87,6 +88,7 @@ export default function RegisterForm({ onSuccess }) {
         accessToken: data.accessToken,
         organizationId: data.organizationId,
       });
+      markCheckoutRequired();
       onSuccess?.();
     } catch (err) {
       setFeedback({ type: "err", text: err.message });

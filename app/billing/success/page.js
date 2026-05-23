@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { fetchBillingStatus } from "@/lib/billing";
+import { clearCheckoutRequired, fetchBillingStatus, hasActiveBillingAccess } from "@/lib/billing";
 import styles from "./page.module.css";
 
 export default function BillingSuccessPage() {
@@ -19,7 +19,8 @@ export default function BillingSuccessPage() {
       try {
         const status = await fetchBillingStatus();
         if (cancelled) return;
-        if (status?.hasActiveSubscription || status?.bypass) {
+        if (hasActiveBillingAccess(status)) {
+          clearCheckoutRequired();
           setMessage("Assinatura activa! A abrir o painel…");
           timer = window.setTimeout(() => router.replace("/inicio"), 900);
           return;
