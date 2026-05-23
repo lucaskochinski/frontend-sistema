@@ -12,6 +12,8 @@ import {
   Cell,
 } from "recharts";
 import { apiFetch } from "@/lib/hooko-session";
+import { chartTooltipStyle } from "@/components/Dashboard/dashboardTheme";
+import { useTheme } from "@/components/Theme/ThemeProvider";
 import { AdminDashboardSkeleton } from "@/components/Skeleton/Skeleton.js";
 import dash from "./adminDashboard.module.css";
 
@@ -33,6 +35,7 @@ function pickUsageMinutes(usageRows) {
 }
 
 export default function AdminDashboardPage() {
+  const { theme } = useTheme();
   const [loaded, setLoaded] = useState(false);
   const [err, setErr] = useState("");
   const [metrics, setMetrics] = useState(null);
@@ -66,6 +69,11 @@ export default function AdminDashboardPage() {
     const active = rows.find((r) => String(r.status).toLowerCase() === "active");
     return active ? Number(active.count) || 0 : 0;
   }, [finance]);
+
+  const chartGrid = theme === "light" ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.06)";
+  const chartAxisGold = theme === "light" ? "rgba(184,148,31,0.88)" : "rgba(212,175,55,0.88)";
+  const chartAxisMuted = theme === "light" ? "rgba(82,82,91,0.88)" : "rgba(161,161,170,0.88)";
+  const barStroke = theme === "light" ? "rgba(0,0,0,0.08)" : "rgba(255,255,255,0.12)";
 
   if (!loaded) {
     return (
@@ -147,28 +155,22 @@ export default function AdminDashboardPage() {
                     <stop offset="100%" stopColor="#f7e8a8" />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 12" stroke="rgba(255,255,255,0.06)" vertical={false} />
+                <CartesianGrid strokeDasharray="3 12" stroke={chartGrid} vertical={false} />
                 <XAxis
                   dataKey="label"
-                  tick={{ fill: "rgba(212,175,55,0.88)", fontSize: 11, fontWeight: 600 }}
+                  tick={{ fill: chartAxisGold, fontSize: 11, fontWeight: 600 }}
                   axisLine={false}
                   tickLine={false}
                   dy={6}
                 />
-                <YAxis tick={{ fill: "rgba(161,161,170,0.88)", fontSize: 11 }} axisLine={false} tickLine={false} width={38} allowDecimals={false} />
+                <YAxis tick={{ fill: chartAxisMuted, fontSize: 11 }} axisLine={false} tickLine={false} width={38} allowDecimals={false} />
                 <Tooltip
-                  cursor={{ fill: "rgba(212,175,55,0.06)" }}
-                  contentStyle={{
-                    background: "rgba(14,14,18,0.97)",
-                    border: "1px solid rgba(212,175,55,0.35)",
-                    borderRadius: "12px",
-                    fontSize: "0.82rem",
-                    color: "#fafafa",
-                  }}
+                  cursor={{ fill: "color-mix(in srgb, var(--hooko-gold) 6%, transparent)" }}
+                  contentStyle={chartTooltipStyle()}
                   formatter={(v) => [`${v} registos`, "Novos utilizadores"]}
                   labelFormatter={(l) => String(l)}
                 />
-                <Bar dataKey="value" radius={[8, 8, 3, 3]} stroke="rgba(255,255,255,0.12)" strokeWidth={1}>
+                <Bar dataKey="value" radius={[8, 8, 3, 3]} stroke={barStroke} strokeWidth={1}>
                   {signups.map((_, i) => (
                     <Cell key={i} fill="url(#hookoBarPremium)" />
                   ))}

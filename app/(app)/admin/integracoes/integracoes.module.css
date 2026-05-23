@@ -12,13 +12,9 @@
 .card {
   padding: 1.35rem 1.4rem 1.45rem;
   border-radius: 18px;
-  border: 1px solid rgba(212, 175, 55, 0.22);
-  background:
-    radial-gradient(90% 80% at 12% 0%, rgba(212, 175, 55, 0.12), transparent 52%),
-    linear-gradient(168deg, rgba(20, 20, 26, 0.98), rgba(10, 10, 12, 0.99));
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.45) inset,
-    0 18px 44px rgba(0, 0, 0, 0.38);
+  border: 1px solid color-mix(in srgb, var(--hooko-gold) 22%, transparent);
+  background: var(--hooko-admin-card-bg);
+  box-shadow: var(--hooko-admin-card-shadow);
 }
 
 .cardTitle {
@@ -66,7 +62,7 @@
   appearance: none;
   border-radius: 12px;
   border: 1px solid var(--hooko-border);
-  background: rgba(0, 0, 0, 0.35);
+  background: var(--hooko-admin-input-alt-bg);
   color: var(--hooko-text);
   font-family: inherit;
   font-size: 0.86rem;
@@ -140,14 +136,14 @@
 }
 
 .badgeOk {
-  border-color: rgba(74, 222, 128, 0.35);
-  color: rgb(187, 247, 208);
-  background: rgba(34, 197, 94, 0.12);
+  border-color: var(--hooko-pill-success-border);
+  color: var(--hooko-pill-success-text);
+  background: var(--hooko-pill-success-bg);
 }
 
 .badgeEnv {
-  border-color: rgba(96, 165, 250, 0.35);
-  color: rgb(191, 219, 254);
+  border-color: rgba(59, 130, 246, 0.35);
+  color: var(--hooko-admin-badge-info-text);
   background: rgba(59, 130, 246, 0.12);
 }
 
@@ -177,9 +173,9 @@
   font-weight: 700;
   padding: 0.72rem 1.25rem;
   border-radius: 13px;
-  border: 1px solid rgba(212, 175, 55, 0.48);
-  color: rgb(251, 245, 216);
-  background: linear-gradient(145deg, rgba(245, 224, 160, 0.28) 0%, rgba(212, 175, 55, 0.35) 35%, rgba(148, 120, 45, 0.55) 100%);
+  border: 1px solid color-mix(in srgb, var(--hooko-gold) 48%, transparent);
+  color: var(--hooko-admin-btn-primary-text);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--hooko-gold) 28%, transparent) 0%, color-mix(in srgb, var(--hooko-gold) 35%, transparent) 35%, color-mix(in srgb, var(--hooko-gold) 55%, transparent) 100%);
 }
 
 .btnPrimary:disabled {
@@ -190,7 +186,7 @@
 .success {
   margin: 0;
   font-size: 0.82rem;
-  color: rgb(204, 251, 229);
+  color: var(--hooko-admin-success-text);
 }
 
 .skeletonBlock {

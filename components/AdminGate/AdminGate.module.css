@@ -1,12 +1,19 @@
+.loading {
+  padding: 2rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--hooko-text-muted);
+}
+
 .bypassRibbon {
   margin: 0 0 1rem;
   padding: 0.55rem 0.85rem;
   border-radius: 10px;
-  border: 1px solid rgba(251, 191, 36, 0.35);
-  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid var(--hooko-warning-banner-border);
+  background: var(--hooko-warning-banner-bg);
   font-size: 0.76rem;
   line-height: 1.45;
-  color: rgba(253, 230, 138, 0.95);
+  color: var(--hooko-warning-banner-text);
 }
 
 .bypassRibbon code {
@@ -14,7 +21,7 @@
   padding: 0.12rem 0.35rem;
   border-radius: 6px;
   background: var(--hooko-input-bg);
-  color: rgb(251, 245, 216);
+  color: var(--hooko-admin-btn-primary-text);
 }
 
 .bypassRibbon strong {

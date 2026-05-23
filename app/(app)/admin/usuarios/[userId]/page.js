@@ -64,7 +64,7 @@ export default function AdminUsuarioDetalhePage({ params }) {
   if (!user) {
     return (
       <div className={s.page}>
-        <p style={{ color: "rgba(161,161,170,0.95)" }}>A carregar…</p>
+        <p className={s.loadingText}>A carregar…</p>
       </div>
     );
   }
@@ -85,7 +85,7 @@ export default function AdminUsuarioDetalhePage({ params }) {
         <p className={s.lede}>Identificador {user.id}</p>
       </header>
 
-      <Link href="/admin/usuarios" className={s.rowLink} style={{ display: "inline-block", marginBottom: "1.25rem" }}>
+      <Link href="/admin/usuarios" className={`${s.rowLink} ${s.backLink}`}>
         ← Lista
       </Link>
 
@@ -127,7 +127,7 @@ export default function AdminUsuarioDetalhePage({ params }) {
                       <td>
                         {activeSub?.plan?.displayName || "Sem plano"}
                         {activeSub?.plan ? (
-                          <span style={{ display: "block", fontSize: "0.76rem", color: "rgba(161,161,170,0.95)" }}>
+                          <span className={s.subText}>
                             {formatPlanPrice(activeSub.plan) || "—"}
                           </span>
                         ) : null}

@@ -87,6 +87,38 @@
   --hooko-score-muted-border: rgba(255, 255, 255, 0.1);
   --hooko-score-muted-text: rgba(161, 161, 170, 0.95);
   --hooko-card-shadow: 0 16px 42px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(0, 0, 0, 0.35) inset;
+  --hooko-admin-kpi-bg: linear-gradient(168deg, rgba(22, 22, 28, 0.96), rgba(12, 12, 14, 0.99));
+  --hooko-admin-kpi-strong: rgb(253, 244, 216);
+  --hooko-admin-table-bg: radial-gradient(100% 80% at 100% -8%, rgba(212, 175, 55, 0.1), transparent 45%), rgba(11, 11, 15, 0.96);
+  --hooko-admin-table-shadow: 0 0 0 1px rgba(0, 0, 0, 0.42) inset;
+  --hooko-admin-card-bg: radial-gradient(90% 80% at 12% 0%, rgba(212, 175, 55, 0.12), transparent 52%), linear-gradient(168deg, rgba(20, 20, 26, 0.98), rgba(10, 10, 12, 0.99));
+  --hooko-admin-card-shadow: 0 0 0 1px rgba(0, 0, 0, 0.45) inset, 0 18px 44px rgba(0, 0, 0, 0.38);
+  --hooko-admin-chart-bg: radial-gradient(ellipse 85% 60% at 50% -30%, rgba(212, 175, 55, 0.12), transparent 52%), linear-gradient(178deg, rgba(18, 18, 22, 0.98) 0%, rgba(8, 8, 10, 0.99) 48%, rgba(12, 12, 14, 1) 100%);
+  --hooko-admin-kicker: rgba(212, 175, 55, 0.78);
+  --hooko-admin-section-title: rgba(228, 228, 231, 0.82);
+  --hooko-admin-link: rgba(253, 224, 130, 0.96);
+  --hooko-admin-btn-primary-text: rgba(251, 245, 216, 0.98);
+  --hooko-admin-btn-ghost-text: rgba(228, 228, 231, 0.9);
+  --hooko-admin-btn-danger-text: rgba(254, 202, 202, 0.96);
+  --hooko-admin-label: rgba(228, 228, 231, 0.88);
+  --hooko-admin-checkbox: rgba(212, 212, 218, 0.94);
+  --hooko-admin-callout-title: rgba(253, 224, 130, 0.96);
+  --hooko-admin-callout-text: rgba(212, 212, 218, 0.96);
+  --hooko-admin-success-text: rgba(187, 247, 208, 0.96);
+  --hooko-admin-error-text: rgba(254, 202, 202, 0.96);
+  --hooko-admin-th-accent: rgba(212, 175, 55, 0.82);
+  --hooko-admin-td-text: rgba(236, 236, 242, 0.94);
+  --hooko-admin-readonly-bg: rgba(0, 0, 0, 0.25);
+  --hooko-admin-readonly-text: rgba(250, 250, 250, 0.98);
+  --hooko-admin-input-alt-bg: rgba(0, 0, 0, 0.35);
+  --hooko-admin-split-control-bg: linear-gradient(180deg, rgba(212, 175, 55, 0.06) 0%, rgba(0, 0, 0, 0.22) 100%);
+  --hooko-admin-time-input-bg: rgba(0, 0, 0, 0.45);
+  --hooko-admin-time-preview-text: rgba(253, 230, 168, 0.95);
+  --hooko-admin-explain-strong: rgba(253, 230, 168, 0.92);
+  --hooko-admin-mock-pill-text: rgba(253, 230, 138, 0.95);
+  --hooko-admin-badge-pub-text: rgba(253, 230, 138, 0.96);
+  --hooko-admin-badge-info-text: rgb(191, 219, 254);
+  --hooko-admin-chart-head: rgba(228, 228, 231, 0.88);
 }
 
 [data-theme="light"] {
@@ -162,6 +194,38 @@
   --hooko-score-muted-border: rgba(0, 0, 0, 0.1);
   --hooko-score-muted-text: #52525b;
   --hooko-card-shadow: 0 12px 32px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05) inset;
+  --hooko-admin-kpi-bg: linear-gradient(168deg, #ffffff, #f4f4f5);
+  --hooko-admin-kpi-strong: #09090b;
+  --hooko-admin-table-bg: radial-gradient(100% 80% at 100% -8%, rgba(212, 175, 55, 0.08), transparent 45%), #ffffff;
+  --hooko-admin-table-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06) inset;
+  --hooko-admin-card-bg: radial-gradient(90% 80% at 12% 0%, rgba(212, 175, 55, 0.06), transparent 52%), linear-gradient(168deg, #ffffff, #f8f8f9);
+  --hooko-admin-card-shadow: 0 12px 32px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05) inset;
+  --hooko-admin-chart-bg: radial-gradient(ellipse 85% 60% at 50% -30%, rgba(212, 175, 55, 0.08), transparent 52%), linear-gradient(178deg, #ffffff 0%, #f8f8f9 48%, #f4f4f5 100%);
+  --hooko-admin-kicker: #b8941f;
+  --hooko-admin-section-title: #52525b;
+  --hooko-admin-link: #92400e;
+  --hooko-admin-btn-primary-text: #5c4a12;
+  --hooko-admin-btn-ghost-text: #52525b;
+  --hooko-admin-btn-danger-text: #991b1b;
+  --hooko-admin-label: #27272a;
+  --hooko-admin-checkbox: #52525b;
+  --hooko-admin-callout-title: #854d0e;
+  --hooko-admin-callout-text: #52525b;
+  --hooko-admin-success-text: #166534;
+  --hooko-admin-error-text: #991b1b;
+  --hooko-admin-th-accent: #b8941f;
+  --hooko-admin-td-text: #27272a;
+  --hooko-admin-readonly-bg: rgba(0, 0, 0, 0.04);
+  --hooko-admin-readonly-text: #09090b;
+  --hooko-admin-input-alt-bg: #ffffff;
+  --hooko-admin-split-control-bg: linear-gradient(180deg, rgba(212, 175, 55, 0.06) 0%, rgba(0, 0, 0, 0.02) 100%);
+  --hooko-admin-time-input-bg: #ffffff;
+  --hooko-admin-time-preview-text: #854d0e;
+  --hooko-admin-explain-strong: #92400e;
+  --hooko-admin-mock-pill-text: #854d0e;
+  --hooko-admin-badge-pub-text: #854d0e;
+  --hooko-admin-badge-info-text: #1d4ed8;
+  --hooko-admin-chart-head: #52525b;
 }
 
 *,

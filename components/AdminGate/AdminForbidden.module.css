@@ -4,7 +4,8 @@
   padding: 1.5rem 1.35rem;
   border-radius: 16px;
   border: 1px solid var(--hooko-border);
-  background: linear-gradient(168deg, rgba(28, 24, 18, 0.95), rgba(10, 10, 12, 0.98));
+  background: var(--hooko-admin-card-bg);
+  box-shadow: var(--hooko-admin-card-shadow);
   text-align: center;
 }
 
@@ -27,14 +28,14 @@
   margin-top: 1rem;
   padding: 0.55rem 1.05rem;
   border-radius: 11px;
-  border: 1px solid rgba(212, 175, 55, 0.45);
-  background: rgba(212, 175, 55, 0.14);
-  color: rgb(251, 245, 216);
+  border: 1px solid color-mix(in srgb, var(--hooko-gold) 45%, transparent);
+  background: color-mix(in srgb, var(--hooko-gold) 14%, transparent);
+  color: var(--hooko-admin-btn-primary-text);
   font-size: 0.82rem;
   font-weight: 600;
   text-decoration: none;
 }
 
 .link:hover {
-  background: rgba(212, 175, 55, 0.22);
+  background: color-mix(in srgb, var(--hooko-gold) 22%, transparent);
 }

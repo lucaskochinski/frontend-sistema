@@ -89,9 +89,7 @@ export default function AdminFinancasPage() {
       </header>
 
       {USE_MOCK ? (
-        <p style={{ marginBottom: "0.85rem", fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(212,175,55,0.85)" }}>
-          USE_MOCK = true
-        </p>
+        <p className={s.mockBanner}>USE_MOCK = true</p>
       ) : null}
 
       {err ? <p className={s.err}>{err}</p> : null}
@@ -141,7 +139,7 @@ export default function AdminFinancasPage() {
                 <tbody>
                   {subs.length === 0 ? (
                     <tr>
-                      <td colSpan={4} style={{ color: "rgba(161,161,170,0.9)" }}>
+                      <td colSpan={4} className={s.emptyCell}>
                         Sem registos.
                       </td>
                     </tr>
@@ -177,7 +175,7 @@ export default function AdminFinancasPage() {
                 <tbody>
                   {inv.length === 0 ? (
                     <tr>
-                      <td colSpan={4} style={{ color: "rgba(161,161,170,0.9)" }}>
+                      <td colSpan={4} className={s.emptyCell}>
                         Sem registos.
                       </td>
                     </tr>

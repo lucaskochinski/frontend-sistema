@@ -11,7 +11,7 @@
   font-size: 0.65rem;
   letter-spacing: 0.26em;
   text-transform: uppercase;
-  color: rgba(212, 175, 55, 0.82);
+  color: var(--hooko-admin-kicker);
   font-weight: 600;
 }
 
@@ -42,12 +42,10 @@
   position: relative;
   border-radius: 16px;
   padding: 1.1rem 1.15rem 1.15rem;
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  background: linear-gradient(155deg, rgba(22, 22, 26, 0.98) 0%, rgba(10, 10, 13, 0.99) 100%);
+  border: 1px solid var(--hooko-border);
+  background: var(--hooko-admin-kpi-bg);
   overflow: hidden;
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.42) inset,
-    0 22px 56px rgba(0, 0, 0, 0.42);
+  box-shadow: var(--hooko-shadow-premium);
 }
 
 .kpiGlow {
@@ -78,7 +76,7 @@
   font-size: 1.42rem;
   font-weight: 700;
   letter-spacing: -0.03em;
-  color: rgb(253, 244, 236);
+  color: var(--hooko-admin-kpi-strong);
   font-variant-numeric: tabular-nums;
 }
 
@@ -90,15 +88,10 @@
 
 .chartCard {
   border-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  border: 1px solid var(--hooko-border);
   padding: 1.35rem 1.2rem 1.1rem;
-  background:
-    radial-gradient(ellipse 85% 60% at 50% -30%, rgba(212, 175, 55, 0.12), transparent 52%),
-    linear-gradient(178deg, rgba(18, 18, 22, 0.98) 0%, rgba(8, 8, 10, 0.99) 48%, rgba(12, 12, 14, 1) 100%);
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.48) inset,
-    0 28px 64px rgba(0, 0, 0, 0.52),
-    0 0 80px rgba(212, 175, 55, 0.04);
+  background: var(--hooko-admin-chart-bg);
+  box-shadow: var(--hooko-shadow-premium);
 }
 
 .chartHead {
@@ -107,7 +100,7 @@
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(228, 228, 231, 0.88);
+  color: var(--hooko-admin-chart-head);
 }
 
 .chartSub {
@@ -131,18 +124,18 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  border: 1px solid rgba(212, 175, 55, 0.38);
-  background: rgba(212, 175, 55, 0.1);
-  color: rgba(253, 230, 138, 0.95);
+  border: 1px solid color-mix(in srgb, var(--hooko-gold) 38%, transparent);
+  background: color-mix(in srgb, var(--hooko-gold) 10%, transparent);
+  color: var(--hooko-admin-mock-pill-text);
 }
 
 .err {
   margin: 0 0 1rem;
   padding: 0.65rem 0.85rem;
   border-radius: 10px;
-  background: rgba(248, 113, 113, 0.1);
-  border: 1px solid rgba(248, 113, 113, 0.25);
-  color: #fca5a5;
+  background: color-mix(in srgb, var(--hooko-negative) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--hooko-negative) 25%, transparent);
+  color: var(--hooko-admin-error-text);
   font-size: 0.85rem;
 }
 

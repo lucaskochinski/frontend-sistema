@@ -12,7 +12,7 @@
   font-size: 0.65rem;
   letter-spacing: 0.26em;
   text-transform: uppercase;
-  color: rgba(212, 175, 55, 0.78);
+  color: var(--hooko-admin-kicker);
   font-weight: 600;
 }
 
@@ -42,9 +42,9 @@
 .kpi {
   border-radius: 14px;
   border: 1px solid var(--hooko-border);
-  background: linear-gradient(168deg, rgba(22, 22, 28, 0.96), rgba(12, 12, 14, 0.99));
+  background: var(--hooko-admin-kpi-bg);
   padding: 1rem 1.05rem;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35) inset;
+  box-shadow: var(--hooko-shadow-premium);
 }
 
 .kpiMuted {
@@ -60,7 +60,7 @@
   margin: 0.35rem 0 0;
   font-size: 1.35rem;
   font-weight: 700;
-  color: rgb(253, 244, 216);
+  color: var(--hooko-admin-kpi-strong);
   letter-spacing: -0.02em;
 }
 
@@ -74,14 +74,15 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(228, 228, 231, 0.82);
+  color: var(--hooko-admin-section-title);
 }
 
 .cardTable {
   border-radius: 14px;
   border: 1px solid var(--hooko-border);
-  background: rgba(12, 12, 14, 0.94);
+  background: var(--hooko-admin-table-bg);
   overflow-x: auto;
+  box-shadow: var(--hooko-admin-table-shadow);
 }
 
 .table {
@@ -100,16 +101,21 @@
 
 .table th {
   font-weight: 600;
-  color: var(--hooko-text-muted);
+  color: var(--hooko-admin-th-accent);
   white-space: nowrap;
+  background: var(--hooko-surface-hover);
 }
 
 .table td {
-  color: var(--hooko-text);
+  color: var(--hooko-admin-td-text);
 }
 
 .table tr:last-child td {
   border-bottom: none;
+}
+
+.table tr:hover td {
+  background: color-mix(in srgb, var(--hooko-gold) 5%, transparent);
 }
 
 .mono {
@@ -127,7 +133,7 @@
 }
 
 .rowLink {
-  color: rgba(253, 224, 130, 0.96);
+  color: var(--hooko-admin-link);
   font-weight: 600;
   text-decoration: none;
 }
@@ -144,13 +150,13 @@
   font-weight: 600;
   padding: 0.55rem 1.1rem;
   border-radius: 11px;
-  border: 1px solid rgba(212, 175, 55, 0.45);
-  background: rgba(212, 175, 55, 0.16);
-  color: rgba(251, 245, 216, 0.98);
+  border: 1px solid color-mix(in srgb, var(--hooko-gold) 45%, transparent);
+  background: color-mix(in srgb, var(--hooko-gold) 16%, transparent);
+  color: var(--hooko-admin-btn-primary-text);
 }
 
 .btnPrimary:hover:not(:disabled) {
-  background: rgba(212, 175, 55, 0.24);
+  background: color-mix(in srgb, var(--hooko-gold) 24%, transparent);
 }
 
 .btnPrimary:disabled {
@@ -168,7 +174,7 @@
   border-radius: 11px;
   border: 1px solid var(--hooko-border);
   background: transparent;
-  color: rgba(228, 228, 231, 0.9);
+  color: var(--hooko-admin-btn-ghost-text);
 }
 
 .btnDanger {
@@ -179,13 +185,13 @@
   font-weight: 600;
   padding: 0.52rem 1rem;
   border-radius: 11px;
-  border: 1px solid rgba(248, 113, 113, 0.42);
-  background: rgba(239, 68, 68, 0.12);
-  color: rgba(254, 202, 202, 0.96);
+  border: 1px solid color-mix(in srgb, var(--hooko-negative) 42%, transparent);
+  background: color-mix(in srgb, var(--hooko-negative) 12%, transparent);
+  color: var(--hooko-admin-btn-danger-text);
 }
 
 .btnDanger:hover:not(:disabled) {
-  background: rgba(239, 68, 68, 0.2);
+  background: color-mix(in srgb, var(--hooko-negative) 20%, transparent);
 }
 
 .btnDanger:disabled {
@@ -201,7 +207,7 @@
 
 .input {
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.11);
+  border: 1px solid var(--hooko-border);
   background: var(--hooko-input-bg);
   color: var(--hooko-text);
   font-family: inherit;
@@ -219,7 +225,7 @@
 .label {
   font-size: 0.72rem;
   font-weight: 600;
-  color: rgba(228, 228, 231, 0.88);
+  color: var(--hooko-admin-label);
 }
 
 .gridForm {
@@ -239,34 +245,34 @@
   align-items: center;
   gap: 0.38rem;
   font-size: 0.8rem;
-  color: rgba(212, 212, 218, 0.94);
+  color: var(--hooko-admin-checkbox);
 }
 
 .err {
   margin-top: 0.75rem;
   padding: 0.55rem 0.7rem;
   border-radius: 10px;
-  border: 1px solid rgba(248, 113, 113, 0.35);
-  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid color-mix(in srgb, var(--hooko-negative) 35%, transparent);
+  background: color-mix(in srgb, var(--hooko-negative) 10%, transparent);
   font-size: 0.8rem;
-  color: rgba(254, 202, 202, 0.96);
+  color: var(--hooko-admin-error-text);
 }
 
 .success {
   margin-top: 0.75rem;
   padding: 0.55rem 0.7rem;
   border-radius: 10px;
-  border: 1px solid rgba(74, 222, 128, 0.35);
-  background: rgba(22, 163, 74, 0.14);
+  border: 1px solid var(--hooko-pill-success-border);
+  background: var(--hooko-pill-success-bg);
   font-size: 0.8rem;
-  color: rgba(187, 247, 208, 0.96);
+  color: var(--hooko-admin-success-text);
 }
 
 .hint {
   margin: 0;
   font-size: 0.74rem;
   line-height: 1.5;
-  color: rgba(113, 113, 122, 0.98);
+  color: var(--hooko-text-muted);
   max-width: 36rem;
 }
 
@@ -274,20 +280,64 @@
   margin-top: 1rem;
   padding: 1rem 1.05rem;
   border-radius: 12px;
-  border: 1px solid rgba(212, 175, 55, 0.18);
-  background: rgba(212, 175, 55, 0.06);
+  border: 1px solid color-mix(in srgb, var(--hooko-gold) 18%, transparent);
+  background: color-mix(in srgb, var(--hooko-gold) 6%, transparent);
 }
 
 .calloutTitle {
   margin: 0 0 0.4rem;
   font-size: 0.78rem;
   font-weight: 700;
-  color: rgba(253, 224, 130, 0.96);
+  color: var(--hooko-admin-callout-title);
 }
 
 .callout p {
   margin: 0;
   font-size: 0.78rem;
   line-height: 1.5;
-  color: rgba(212, 212, 218, 0.96);
+  color: var(--hooko-admin-callout-text);
+}
+
+.emptyCell {
+  color: var(--hooko-text-muted);
+}
+
+.cellMuted {
+  color: var(--hooko-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.subText {
+  display: block;
+  font-size: 0.76rem;
+  color: var(--hooko-text-muted);
+}
+
+.bodyText {
+  margin: 0;
+  color: var(--hooko-text-muted);
+  line-height: 1.55;
+}
+
+.loadingText {
+  color: var(--hooko-text-muted);
+}
+
+.loadingBlock {
+  color: var(--hooko-text-muted);
+  padding: 2rem 1rem;
+}
+
+.backLink {
+  display: inline-block;
+  margin-bottom: 1.25rem;
+}
+
+.mockBanner {
+  margin-bottom: 0.85rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--hooko-admin-kicker);
 }

@@ -593,7 +593,7 @@ export default function AdminPlanosPage() {
               <tbody>
                 {plans.length === 0 ? (
                   <tr>
-                    <td colSpan={6} style={{ color: "rgba(161,161,170,0.9)", padding: "1.75rem 0.75rem" }}>
+                    <td colSpan={6} className={s.emptyCell} style={{ padding: "1.75rem 0.75rem" }}>
                       Nenhum plano. Clique em «Novo plano».
                     </td>
                   </tr>
@@ -661,7 +661,7 @@ export default function AdminPlanosPage() {
         }
       >
         {modalDelete ? (
-          <p style={{ margin: 0, color: "rgba(212,212,218,0.95)", lineHeight: 1.55 }}>
+          <p className={s.bodyText}>
             O plano <strong>{modalDelete.displayName}</strong> deixa de aparecer na vitrine. Assinaturas existentes
             mantêm-se no histórico.
           </p>

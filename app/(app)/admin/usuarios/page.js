@@ -634,7 +634,7 @@ function AdminUsuariosPageContent() {
             <tbody>
               {users.length === 0 ? (
                 <tr>
-                  <td colSpan={5} style={{ color: "rgba(161,161,170,0.95)", padding: "1.75rem 1rem" }}>
+                  <td colSpan={5} className={s.emptyCell} style={{ padding: "1.75rem 1rem" }}>
                     Sem utilizadores. Cria um com «Novo utilizador».
                   </td>
                 </tr>
@@ -654,7 +654,7 @@ function AdminUsuariosPageContent() {
                         {subscriptionStatusLabel(row.subscriptionStatus)}
                       </span>
                     </td>
-                    <td style={{ fontVariantNumeric: "tabular-nums", color: "rgba(161,161,170,0.95)" }}>{row.createdDisplay}</td>
+                    <td className={s.cellMuted}>{row.createdDisplay}</td>
                     <td className={u.tdActions}>
                       <button
                         type="button"
@@ -766,7 +766,7 @@ function AdminUsuariosPageContent() {
       >
         {modalDelete ? (
           <>
-            <p style={{ margin: 0, color: "rgba(212,212,218,0.95)", lineHeight: 1.5 }}>
+            <p className={s.bodyText}>
               Isto remove <strong>{modalDelete.email}</strong> da lista{USE_MOCK ? " mock" : ""}.
               {!USE_MOCK ? (
                 <>

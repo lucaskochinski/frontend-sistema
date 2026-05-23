@@ -7,9 +7,9 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  border: 1px solid rgba(212, 175, 55, 0.38);
-  background: rgba(212, 175, 55, 0.1);
-  color: rgba(253, 230, 138, 0.95);
+  border: 1px solid color-mix(in srgb, var(--hooko-gold) 38%, transparent);
+  background: color-mix(in srgb, var(--hooko-gold) 10%, transparent);
+  color: var(--hooko-admin-mock-pill-text);
 }
 
 .toolbar {
@@ -42,9 +42,9 @@
   border-radius: 999px;
   font-size: 0.72rem;
   font-weight: 650;
-  border: 1px solid rgba(212, 175, 55, 0.42);
-  background: rgba(212, 175, 55, 0.12);
-  color: rgba(253, 230, 138, 0.96);
+  border: 1px solid color-mix(in srgb, var(--hooko-gold) 42%, transparent);
+  background: color-mix(in srgb, var(--hooko-gold) 12%, transparent);
+  color: var(--hooko-admin-badge-pub-text);
 }
 
 .badgeRest {
@@ -54,9 +54,9 @@
   border-radius: 999px;
   font-size: 0.72rem;
   font-weight: 650;
-  border: 1px solid rgba(212, 175, 55, 0.38);
-  background: rgba(212, 175, 55, 0.1);
-  color: rgba(253, 224, 130, 0.96);
+  border: 1px solid color-mix(in srgb, var(--hooko-gold) 38%, transparent);
+  background: color-mix(in srgb, var(--hooko-gold) 10%, transparent);
+  color: var(--hooko-admin-mock-pill-text);
 }
 
 .formSection {

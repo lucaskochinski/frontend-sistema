@@ -15,13 +15,9 @@
   gap: 0;
   padding: 0;
   border-radius: 18px;
-  border: 1px solid rgba(212, 175, 55, 0.22);
-  background:
-    radial-gradient(90% 80% at 12% 0%, rgba(212, 175, 55, 0.14), transparent 52%),
-    linear-gradient(168deg, rgba(20, 20, 26, 0.98), rgba(10, 10, 12, 0.99));
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.45) inset,
-    0 22px 56px rgba(0, 0, 0, 0.45);
+  border: 1px solid color-mix(in srgb, var(--hooko-gold) 22%, transparent);
+  background: var(--hooko-admin-card-bg);
+  box-shadow: var(--hooko-admin-card-shadow);
   overflow: hidden;
 }
 
@@ -35,9 +31,8 @@
   flex-direction: column;
   min-width: 0;
   padding: 1.45rem 1.35rem 1.55rem;
-  background:
-    linear-gradient(180deg, rgba(212, 175, 55, 0.06) 0%, rgba(0, 0, 0, 0.22) 100%);
-  border-left: 1px solid rgba(212, 175, 55, 0.16);
+  background: var(--hooko-admin-split-control-bg);
+  border-left: 1px solid color-mix(in srgb, var(--hooko-gold) 16%, transparent);
 }
 
 .controlPanel {
@@ -53,7 +48,7 @@
   letter-spacing: 0.22em;
   text-transform: uppercase;
   font-weight: 650;
-  color: rgba(212, 175, 55, 0.72);
+  color: var(--hooko-admin-kicker);
 }
 
 .splitTitle {
@@ -90,7 +85,7 @@
 }
 
 .explainList strong {
-  color: rgba(253, 230, 168, 0.92);
+  color: var(--hooko-admin-explain-strong);
   font-weight: 650;
 }
 
@@ -125,8 +120,8 @@
   width: 100%;
   min-width: 0;
   border-radius: 12px;
-  border: 1px solid rgba(212, 175, 55, 0.32);
-  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid color-mix(in srgb, var(--hooko-gold) 32%, transparent);
+  background: var(--hooko-admin-time-input-bg);
   color: var(--hooko-text);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 1.05rem;
@@ -149,9 +144,9 @@
   min-width: 5.5rem;
   padding: 0.55rem 0.85rem;
   border-radius: 12px;
-  border: 1px solid rgba(212, 175, 55, 0.28);
-  background: rgba(212, 175, 55, 0.08);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border: 1px solid color-mix(in srgb, var(--hooko-gold) 28%, transparent);
+  background: color-mix(in srgb, var(--hooko-gold) 8%, transparent);
+  box-shadow: inset 0 1px 0 var(--hooko-divider);
 }
 
 .timePreviewValue {
@@ -159,7 +154,7 @@
   font-size: 1.05rem;
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: rgba(253, 230, 168, 0.95);
+  color: var(--hooko-admin-time-preview-text);
   line-height: 1.2;
 }
 
@@ -169,7 +164,7 @@
   letter-spacing: 0.18em;
   text-transform: uppercase;
   font-weight: 650;
-  color: rgba(212, 175, 55, 0.65);
+  color: var(--hooko-admin-kicker);
 }
 
 .actions {
@@ -189,12 +184,10 @@
   letter-spacing: 0.04em;
   padding: 0.78rem 1.2rem;
   border-radius: 13px;
-  border: 1px solid rgba(212, 175, 55, 0.48);
-  color: rgb(251, 245, 216);
-  background: linear-gradient(145deg, rgba(245, 224, 160, 0.28) 0%, rgba(212, 175, 55, 0.35) 35%, rgba(148, 120, 45, 0.55) 100%);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.12) inset,
-    0 14px 36px rgba(0, 0, 0, 0.4);
+  border: 1px solid color-mix(in srgb, var(--hooko-gold) 48%, transparent);
+  color: var(--hooko-admin-btn-primary-text);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--hooko-gold) 28%, transparent) 0%, color-mix(in srgb, var(--hooko-gold) 35%, transparent) 35%, color-mix(in srgb, var(--hooko-gold) 55%, transparent) 100%);
+  box-shadow: var(--hooko-shadow-premium);
   transition:
     transform 0.16s ease,
     filter 0.16s ease;
@@ -215,10 +208,10 @@
   margin: 0;
   padding: 0.62rem 0.75rem;
   border-radius: 11px;
-  border: 1px solid rgba(167, 243, 208, 0.35);
-  background: rgba(22, 163, 74, 0.14);
+  border: 1px solid var(--hooko-pill-success-border);
+  background: var(--hooko-pill-success-bg);
   font-size: 0.8rem;
-  color: rgb(204, 251, 229);
+  color: var(--hooko-admin-success-text);
 }
 
 .skeletonBlock {

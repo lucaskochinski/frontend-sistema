@@ -5,6 +5,7 @@ import { apiFetch } from "@/lib/hooko-session";
 import { isAdminUiBypassEnabled } from "@/lib/admin-ui-bypass";
 import { hasPlatformAdminRole } from "@/lib/platform-admin";
 import AdminForbidden from "./AdminForbidden";
+import s from "./AdminGate.module.css";
 
 /**
  * Confirma `/api/auth/me` + papel platform admin antes de renderizar páginas `/admin/*`.
@@ -37,7 +38,7 @@ export default function AdminGate({ children }) {
 
   if (!bypass && state === "loading") {
     return (
-      <div style={{ padding: "2rem", textAlign: "center", color: "rgba(161,161,170,0.95)", fontSize: "0.9rem" }}>
+      <div className={s.loading} aria-busy="true">
         A carregar…
       </div>
     );
