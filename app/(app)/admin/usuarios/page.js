@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { TableSkeleton } from "@/components/Skeleton/Skeleton.js";
 import AdminModal from "@/components/AdminModal/AdminModal.js";
+import AdminStepModal, { ReviewRow } from "@/components/AdminStepModal/AdminStepModal.js";
 import { apiFetch } from "@/lib/hooko-session";
 import { HOOKO_PLATFORM_ADMIN_ROLE_KEY } from "@/lib/platform-admin";
 import s from "../adminShared.module.css";
@@ -92,6 +93,8 @@ function AdminUsuariosPageContent() {
   const [modalCreate, setModalCreate] = useState(false);
   const [modalEdit, setModalEdit] = useState(null);
   const [modalDelete, setModalDelete] = useState(null);
+  const [createStep, setCreateStep] = useState(0);
+  const [editStep, setEditStep] = useState(0);
 
   const [formEmail, setFormEmail] = useState("");
   const [formPassword, setFormPassword] = useState("");
@@ -113,6 +116,8 @@ function AdminUsuariosPageContent() {
     setFormPlanLabel("HOOKO Pro");
     setFormSubStatus("active");
     setFormErr("");
+    setCreateStep(0);
+    setEditStep(0);
   }, []);
 
   const loadList = useCallback(async () => {
@@ -288,6 +293,189 @@ function AdminUsuariosPageContent() {
     );
   }, [orgs, formOrgId]);
 
+  const orgLabel = useMemo(() => {
+    const o = orgs.find((x) => x.id === formOrgId);
+    return o ? `${o.name} · ${o.slug}` : formOrgId || "—";
+  }, [orgs, formOrgId]);
+
+  const validateUserStep = (mode, step) => {
+    if (mode === "create") {
+      if (step === 0) {
+        const email = formEmail.trim().toLowerCase();
+        if (!email.includes("@")) {
+          setFormErr("E-mail inválido.");
+          return false;
+        }
+        if (formPassword.trim().length < 8) {
+          setFormErr("Palavra-passe com mínimo 8 caracteres.");
+          return false;
+        }
+      }
+      if (step === 1 && !formOrgId.trim()) {
+        setFormErr("Selecciona uma organização.");
+        return false;
+      }
+    } else if (step === 0 && !formOrgId.trim()) {
+      setFormErr("Selecciona uma organização.");
+      return false;
+    }
+    setFormErr("");
+    return true;
+  };
+
+  const createSteps = useMemo(
+    () => [
+      {
+        key: "account",
+        label: "Conta",
+        content: (
+          <>
+            {formErr && createStep === 0 ? <p className={s.err} style={{ marginBottom: "0.75rem" }}>{formErr}</p> : null}
+            <div className={s.field}>
+              <label className={s.label} htmlFor="um-email">
+                E-mail
+              </label>
+              <input id="um-email" className={s.input} style={{ width: "100%" }} value={formEmail} onChange={(e) => setFormEmail(e.target.value)} required type="email" autoComplete="off" />
+            </div>
+            <div className={s.field}>
+              <label className={s.label} htmlFor="um-pass">
+                Palavra-passe
+              </label>
+              <input id="um-pass" className={s.input} style={{ width: "100%" }} value={formPassword} onChange={(e) => setFormPassword(e.target.value)} type="password" minLength={8} autoComplete="new-password" />
+            </div>
+          </>
+        ),
+      },
+      {
+        key: "org",
+        label: "Organização",
+        content: (
+          <>
+            {formErr && createStep === 1 ? <p className={s.err} style={{ marginBottom: "0.75rem" }}>{formErr}</p> : null}
+            <div className={s.field}>
+              <label className={s.label} htmlFor="um-org">
+                Organização
+              </label>
+              {orgSelect || (
+                <input id="um-org" className={s.input} style={{ width: "100%" }} value={formOrgId} onChange={(e) => setFormOrgId(e.target.value)} placeholder="UUID" required />
+              )}
+            </div>
+            <div className={s.field}>
+              <label className={s.label} htmlFor="um-ms">
+                Estado da membership
+              </label>
+              <select id="um-ms" className={s.input} style={{ width: "100%" }} value={formMembershipStatus} onChange={(e) => setFormMembershipStatus(e.target.value)}>
+                <option value="active">active</option>
+                <option value="invited">invited</option>
+                <option value="suspended">suspended</option>
+              </select>
+            </div>
+          </>
+        ),
+      },
+      {
+        key: "roles",
+        label: "Papéis",
+        content: (
+          <div className={s.field}>
+            <span className={s.label}>Papéis</span>
+            <div className={s.checkboxRow}>
+              <label className={s.checkbox}>
+                <input type="checkbox" checked={formRoleAdmin} onChange={(e) => setFormRoleAdmin(e.target.checked)} />
+                Admin da org. (<span className={s.mono}>admin</span>)
+              </label>
+              <label className={s.checkbox}>
+                <input type="checkbox" checked={formRolePlatform} onChange={(e) => setFormRolePlatform(e.target.checked)} />
+                Admin plataforma (<span className={s.mono}>{HOOKO_PLATFORM_ADMIN_ROLE_KEY}</span>)
+              </label>
+            </div>
+          </div>
+        ),
+      },
+      {
+        key: "review",
+        label: "Revisão",
+        content: (
+          <>
+            <ReviewRow label="E-mail" value={formEmail.trim().toLowerCase()} />
+            <ReviewRow label="Organização" value={orgLabel} />
+            <ReviewRow label="Membership" value={formMembershipStatus} />
+            <ReviewRow label="Papéis" value={[formRoleAdmin && "admin", formRolePlatform && HOOKO_PLATFORM_ADMIN_ROLE_KEY].filter(Boolean).join(", ") || "—"} />
+          </>
+        ),
+      },
+    ],
+    [formErr, createStep, formEmail, formPassword, formOrgId, formMembershipStatus, formRoleAdmin, formRolePlatform, orgSelect, orgLabel],
+  );
+
+  const editSteps = useMemo(
+    () => [
+      {
+        key: "data",
+        label: "Dados",
+        content: modalEdit ? (
+          <>
+            {formErr && editStep === 0 ? <p className={s.err} style={{ marginBottom: "0.75rem" }}>{formErr}</p> : null}
+            <div className={s.field}>
+              <span className={s.label}>E-mail</span>
+              <p className={u.readonlyEmail}>{modalEdit.email}</p>
+            </div>
+            <div className={s.field}>
+              <label className={s.label} htmlFor="ue-pass">
+                Nova palavra-passe (opcional)
+              </label>
+              <input id="ue-pass" className={s.input} style={{ width: "100%" }} value={formPassword} onChange={(e) => setFormPassword(e.target.value)} type="password" minLength={8} autoComplete="new-password" />
+            </div>
+            <div className={s.field}>
+              <label className={s.label} htmlFor="ue-org">
+                Organização
+              </label>
+              {orgSelect || (
+                <input id="ue-org" className={s.input} style={{ width: "100%" }} value={formOrgId} onChange={(e) => setFormOrgId(e.target.value)} required placeholder="UUID" />
+              )}
+            </div>
+            <div className={s.field}>
+              <span className={s.label}>Papéis</span>
+              <div className={s.checkboxRow}>
+                <label className={s.checkbox}>
+                  <input type="checkbox" checked={formRoleAdmin} onChange={(e) => setFormRoleAdmin(e.target.checked)} />
+                  Admin da org.
+                </label>
+                <label className={s.checkbox}>
+                  <input type="checkbox" checked={formRolePlatform} onChange={(e) => setFormRolePlatform(e.target.checked)} />
+                  Admin plataforma
+                </label>
+              </div>
+            </div>
+            <div className={s.field}>
+              <label className={s.label} htmlFor="ue-ms">
+                Estado da membership
+              </label>
+              <select id="ue-ms" className={s.input} style={{ width: "100%" }} value={formMembershipStatus} onChange={(e) => setFormMembershipStatus(e.target.value)}>
+                <option value="active">active</option>
+                <option value="invited">invited</option>
+                <option value="suspended">suspended</option>
+              </select>
+            </div>
+          </>
+        ) : null,
+      },
+      {
+        key: "review",
+        label: "Revisão",
+        content: modalEdit ? (
+          <>
+            <ReviewRow label="E-mail" value={modalEdit.email} />
+            <ReviewRow label="Organização" value={orgLabel} />
+            <ReviewRow label="Membership" value={formMembershipStatus} />
+            <ReviewRow label="Papéis" value={[formRoleAdmin && "admin", formRolePlatform && HOOKO_PLATFORM_ADMIN_ROLE_KEY].filter(Boolean).join(", ") || "—"} />
+          </>
+        ) : null,
+      },
+    ],
+    [modalEdit, formErr, editStep, formPassword, formOrgId, formMembershipStatus, formRoleAdmin, formRolePlatform, orgSelect, orgLabel],
+  );
+
   return (
     <div className={`${s.page} ${u.usersPage}`}>
       <header className={s.header}>
@@ -337,7 +525,11 @@ function AdminUsuariosPageContent() {
               ) : (
                 users.map((row) => (
                   <tr key={row.id}>
-                    <td className={u.email}>{row.email}</td>
+                    <td className={u.email}>
+                      <Link href={`/admin/usuarios/${row.id}`} className={u.emailLink}>
+                        {row.email}
+                      </Link>
+                    </td>
                     <td>
                       <span className={u.badge}>{row.planLabel}</span>
                     </td>
@@ -361,205 +553,55 @@ function AdminUsuariosPageContent() {
         </div>
       )}
 
-      <AdminModal
+      <AdminStepModal
         open={modalCreate}
         title="Novo utilizador"
-        onClose={() => { setModalCreate(false); resetForm(); }}
-        footer={
-          <>
-            <button type="button" className={s.btnGhost} onClick={() => { setModalCreate(false); resetForm(); }}>
-              Cancelar
-            </button>
-            <button type="button" className={s.btnPrimary} disabled={busy} onClick={() => submitCreateEdit("create", null)}>
-              {busy ? "A guardar…" : "Criar"}
-            </button>
-          </>
-        }
-        wide={!USE_MOCK}
-      >
-        {formErr ? <p className={s.err} style={{ marginBottom: "0.75rem" }}>{formErr}</p> : null}
+        steps={createSteps}
+        step={createStep}
+        onStepChange={(next) => {
+          if (next > createStep && !validateUserStep("create", createStep)) return;
+          setCreateStep(next);
+        }}
+        onClose={() => {
+          setModalCreate(false);
+          resetForm();
+        }}
+        onSubmit={() => {
+          for (let i = 0; i < 3; i += 1) {
+            if (!validateUserStep("create", i)) {
+              setCreateStep(i);
+              return;
+            }
+          }
+          submitCreateEdit("create", null);
+        }}
+        busy={busy}
+        submitLabel="Criar utilizador"
+      />
 
-        {!USE_MOCK ? (
-          <>
-            <div className={s.field}>
-              <label className={s.label} htmlFor="um-email">
-                E-mail
-              </label>
-              <input id="um-email" className={s.input} style={{ width: "100%", minWidth: 0 }} value={formEmail} onChange={(e) => setFormEmail(e.target.value)} required type="email" autoComplete="off" />
-            </div>
-            <div className={s.field}>
-              <label className={s.label} htmlFor="um-pass">
-                Palavra-passe
-              </label>
-              <input
-                id="um-pass"
-                className={s.input}
-                style={{ width: "100%", minWidth: 0 }}
-                value={formPassword}
-                onChange={(e) => setFormPassword(e.target.value)}
-                type="password"
-                minLength={8}
-                autoComplete="new-password"
-              />
-              <p className={s.hint}>Mínimo 8 caracteres para conta nova; opcional para actualizar hash se o e-mail já existe.</p>
-            </div>
-            <div className={s.field}>
-              <label className={s.label} htmlFor="um-org">
-                Organização
-              </label>
-              {orgSelect || (
-                <input id="um-org" className={s.input} style={{ width: "100%", minWidth: 0 }} value={formOrgId} onChange={(e) => setFormOrgId(e.target.value)} placeholder="UUID" required />
-              )}
-            </div>
-            <div className={s.field}>
-              <span className={s.label}>Papéis</span>
-              <div className={s.checkboxRow}>
-                <label className={s.checkbox}>
-                  <input type="checkbox" checked={formRoleAdmin} onChange={(e) => setFormRoleAdmin(e.target.checked)} />
-                  Admin da org. (<span className={s.mono}>admin</span>)
-                </label>
-                <label className={s.checkbox}>
-                  <input type="checkbox" checked={formRolePlatform} onChange={(e) => setFormRolePlatform(e.target.checked)} />
-                  Admin plataforma (<span className={s.mono}>{HOOKO_PLATFORM_ADMIN_ROLE_KEY}</span>)
-                </label>
-              </div>
-            </div>
-            <div className={s.field}>
-              <label className={s.label} htmlFor="um-ms">
-                Estado da membership
-              </label>
-              <select id="um-ms" className={s.input} style={{ width: "100%", minWidth: 0 }} value={formMembershipStatus} onChange={(e) => setFormMembershipStatus(e.target.value)}>
-                <option value="active">active</option>
-                <option value="invited">invited</option>
-                <option value="suspended">suspended</option>
-              </select>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className={s.field}>
-              <label className={s.label} htmlFor="um-m-email">
-                E-mail
-              </label>
-              <input id="um-m-email" className={s.input} style={{ width: "100%", minWidth: 0 }} value={formEmail} onChange={(e) => setFormEmail(e.target.value)} required type="email" />
-            </div>
-            <div className={s.field}>
-              <label className={s.label} htmlFor="um-m-plan">
-                Plano (rótulo)
-              </label>
-              <input id="um-m-plan" className={s.input} style={{ width: "100%", minWidth: 0 }} value={formPlanLabel} onChange={(e) => setFormPlanLabel(e.target.value)} />
-            </div>
-            <div className={s.field}>
-              <label className={s.label} htmlFor="um-m-sub">
-                Estado da assinatura (mock)
-              </label>
-              <select id="um-m-sub" className={s.input} style={{ width: "100%", minWidth: 0 }} value={formSubStatus} onChange={(e) => setFormSubStatus(e.target.value)}>
-                <option value="active">Activo</option>
-                <option value="delinquent">Inadimplente</option>
-                <option value="paused">Pausado</option>
-              </select>
-            </div>
-          </>
-        )}
-      </AdminModal>
-
-      <AdminModal
+      <AdminStepModal
         open={Boolean(modalEdit)}
         title="Editar utilizador"
-        onClose={() => { setModalEdit(null); resetForm(); }}
-        footer={
-          <>
-            <button type="button" className={s.btnGhost} onClick={() => { setModalEdit(null); resetForm(); }}>
-              Cancelar
-            </button>
-            <button type="button" className={s.btnPrimary} disabled={busy} onClick={() => submitCreateEdit("edit", modalEdit)}>
-              {busy ? "A guardar…" : "Guardar"}
-            </button>
-          </>
-        }
-        wide={!USE_MOCK}
-      >
-        {formErr ? <p className={s.err} style={{ marginBottom: "0.75rem" }}>{formErr}</p> : null}
-        {modalEdit ? (
-          <>
-            <div className={s.field}>
-              <span className={s.label}>E-mail</span>
-              <p className={u.readonlyEmail}>{modalEdit.email}</p>
-              <p className={s.hint}>{USE_MOCK ? "No mock altera plano e estado abaixo." : "Reenvia membership e papéis com o mesmo e-mail."}</p>
-            </div>
-
-            {!USE_MOCK ? (
-              <>
-                <div className={s.field}>
-                  <label className={s.label} htmlFor="ue-pass">
-                    Nova palavra-passe (opcional)
-                  </label>
-                  <input
-                    id="ue-pass"
-                    className={s.input}
-                    style={{ width: "100%", minWidth: 0 }}
-                    value={formPassword}
-                    onChange={(e) => setFormPassword(e.target.value)}
-                    type="password"
-                    minLength={8}
-                    autoComplete="new-password"
-                  />
-                </div>
-                <div className={s.field}>
-                  <label className={s.label} htmlFor="ue-org">
-                    Organização
-                  </label>
-                  {orgSelect || (
-                    <input id="ue-org" className={s.input} style={{ width: "100%", minWidth: 0 }} value={formOrgId} onChange={(e) => setFormOrgId(e.target.value)} required placeholder="UUID" />
-                  )}
-                </div>
-                <div className={s.field}>
-                  <span className={s.label}>Papéis</span>
-                  <div className={s.checkboxRow}>
-                    <label className={s.checkbox}>
-                      <input type="checkbox" checked={formRoleAdmin} onChange={(e) => setFormRoleAdmin(e.target.checked)} />
-                      Admin da org.
-                    </label>
-                    <label className={s.checkbox}>
-                      <input type="checkbox" checked={formRolePlatform} onChange={(e) => setFormRolePlatform(e.target.checked)} />
-                      Admin plataforma
-                    </label>
-                  </div>
-                </div>
-                <div className={s.field}>
-                  <label className={s.label} htmlFor="ue-ms">
-                    Estado da membership
-                  </label>
-                  <select id="ue-ms" className={s.input} style={{ width: "100%", minWidth: 0 }} value={formMembershipStatus} onChange={(e) => setFormMembershipStatus(e.target.value)}>
-                    <option value="active">active</option>
-                    <option value="invited">invited</option>
-                    <option value="suspended">suspended</option>
-                  </select>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className={s.field}>
-                  <label className={s.label} htmlFor="ue-m-plan">
-                    Plano (rótulo)
-                  </label>
-                  <input id="ue-m-plan" className={s.input} style={{ width: "100%", minWidth: 0 }} value={formPlanLabel} onChange={(e) => setFormPlanLabel(e.target.value)} />
-                </div>
-                <div className={s.field}>
-                  <label className={s.label} htmlFor="ue-m-sub">
-                    Estado da assinatura (mock)
-                  </label>
-                  <select id="ue-m-sub" className={s.input} style={{ width: "100%", minWidth: 0 }} value={formSubStatus} onChange={(e) => setFormSubStatus(e.target.value)}>
-                    <option value="active">Activo</option>
-                    <option value="delinquent">Inadimplente</option>
-                    <option value="paused">Pausado</option>
-                  </select>
-                </div>
-              </>
-            )}
-          </>
-        ) : null}
-      </AdminModal>
+        steps={editSteps}
+        step={editStep}
+        onStepChange={(next) => {
+          if (next > editStep && !validateUserStep("edit", editStep)) return;
+          setEditStep(next);
+        }}
+        onClose={() => {
+          setModalEdit(null);
+          resetForm();
+        }}
+        onSubmit={() => {
+          if (!validateUserStep("edit", 0)) {
+            setEditStep(0);
+            return;
+          }
+          submitCreateEdit("edit", modalEdit);
+        }}
+        busy={busy}
+        submitLabel="Guardar alterações"
+      />
 
       <AdminModal
         open={Boolean(modalDelete)}

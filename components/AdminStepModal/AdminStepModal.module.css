@@ -1,0 +1,79 @@
+.stepBar {
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: 1.15rem;
+  flex-wrap: wrap;
+}
+
+.stepItem {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.stepTrack {
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.stepTrackFill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #6b5818, #d4af37, #f7e8a8);
+  transition: width 0.25s ease;
+}
+
+.stepLabel {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--hooko-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stepLabelActive {
+  color: var(--hooko-gold-bright);
+}
+
+.stepLabelDone {
+  color: rgba(212, 175, 55, 0.75);
+}
+
+.reviewGrid {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.reviewRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 10px;
+  background: var(--hooko-surface);
+  border: 1px solid var(--hooko-border);
+  font-size: 0.82rem;
+}
+
+.reviewKey {
+  color: var(--hooko-text-muted);
+}
+
+.reviewVal {
+  color: var(--hooko-text);
+  font-weight: 600;
+  text-align: right;
+  word-break: break-word;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.78rem;
+}

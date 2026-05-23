@@ -1,0 +1,97 @@
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: var(--hooko-overlay);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 0;
+  cursor: pointer;
+}
+
+.panel {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 26rem);
+  padding: 1.5rem 1.5rem 1.25rem;
+  border-radius: 16px;
+  border: 1px solid var(--hooko-border);
+  background: var(--hooko-surface-elevated);
+  box-shadow: 0 24px 64px var(--hooko-shadow);
+  animation: modalIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0 0 0.75rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--hooko-gold-bright);
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+}
+
+.title {
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--hooko-text);
+}
+
+.text {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--hooko-text-muted);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.25rem;
+}
+
+.btn {
+  padding: 0.55rem 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--hooko-border-strong);
+  background: rgba(212, 175, 55, 0.12);
+  color: var(--hooko-text);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: rgba(212, 175, 55, 0.2);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--hooko-gold);
+  outline-offset: 2px;
+}

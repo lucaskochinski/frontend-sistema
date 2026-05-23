@@ -5,7 +5,6 @@ import { apiFetch } from "@/lib/hooko-session";
 import { isAdminUiBypassEnabled } from "@/lib/admin-ui-bypass";
 import { hasPlatformAdminRole } from "@/lib/platform-admin";
 import AdminForbidden from "./AdminForbidden";
-import styles from "./AdminGate.module.css";
 
 /**
  * Confirma `/api/auth/me` + papel platform admin antes de renderizar páginas `/admin/*`.
@@ -50,11 +49,6 @@ export default function AdminGate({ children }) {
 
   return (
     <>
-      {bypass ? (
-        <div className={styles.bypassRibbon} role="status">
-          <strong>Preview admin:</strong> sem API ligada — <code>NEXT_PUBLIC_ADMIN_UI_BYPASS=true</code> no frontend. Não usar em produção.
-        </div>
-      ) : null}
       {children}
     </>
   );

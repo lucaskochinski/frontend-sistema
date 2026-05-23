@@ -4,12 +4,12 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import {
   apiFetch,
-  getApiBase,
   getStoredAccessToken,
   getStoredOrganizationId,
   persistSession,
 } from "@/lib/hooko-session";
 import ThemeToggle from "@/components/Theme/ThemeToggle";
+import NotImplementedModal from "@/components/NotImplementedModal/NotImplementedModal";
 import styles from "./page.module.css";
 
 /**
@@ -38,21 +38,13 @@ function IconSlidersHeader({ className }) {
   );
 }
 
-function copyText(text) {
-  if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
-    navigator.clipboard.writeText(text).catch(() => {});
-  }
-}
-
 export default function AjustesPage() {
-  const apiBase = getApiBase();
   const [tokenPresent, setTokenPresent] = useState(false);
   const [me, setMe] = useState(/** @type {MeProfile | null} */ (null));
   const [selectedOrgId, setSelectedOrgId] = useState("");
   const [busyMeta, setBusyMeta] = useState(false);
-  const [busyDrive, setBusyDrive] = useState(false);
   const [busyPortal, setBusyPortal] = useState(false);
-  const [plans, setPlans] = useState([]);
+  const [vturbModalOpen, setVturbModalOpen] = useState(false);
 
   const syncTokenFlag = useCallback(() => {
     setTokenPresent(Boolean(getStoredAccessToken()));
@@ -65,7 +57,7 @@ export default function AjustesPage() {
   }, [syncTokenFlag]);
 
   useEffect(() => {
-    if (!apiBase || !getStoredAccessToken()) {
+    if (!getStoredAccessToken()) {
       setMe(null);
       return;
     }
@@ -81,23 +73,7 @@ export default function AjustesPage() {
     return () => {
       cancelled = true;
     };
-  }, [apiBase, tokenPresent]);
-
-  useEffect(() => {
-    if (!apiBase) return;
-    let cancelled = false;
-    (async () => {
-      try {
-        const res = await apiFetch("/api/plans/public", { headers: {} });
-        if (!cancelled) setPlans(Array.isArray(res?.items) ? res.items : []);
-      } catch {
-        if (!cancelled) setPlans([]);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [apiBase]);
+  }, [tokenPresent]);
 
   const organizations = useMemo(() => rowsFromProfile(me), [me]);
 
@@ -122,24 +98,14 @@ export default function AjustesPage() {
   }, [organizations]);
 
   const orgReady = Boolean(selectedOrgId && organizations.some((r) => r.organizationId === selectedOrgId));
-  const canConnect = Boolean(apiBase && tokenPresent && orgReady);
+  const canConnect = Boolean(tokenPresent && orgReady);
 
-  const vturbWebhookUrl = useMemo(() => {
-    if (!selectedOrgId) return "";
-    return `${apiBase}/api/webhooks/vturb?organizationId=${selectedOrgId}`;
-  }, [apiBase, selectedOrgId]);
-
-  const pagtrustWebhookUrl = useMemo(() => {
-    if (!selectedOrgId) return "";
-    return `${apiBase}/api/webhooks/pagtrust?organizationId=${selectedOrgId}`;
-  }, [apiBase, selectedOrgId]);
-
-  const startOAuth = async (path, setBusy) => {
+  const startMetaOAuth = async () => {
     if (!canConnect || !selectedOrgId) return;
-    setBusy(true);
+    setBusyMeta(true);
     try {
       const qs = new URLSearchParams({ organizationId: selectedOrgId.trim() });
-      const data = await apiFetch(`${path}?${qs.toString()}`, { headers: {} });
+      const data = await apiFetch(`/api/meta/oauth/authorize-url?${qs.toString()}`, { headers: {} });
       const url = data?.authorizeUrl;
       if (typeof url === "string" && url.length > 0) {
         window.location.href = url;
@@ -147,7 +113,7 @@ export default function AjustesPage() {
     } catch {
       /* silencioso */
     } finally {
-      setBusy(false);
+      setBusyMeta(false);
     }
   };
 
@@ -178,15 +144,37 @@ export default function AjustesPage() {
             </div>
             <div className={styles.topTitleBlock}>
               <h1 className={styles.topPageTitle}>Ajustes</h1>
-              <p className={styles.topHint}>
-                Integrações, aparência, plano e webhooks de vendas (PagTrust, VTurb).
-              </p>
+              <p className={styles.topHint}>Conta Meta, aparência, VTurb e plano.</p>
             </div>
           </div>
         </div>
       </header>
 
       <div className={styles.main}>
+        <section className={styles.row} aria-labelledby="meta-h">
+          <div className={styles.thumb}>
+            <Image src="/imagens/meta.png" alt="" width={120} height={120} />
+          </div>
+          <div className={styles.rowGrow}>
+            <h2 id="meta-h" className={styles.rowTitle}>
+              Conta Meta Ads
+            </h2>
+            <p className={styles.rowText}>
+              Conecte ou troque a conta da Meta para importar criativos e sincronizar métricas.
+            </p>
+          </div>
+          <div className={styles.rowActions}>
+            <button
+              type="button"
+              className={`${styles.btn} ${styles.btnPrimary}`}
+              disabled={!canConnect || busyMeta}
+              onClick={startMetaOAuth}
+            >
+              {busyMeta ? "A redirecionar…" : "Mudar conta Meta"}
+            </button>
+          </div>
+        </section>
+
         <section className={styles.row} aria-labelledby="theme-h">
           <div className={styles.thumbIcon} aria-hidden>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
@@ -198,54 +186,10 @@ export default function AjustesPage() {
             <h2 id="theme-h" className={styles.rowTitle}>
               Aparência
             </h2>
-            <p className={styles.rowText}>Alterne entre tema claro e escuro. A preferência fica guardada neste browser.</p>
+            <p className={styles.rowText}>Alterne entre tema claro (dia) e escuro (noite).</p>
           </div>
           <div className={styles.rowActions}>
             <ThemeToggle />
-          </div>
-        </section>
-
-        <section className={styles.row} aria-labelledby="meta-h">
-          <div className={styles.thumb}>
-            <Image src="/imagens/meta.png" alt="" width={120} height={120} />
-          </div>
-          <div className={styles.rowGrow}>
-            <h2 id="meta-h" className={styles.rowTitle}>
-              Meta Ads
-            </h2>
-            <p className={styles.rowText}>Conecta a tua conta da Meta para importares criativos e veres campanhas.</p>
-          </div>
-          <div className={styles.rowActions}>
-            <button
-              type="button"
-              className={`${styles.btn} ${styles.btnPrimary}`}
-              disabled={!canConnect || busyMeta}
-              onClick={() => startOAuth("/api/meta/oauth/authorize-url", setBusyMeta)}
-            >
-              {busyMeta ? "A redirecionar…" : "Ligar Meta"}
-            </button>
-          </div>
-        </section>
-
-        <section className={styles.row} aria-labelledby="drive-h">
-          <div className={styles.thumb}>
-            <Image src="/imagens/google-drive.png" alt="" width={120} height={120} />
-          </div>
-          <div className={styles.rowGrow}>
-            <h2 id="drive-h" className={styles.rowTitle}>
-              Google Drive
-            </h2>
-            <p className={styles.rowText}>Autoriza o Google Drive para importares ou leres os teus ficheiros.</p>
-          </div>
-          <div className={styles.rowActions}>
-            <button
-              type="button"
-              className={`${styles.btn} ${styles.btnPrimary}`}
-              disabled={!canConnect || busyDrive}
-              onClick={() => startOAuth("/api/google-drive/oauth/authorize-url", setBusyDrive)}
-            >
-              {busyDrive ? "A redirecionar…" : "Ligar Drive"}
-            </button>
           </div>
         </section>
 
@@ -255,43 +199,20 @@ export default function AjustesPage() {
           </div>
           <div className={styles.rowGrow}>
             <h2 id="vturb-h" className={styles.rowTitle}>
-              VTurb / ConverteAI
+              VTurb
             </h2>
             <p className={styles.rowText}>
-              Integração parcial: webhook de vendas + embed do player no detalhe do criativo. Não há OAuth VTurb —
-              configure o webhook abaixo e ligue o ID do player em cada anúncio.
-            </p>
-            {vturbWebhookUrl ? (
-              <div className={styles.webhookBox}>
-                <code className={styles.webhookCode}>{vturbWebhookUrl}</code>
-                <button type="button" className={styles.btn} onClick={() => copyText(vturbWebhookUrl)}>
-                  Copiar
-                </button>
-              </div>
-            ) : null}
-            <p className={styles.rowHint}>
-              Use <code>utm_term</code> no payload igual ao ID Meta do anúncio para cruzamento de vendas.
+              Conecte a API VTurb para sincronizar players, métricas de VSL e conversões.
             </p>
           </div>
-        </section>
-
-        <section className={styles.row} aria-labelledby="pagtrust-h">
-          <div className={styles.thumbIcon} aria-hidden>
-            <span className={styles.pagtrustMark}>PT</span>
-          </div>
-          <div className={styles.rowGrow}>
-            <h2 id="pagtrust-h" className={styles.rowTitle}>
-              PagTrust
-            </h2>
-            <p className={styles.rowText}>Webhook de vendas para alimentar o dashboard de receitas.</p>
-            {pagtrustWebhookUrl ? (
-              <div className={styles.webhookBox}>
-                <code className={styles.webhookCode}>{pagtrustWebhookUrl}</code>
-                <button type="button" className={styles.btn} onClick={() => copyText(pagtrustWebhookUrl)}>
-                  Copiar
-                </button>
-              </div>
-            ) : null}
+          <div className={styles.rowActions}>
+            <button
+              type="button"
+              className={`${styles.btn} ${styles.btnPrimary}`}
+              onClick={() => setVturbModalOpen(true)}
+            >
+              Conectar API VTurb
+            </button>
           </div>
         </section>
 
@@ -306,21 +227,7 @@ export default function AjustesPage() {
             <h2 id="plan-h" className={styles.rowTitle}>
               Plano e faturação
             </h2>
-            <p className={styles.rowText}>
-              Gerencie assinatura, faturas e cancelamento via portal Stripe.
-            </p>
-            {plans.length > 0 ? (
-              <ul className={styles.planList}>
-                {plans.slice(0, 3).map((plan) => (
-                  <li key={plan.id}>
-                    <strong>{plan.name || plan.key}</strong>
-                    {plan.priceCents != null ? ` — R$ ${(Number(plan.priceCents) / 100).toFixed(2)}/mês` : ""}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className={styles.rowHint}>Planos disponíveis após login.</p>
-            )}
+            <p className={styles.rowText}>Altere, atualize ou cancele sua assinatura no portal Stripe.</p>
           </div>
           <div className={styles.rowActions}>
             <button
@@ -329,11 +236,17 @@ export default function AjustesPage() {
               disabled={!canConnect || busyPortal}
               onClick={openBillingPortal}
             >
-              {busyPortal ? "A abrir…" : "Portal de faturação"}
+              {busyPortal ? "A abrir…" : "Gerir plano"}
             </button>
           </div>
         </section>
       </div>
+
+      <NotImplementedModal
+        open={vturbModalOpen}
+        featureKey="vturb"
+        onClose={() => setVturbModalOpen(false)}
+      />
     </div>
   );
 }

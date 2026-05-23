@@ -1,0 +1,46 @@
+.wrap {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  background: linear-gradient(195deg, #09090b 0%, #000 100%);
+  color: var(--hooko-text);
+}
+
+.inner {
+  max-width: 28rem;
+  text-align: center;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.65rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(212, 175, 55, 0.85);
+}
+
+.title {
+  margin: 0.65rem 0 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.sub {
+  margin: 0.75rem 0 0;
+  color: var(--hooko-text-muted);
+}
+
+.links {
+  margin-top: 1.5rem;
+}
+
+.link {
+  color: #d4af37;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.link:hover {
+  color: #ffd700;
+}

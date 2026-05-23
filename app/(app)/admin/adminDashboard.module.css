@@ -135,3 +135,20 @@
   background: rgba(212, 175, 55, 0.1);
   color: rgba(253, 230, 138, 0.95);
 }
+
+.err {
+  margin: 0 0 1rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.25);
+  color: #fca5a5;
+  font-size: 0.85rem;
+}
+
+.chartEmpty {
+  margin: 2rem 0;
+  text-align: center;
+  color: var(--hooko-text-muted);
+  font-size: 0.9rem;
+}

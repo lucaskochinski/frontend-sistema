@@ -117,3 +117,8 @@
   background: var(--hooko-surface);
   color: var(--hooko-text);
 }
+
+.reviewWrap {
+  display: grid;
+  gap: 0.55rem;
+}

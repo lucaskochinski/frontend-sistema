@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { apiFetch, getApiBase, getStoredOrganizationId } from "@/lib/hooko-session";
+import { apiFetch, getStoredOrganizationId } from "@/lib/hooko-session";
+import NotImplementedModal from "@/components/NotImplementedModal/NotImplementedModal";
 import {
   DashboardSection,
   MetaRankingsGrid,
@@ -17,8 +18,7 @@ export default function CriativosDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [overview, setOverview] = useState(null);
   const [insights, setInsights] = useState([]);
-  const [vturbSales, setVturbSales] = useState(null);
-  const [platform, setPlatform] = useState("meta");
+  const [vturbModalOpen, setVturbModalOpen] = useState(false);
   const [period, setPeriod] = useState("month");
 
   useEffect(() => {
@@ -29,15 +29,13 @@ export default function CriativosDashboardPage() {
         if (!orgId) return;
 
         const periodParam = encodeURIComponent(period);
-        const [overviewRes, insightsRes, vturbRes] = await Promise.all([
+        const [overviewRes, insightsRes] = await Promise.all([
           apiFetch(`/api/dashboard/overview?organizationId=${orgId}&period=${periodParam}`).catch(() => null),
           apiFetch(`/api/dashboard/insights?organizationId=${orgId}&sort=roas&limit=50`).catch(() => null),
-          apiFetch(`/api/dashboard/external-sales/vturb?organizationId=${orgId}&period=${periodParam}`).catch(() => null),
         ]);
 
         setOverview(overviewRes);
         setInsights(Array.isArray(insightsRes?.items) ? insightsRes.items : []);
-        setVturbSales(vturbRes);
       } catch (err) {
         console.error("Erro ao carregar dashboard de criativos:", err);
       } finally {
@@ -51,14 +49,12 @@ export default function CriativosDashboardPage() {
     const active = insights.filter((i) => Number(i?.rollup?.spend || 0) > 0);
     const topRoas = [...active].sort((a, b) => Number(b?.rollup?.roas || 0) - Number(a?.rollup?.roas || 0))[0];
     const lowCtr = [...active].sort((a, b) => Number(a?.rollup?.ctr || 0) - Number(b?.rollup?.ctr || 0))[0];
-    const withVturb = insights.filter((i) => i.vturbVideoId || i.vturb_video_id).length;
 
     return {
       activeCount: active.length,
       totalCount: insights.length,
       topRoas,
       lowCtr,
-      withVturb,
     };
   }, [insights]);
 
@@ -77,22 +73,18 @@ export default function CriativosDashboardPage() {
           <p className={styles.kicker}>Criativos</p>
           <h1 className={styles.title}>Dashboard de performance</h1>
           <p className={styles.sub}>
-            Rankings, funil e resumo IA dos criativos importados. Alterne entre Meta Ads e VTurb.
+            Rankings, funil e resumo IA dos criativos importados da Meta Ads.
           </p>
         </div>
         <div className={styles.headerActions}>
           <div className={styles.platformToggle} role="group" aria-label="Fonte de dados">
-            <button
-              type="button"
-              className={`${styles.platformBtn} ${platform === "meta" ? styles.platformBtnActive : ""}`}
-              onClick={() => setPlatform("meta")}
-            >
+            <button type="button" className={`${styles.platformBtn} ${styles.platformBtnActive}`}>
               Meta Ads
             </button>
             <button
               type="button"
-              className={`${styles.platformBtn} ${platform === "vturb" ? styles.platformBtnActive : ""}`}
-              onClick={() => setPlatform("vturb")}
+              className={styles.platformBtn}
+              onClick={() => setVturbModalOpen(true)}
             >
               VTurb
             </button>
@@ -146,62 +138,29 @@ export default function CriativosDashboardPage() {
               <p className={styles.aiHint}>Sem dados suficientes</p>
             )}
           </div>
-          <div className={styles.aiCard}>
-            <span className={styles.aiLabel}>VTurb ligados</span>
-            <strong className={styles.aiValue}>{aiSummary.withVturb}</strong>
-            <p className={styles.aiHint}>
-              Webhook: {getApiBase()}/api/webhooks/vturb
-            </p>
-          </div>
         </div>
       </section>
 
-      {platform === "meta" ? (
-        <div className={dash.dashboardGrid}>
-          <DashboardSection title="Rankings por criativo">
-            <MetaRankingsGrid items={overview?.rankingItems} />
-          </DashboardSection>
+      <div className={dash.dashboardGrid}>
+        <DashboardSection title="Rankings por criativo">
+          <MetaRankingsGrid items={overview?.rankingItems} />
+        </DashboardSection>
 
-          <DashboardSection title="Funil de conversão">
-            <MetaConversionFunnel
-              funnel={overview?.conversionFunnel || overview?.funnel}
-              salesInitiated={vturbSales?.totalSales}
-              salesApproved={vturbSales?.approvedSales}
-            />
-          </DashboardSection>
+        <DashboardSection title="Funil de conversão">
+          <MetaConversionFunnel funnel={overview?.conversionFunnel || overview?.funnel} />
+        </DashboardSection>
 
-          <DashboardSection title="Gasto diário Meta">
-            <MetaDailySpendChart data={overview?.dailyMeta} />
-            <MetaMetricsSection overview={overview} />
-          </DashboardSection>
-        </div>
-      ) : (
-        <div className={dash.dashboardGrid}>
-          <DashboardSection title="VTurb — vendas via webhook">
-            <div className={styles.vturbStats}>
-              <div className={styles.vturbStat}>
-                <span>Receita</span>
-                <strong>R$ {Number(vturbSales?.totalRevenue || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</strong>
-              </div>
-              <div className={styles.vturbStat}>
-                <span>Vendas</span>
-                <strong>{Number(vturbSales?.totalSales || 0)}</strong>
-              </div>
-              <div className={styles.vturbStat}>
-                <span>Aprovadas</span>
-                <strong>{Number(vturbSales?.approvedSales || 0)}</strong>
-              </div>
-            </div>
-            <p className={styles.vturbNote}>
-              A integração VTurb atual é via webhook de vendas + embed ConverteAI no detalhe do criativo.
-              Configure o webhook em Ajustes com o <code>utm_term</code> igual ao ID do anúncio Meta.
-            </p>
-            <Link href="/graficos/vturb" className={styles.linkBtn}>
-              Ver gráficos VTurb completos
-            </Link>
-          </DashboardSection>
-        </div>
-      )}
+        <DashboardSection title="Gasto diário Meta">
+          <MetaDailySpendChart data={overview?.dailyMeta} />
+          <MetaMetricsSection overview={overview} />
+        </DashboardSection>
+      </div>
+
+      <NotImplementedModal
+        open={vturbModalOpen}
+        featureKey="vturb"
+        onClose={() => setVturbModalOpen(false)}
+      />
     </div>
   );
 }

@@ -1,0 +1,104 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: var(--hooko-overlay);
+  backdrop-filter: blur(8px);
+}
+
+.panel {
+  width: min(100%, 26rem);
+  padding: 1.35rem 1.35rem 1.15rem;
+  border-radius: 16px;
+  border: 1px solid var(--hooko-border);
+  background: var(--hooko-surface-elevated);
+  box-shadow: 0 24px 64px var(--hooko-shadow);
+}
+
+.badge {
+  display: inline-flex;
+  margin-bottom: 0.65rem;
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.badgeCritical {
+  color: #fecaca;
+  background: rgba(248, 113, 113, 0.15);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+}
+
+.badgeWarning {
+  color: #fde68a;
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.badgeInfo {
+  color: var(--hooko-gold-bright);
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.28);
+}
+
+.title {
+  margin: 0 0 0.45rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--hooko-text);
+}
+
+.text {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--hooko-text-muted);
+}
+
+.planName {
+  margin-top: 0.65rem;
+  font-size: 0.8rem;
+  color: var(--hooko-text-subtle);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 1.15rem;
+}
+
+.btnGhost {
+  padding: 0.55rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid var(--hooko-border-strong);
+  background: transparent;
+  color: var(--hooko-text-muted);
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btnPrimary {
+  padding: 0.55rem 0.95rem;
+  border-radius: 10px;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  background: rgba(212, 175, 55, 0.16);
+  color: var(--hooko-text);
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btnPrimary:disabled,
+.btnGhost:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

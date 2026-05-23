@@ -51,6 +51,16 @@
   letter-spacing: -0.01em;
 }
 
+.emailLink {
+  color: var(--hooko-text);
+  text-decoration: none;
+}
+
+.emailLink:hover {
+  color: var(--hooko-gold-bright);
+  text-decoration: underline;
+}
+
 .badge {
   display: inline-flex;
   align-items: center;

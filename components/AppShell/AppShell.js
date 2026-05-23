@@ -8,13 +8,14 @@ import { apiFetch } from "@/lib/hooko-session";
 import { isAdminUiBypassEnabled } from "@/lib/admin-ui-bypass";
 import { hasPlatformAdminRole } from "@/lib/platform-admin";
 import ThemeToggle from "@/components/Theme/ThemeToggle";
+import NotImplementedModal from "@/components/NotImplementedModal/NotImplementedModal";
 import styles from "./AppShell.module.css";
 
 const NAV = [
   { href: "/inicio", label: "Início" },
   { href: "/criativo", label: "Criativos" },
-  { href: "/formatos", label: "Formatos" },
-  { href: "/criador-de-anuncio", label: "Criador de anúncio" },
+  { href: "/formatos", label: "Formatos", comingSoon: true, featureKey: "formatos" },
+  { href: "/criador-de-anuncio", label: "Criador de anúncio", comingSoon: true, featureKey: "criador" },
   { href: "/perfil", label: "Perfil" },
   { href: "/ajustes", label: "Ajustes" },
 ];
@@ -181,6 +182,7 @@ export default function AppShell({ children }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isMobileVp, setIsMobileVp] = useState(false);
   const [isPlatformAdmin, setIsPlatformAdmin] = useState(() => isAdminUiBypassEnabled());
+  const [comingSoonKey, setComingSoonKey] = useState(null);
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 900px)");
@@ -305,6 +307,26 @@ export default function AppShell({ children }) {
             {NAV.map((item, i) => {
               const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
               const Icon = ICONS[i] ?? IconDash;
+
+              if (item.comingSoon) {
+                return (
+                  <button
+                    key={item.href}
+                    type="button"
+                    className={`${styles.navLink} ${active ? styles.navLinkActive : ""}`}
+                    onClick={() => {
+                      closeDrawer();
+                      setComingSoonKey(item.featureKey || "formatos");
+                    }}
+                  >
+                    <span className={styles.navIcon} aria-hidden>
+                      <Icon />
+                    </span>
+                    <span className={styles.navLabel}>{item.label}</span>
+                  </button>
+                );
+              }
+
               return (
                 <Link
                   key={item.href}
@@ -407,6 +429,12 @@ export default function AppShell({ children }) {
 
         <main className={styles.main}>{children}</main>
       </div>
+
+      <NotImplementedModal
+        open={Boolean(comingSoonKey)}
+        featureKey={comingSoonKey || "formatos"}
+        onClose={() => setComingSoonKey(null)}
+      />
     </div>
   );
 }

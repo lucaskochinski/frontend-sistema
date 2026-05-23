@@ -5,6 +5,7 @@ import styles from "./page.module.css";
 import BrandShowcase from "@/components/BrandShowcase/BrandShowcase";
 import LoginForm from "@/components/LoginForm/LoginForm";
 import AuthSuccessTransition from "@/components/AuthSuccessTransition/AuthSuccessTransition";
+import PostAuthRedirect from "@/components/Billing/PostAuthRedirect";
 
 const EXIT_MS = 520;
 
@@ -27,7 +28,7 @@ export default function LoginPage() {
   }, []);
 
   if (phase === "transition") {
-    return <AuthSuccessTransition variant="login" href="/inicio" />;
+    return <PostAuthRedirect variant="login" />;
   }
 
   return (
