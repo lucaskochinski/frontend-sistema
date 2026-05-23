@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useState } from "react";
 import Skeleton from "@/components/Skeleton/Skeleton";
 import AuthPasswordField from "@/components/AuthPasswordField/AuthPasswordField";
+import { translateApiMessage } from "@/lib/api-messages";
 import { markCheckoutRequired } from "@/lib/billing";
 import { persistSession, getApiBase } from "@/lib/hooko-session";
 
@@ -59,7 +60,7 @@ async function registerRequest(payload) {
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    const err = new Error(data.message || "Não foi possível criar a conta.");
+    const err = new Error(translateApiMessage(data.message || data.error, res.status) || "Não foi possível criar a conta.");
     throw err;
   }
   return data;

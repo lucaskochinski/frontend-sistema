@@ -227,7 +227,7 @@ export default function AjustesPage() {
             <h2 id="plan-h" className={styles.rowTitle}>
               Plano e faturação
             </h2>
-            <p className={styles.rowText}>Altere, atualize ou cancele sua assinatura no portal Stripe.</p>
+            <p className={styles.rowText}>Altere, actualize ou cancele a sua assinatura no portal de pagamento.</p>
           </div>
           <div className={styles.rowActions}>
             <button

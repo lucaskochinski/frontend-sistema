@@ -8,11 +8,37 @@ import { apiFetch } from "@/lib/hooko-session";
 import s from "../adminShared.module.css";
 import p from "./planos.module.css";
 
-const DEFAULT_LIMITS = `{
-  "creative_imports_per_month": 50
-}`;
+const DEFAULT_LIMITS = {
+  creativeImports: 50,
+  transcriptionMinutes: 120,
+  videoSizeMb: 100,
+  videoDurationMin: 5,
+};
 
-/** @typedef {{ id: string, tierKey: string, displayName: string, stripePriceId: string, trialDays: number, limitsJson: string, isPublic: boolean, isActive: boolean, customOrganizationId: string | null, orgName?: string }} PlanRow */
+/** @typedef {{ id: string, tierKey: string, displayName: string, stripePriceId: string, trialDays: number, limits: typeof DEFAULT_LIMITS, isPublic: boolean, isActive: boolean, customOrganizationId: string | null, orgName?: string }} PlanRow */
+
+function limitsFromApi(raw) {
+  const L = raw && typeof raw === "object" ? raw : {};
+  return {
+    creativeImports: Number(L.creative_imports_per_month) || DEFAULT_LIMITS.creativeImports,
+    transcriptionMinutes: Number(L.transcription_minutes_per_month) || DEFAULT_LIMITS.transcriptionMinutes,
+    videoSizeMb: Number(L.max_video_size_mb) || DEFAULT_LIMITS.videoSizeMb,
+    videoDurationMin: Math.max(1, Math.floor(Number(L.max_video_duration_seconds || 300) / 60)),
+  };
+}
+
+function limitsToApi(form) {
+  return {
+    creative_imports_per_month: Math.max(0, Math.floor(Number(form.creativeImports) || 0)),
+    transcription_minutes_per_month: Math.max(0, Math.floor(Number(form.transcriptionMinutes) || 0)),
+    max_video_size_mb: Math.max(1, Math.floor(Number(form.videoSizeMb) || 1)),
+    max_video_duration_seconds: Math.max(30, Math.floor(Number(form.videoDurationMin) || 1) * 60),
+  };
+}
+
+function summarizeLimits(limits) {
+  return `${limits.creativeImports} import./mês · ${limits.transcriptionMinutes} min transcrição · vídeo ${limits.videoSizeMb} MB / ${limits.videoDurationMin} min`;
+}
 
 function mapPlanItem(item) {
   return {
@@ -21,7 +47,7 @@ function mapPlanItem(item) {
     displayName: item.displayName ?? item.name ?? "",
     stripePriceId: item.stripePriceId ?? item.stripe_price_id ?? "",
     trialDays: Number(item.trialDays ?? item.trial_days) || 0,
-    limitsJson: JSON.stringify(item.limits ?? { creative_imports_per_month: 50 }, null, 2),
+    limits: limitsFromApi(item.limits),
     isPublic: item.isPublic !== false && item.is_public !== false,
     isActive: item.isActive !== false && item.is_active !== false,
     customOrganizationId: item.customOrganizationId ?? item.custom_organization_id ?? null,
@@ -55,7 +81,10 @@ export default function AdminPlanosPage() {
   const [displayName, setDisplayName] = useState("");
   const [stripePriceId, setStripePriceId] = useState("");
   const [trialDays, setTrialDays] = useState("0");
-  const [limitsJson, setLimitsJson] = useState(DEFAULT_LIMITS);
+  const [limitCreativeImports, setLimitCreativeImports] = useState(String(DEFAULT_LIMITS.creativeImports));
+  const [limitTranscriptionMinutes, setLimitTranscriptionMinutes] = useState(String(DEFAULT_LIMITS.transcriptionMinutes));
+  const [limitVideoSizeMb, setLimitVideoSizeMb] = useState(String(DEFAULT_LIMITS.videoSizeMb));
+  const [limitVideoDurationMin, setLimitVideoDurationMin] = useState(String(DEFAULT_LIMITS.videoDurationMin));
   const [visibility, setVisibility] = useState(/** @type {'public' | 'org'} */ ("public"));
   const [customOrgId, setCustomOrgId] = useState("");
   const [usingPublicFallback, setUsingPublicFallback] = useState(false);
@@ -77,7 +106,7 @@ export default function AdminPlanosPage() {
           setPlans(items.map(mapPlanItem));
           setUsingPublicFallback(true);
           setErr(
-            "API em produção desactualizada: faça redeploy do hooko--api para listar todos os planos (inactivos, Stripe ID, editar/desactivar).",
+            "Servidor desactualizado: faça redeploy da API para listar todos os planos (inactivos, editar e desactivar).",
           );
           setLoaded(true);
           return;
@@ -116,7 +145,10 @@ export default function AdminPlanosPage() {
     setDisplayName("");
     setStripePriceId("");
     setTrialDays("0");
-    setLimitsJson(DEFAULT_LIMITS);
+    setLimitCreativeImports(String(DEFAULT_LIMITS.creativeImports));
+    setLimitTranscriptionMinutes(String(DEFAULT_LIMITS.transcriptionMinutes));
+    setLimitVideoSizeMb(String(DEFAULT_LIMITS.videoSizeMb));
+    setLimitVideoDurationMin(String(DEFAULT_LIMITS.videoDurationMin));
     setVisibility("public");
     setCustomOrgId("");
     setWizardStep(0);
@@ -138,7 +170,10 @@ export default function AdminPlanosPage() {
     setDisplayName(row.displayName);
     setStripePriceId(row.stripePriceId);
     setTrialDays(String(row.trialDays));
-    setLimitsJson(row.limitsJson || DEFAULT_LIMITS);
+    setLimitCreativeImports(String(row.limits.creativeImports));
+    setLimitTranscriptionMinutes(String(row.limits.transcriptionMinutes));
+    setLimitVideoSizeMb(String(row.limits.videoSizeMb));
+    setLimitVideoDurationMin(String(row.limits.videoDurationMin));
     setVisibility(row.customOrganizationId ? "org" : row.isPublic ? "public" : "org");
     setCustomOrgId(row.customOrganizationId || "");
     setWizardStep(0);
@@ -149,7 +184,7 @@ export default function AdminPlanosPage() {
     if (step === 0) {
       const tk = tierKey.trim().toLowerCase();
       if (wizardMode === "create" && !tk) {
-        setFormErr("tier_key é obrigatório.");
+        setFormErr("Chave do plano é obrigatória.");
         return false;
       }
       if (!displayName.trim()) {
@@ -159,16 +194,29 @@ export default function AdminPlanosPage() {
     }
     if (step === 1) {
       if (!stripePriceId.trim()) {
-        setFormErr("stripe_price_id é obrigatório.");
+        setFormErr("ID do preço na Stripe é obrigatório.");
         return false;
       }
     }
     if (step === 2) {
-      try {
-        const parsed = JSON.parse(limitsJson || "{}");
-        if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) throw new Error();
-      } catch {
-        setFormErr("JSON de limites inválido.");
+      const imports = Number(limitCreativeImports);
+      if (!Number.isFinite(imports) || imports < 0) {
+        setFormErr("Importações por mês deve ser um número válido.");
+        return false;
+      }
+      const minutes = Number(limitTranscriptionMinutes);
+      if (!Number.isFinite(minutes) || minutes < 0) {
+        setFormErr("Minutos de transcrição deve ser um número válido.");
+        return false;
+      }
+      const sizeMb = Number(limitVideoSizeMb);
+      if (!Number.isFinite(sizeMb) || sizeMb < 1) {
+        setFormErr("Tamanho máximo de vídeo deve ser pelo menos 1 MB.");
+        return false;
+      }
+      const durMin = Number(limitVideoDurationMin);
+      if (!Number.isFinite(durMin) || durMin < 1) {
+        setFormErr("Duração máxima de vídeo deve ser pelo menos 1 minuto.");
         return false;
       }
     }
@@ -188,7 +236,12 @@ export default function AdminPlanosPage() {
   };
 
   const buildPayload = () => {
-    const limits = JSON.parse(limitsJson || "{}");
+    const limits = limitsToApi({
+      creativeImports: limitCreativeImports,
+      transcriptionMinutes: limitTranscriptionMinutes,
+      videoSizeMb: limitVideoSizeMb,
+      videoDurationMin: limitVideoDurationMin,
+    });
     const isPublic = visibility === "public";
     const customOrg = visibility === "org" && customOrgId.trim() ? customOrgId.trim() : null;
     return {
@@ -270,7 +323,7 @@ export default function AdminPlanosPage() {
             {formErr && wizardStep === 0 ? <p className={s.err} style={{ marginBottom: "0.75rem" }}>{formErr}</p> : null}
             <div className={s.field}>
               <label className={s.label} htmlFor="pf-tier">
-                tier_key
+                Chave do plano
               </label>
               <input
                 id="pf-tier"
@@ -279,7 +332,7 @@ export default function AdminPlanosPage() {
                 value={tierKey}
                 onChange={(e) => setTierKey(e.target.value)}
                 disabled={wizardMode === "edit"}
-                placeholder="growth_2026"
+                placeholder="ex.: crescimento_2026"
               />
               {wizardMode === "edit" ? <p className={s.hint}>Identificador fixo — não alterável.</p> : null}
             </div>
@@ -300,13 +353,13 @@ export default function AdminPlanosPage() {
       },
       {
         key: "stripe",
-        label: "Stripe",
+        label: "Pagamento",
         content: (
           <>
             {formErr && wizardStep === 1 ? <p className={s.err} style={{ marginBottom: "0.75rem" }}>{formErr}</p> : null}
             <div className={s.field}>
               <label className={s.label} htmlFor="pf-price">
-                stripe_price_id
+                ID do preço (Stripe)
               </label>
               <input
                 id="pf-price"
@@ -316,10 +369,11 @@ export default function AdminPlanosPage() {
                 onChange={(e) => setStripePriceId(e.target.value)}
                 placeholder="price_…"
               />
+              <p className={s.hint}>Copie o ID do preço mensal criado no painel Stripe.</p>
             </div>
             <div className={s.field}>
               <label className={s.label} htmlFor="pf-trial">
-                trial_days
+                Dias de teste grátis
               </label>
               <input
                 id="pf-trial"
@@ -341,15 +395,59 @@ export default function AdminPlanosPage() {
           <>
             {formErr && wizardStep === 2 ? <p className={s.err} style={{ marginBottom: "0.75rem" }}>{formErr}</p> : null}
             <div className={s.field}>
-              <label className={s.label} htmlFor="pf-limits">
-                limits (JSON)
+              <label className={s.label} htmlFor="pf-imports">
+                Importações de criativos por mês
               </label>
-              <textarea
-                id="pf-limits"
+              <input
+                id="pf-imports"
                 className={s.input}
-                style={{ minHeight: "9rem", fontFamily: "ui-monospace, monospace", width: "100%" }}
-                value={limitsJson}
-                onChange={(e) => setLimitsJson(e.target.value)}
+                type="number"
+                min={0}
+                style={{ width: "100%" }}
+                value={limitCreativeImports}
+                onChange={(e) => setLimitCreativeImports(e.target.value)}
+              />
+            </div>
+            <div className={s.field}>
+              <label className={s.label} htmlFor="pf-transcription">
+                Minutos de transcrição por mês
+              </label>
+              <input
+                id="pf-transcription"
+                className={s.input}
+                type="number"
+                min={0}
+                style={{ width: "100%" }}
+                value={limitTranscriptionMinutes}
+                onChange={(e) => setLimitTranscriptionMinutes(e.target.value)}
+              />
+            </div>
+            <div className={s.field}>
+              <label className={s.label} htmlFor="pf-video-size">
+                Tamanho máximo de vídeo (MB)
+              </label>
+              <input
+                id="pf-video-size"
+                className={s.input}
+                type="number"
+                min={1}
+                style={{ width: "100%" }}
+                value={limitVideoSizeMb}
+                onChange={(e) => setLimitVideoSizeMb(e.target.value)}
+              />
+            </div>
+            <div className={s.field}>
+              <label className={s.label} htmlFor="pf-video-dur">
+                Duração máxima de vídeo (minutos)
+              </label>
+              <input
+                id="pf-video-dur"
+                className={s.input}
+                type="number"
+                min={1}
+                style={{ width: "100%" }}
+                value={limitVideoDurationMin}
+                onChange={(e) => setLimitVideoDurationMin(e.target.value)}
               />
             </div>
           </>
@@ -362,19 +460,19 @@ export default function AdminPlanosPage() {
           <>
             {formErr && wizardStep === 3 ? <p className={s.err} style={{ marginBottom: "0.75rem" }}>{formErr}</p> : null}
             <fieldset className={p.fieldset}>
-              <legend className={s.label}>Quem pode subscrever</legend>
+              <legend className={s.label}>Quem pode escolher este plano</legend>
               <label className={p.radioOpt}>
                 <input type="radio" name="vis" checked={visibility === "public"} onChange={() => setVisibility("public")} />
                 <span>
                   <strong>Público na vitrine</strong>
-                  <span className={p.radioHint}>Aparece em `/api/plans/public` para qualquer organização.</span>
+                  <span className={p.radioHint}>Aparece para qualquer organização na página de planos.</span>
                 </span>
               </label>
               <label className={p.radioOpt}>
                 <input type="radio" name="vis" checked={visibility === "org"} onChange={() => setVisibility("org")} />
                 <span>
                   <strong>Exclusivo para organização</strong>
-                  <span className={p.radioHint}>Só o tenant seleccionado pode fazer checkout deste plano.</span>
+                  <span className={p.radioHint}>Só a organização seleccionada pode pagar este plano.</span>
                 </span>
               </label>
             </fieldset>
@@ -407,11 +505,20 @@ export default function AdminPlanosPage() {
         label: "Revisão",
         content: (
           <div className={p.reviewWrap}>
-            <ReviewRow label="tier_key" value={tierKey || "—"} />
+            <ReviewRow label="Chave" value={tierKey || "—"} />
             <ReviewRow label="Nome" value={displayName || "—"} />
-            <ReviewRow label="Stripe price" value={stripePriceId || "—"} />
-            <ReviewRow label="Trial (dias)" value={String(trialDays)} />
-            <ReviewRow label="Visibilidade" value={visibility === "public" ? "Público" : `Org: ${orgLabel}`} />
+            <ReviewRow label="Preço Stripe" value={stripePriceId || "—"} />
+            <ReviewRow label="Teste grátis (dias)" value={String(trialDays)} />
+            <ReviewRow
+              label="Limites"
+              value={summarizeLimits({
+                creativeImports: Number(limitCreativeImports) || 0,
+                transcriptionMinutes: Number(limitTranscriptionMinutes) || 0,
+                videoSizeMb: Number(limitVideoSizeMb) || 0,
+                videoDurationMin: Number(limitVideoDurationMin) || 0,
+              })}
+            />
+            <ReviewRow label="Visibilidade" value={visibility === "public" ? "Público" : `Organização: ${orgLabel}`} />
           </div>
         ),
       },
@@ -423,7 +530,10 @@ export default function AdminPlanosPage() {
       displayName,
       stripePriceId,
       trialDays,
-      limitsJson,
+      limitCreativeImports,
+      limitTranscriptionMinutes,
+      limitVideoSizeMb,
+      limitVideoDurationMin,
       visibility,
       customOrgId,
       orgs,
@@ -437,13 +547,13 @@ export default function AdminPlanosPage() {
       <header className={s.header}>
         <p className={s.kicker}>Admin</p>
         <h1 className={s.title}>Planos</h1>
-        <p className={s.lede}>Catálogo comercial integrado com Stripe — criar, editar e desactivar via API admin.</p>
+        <p className={s.lede}>Catálogo comercial — criar, editar e desactivar planos com pagamento integrado.</p>
       </header>
 
       {err ? <p className={s.err}>{err}</p> : null}
       {usingPublicFallback ? (
         <p className={s.hint} style={{ marginBottom: "0.75rem" }}>
-          Modo compatibilidade: a listagem mostra só planos públicos activos. Criar plano (POST) pode funcionar; editar/desactivar exigem API actualizada.
+          Modo compatibilidade: a listagem mostra só planos públicos activos. Criar plano pode funcionar; editar e desactivar exigem API actualizada.
         </p>
       ) : null}
       {ok ? <p className={s.success}>{ok}</p> : null}
@@ -467,12 +577,12 @@ export default function AdminPlanosPage() {
             <table className={s.table}>
               <thead>
                 <tr>
-                  <th>Tier</th>
+                  <th>Chave</th>
                   <th>Nome</th>
                   <th>Visibilidade</th>
                   <th>Estado</th>
-                  <th>Stripe</th>
-                  <th>Trial</th>
+                  <th>Preço</th>
+                  <th>Teste</th>
                   <th className={p.thActions}>Acções</th>
                 </tr>
               </thead>

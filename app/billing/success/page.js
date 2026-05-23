@@ -46,7 +46,7 @@ export default function BillingSuccessPage() {
   return (
     <main className={styles.wrap}>
       <div className={styles.inner}>
-        <p className={styles.eyebrow}>Stripe</p>
+        <p className={styles.eyebrow}>Pagamento confirmado</p>
         <h1 className={styles.title}>Obrigado!</h1>
         <p className={styles.sub}>{message}</p>
       </div>

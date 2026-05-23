@@ -135,7 +135,7 @@ export default function CheckoutPage() {
         window.location.href = data.checkoutUrl;
         return;
       }
-      setErr("Stripe não devolveu URL de checkout.");
+      setErr("Não foi possível abrir a página de pagamento.");
     } catch (e) {
       setErr(e?.message || "Falha ao iniciar pagamento");
     } finally {
@@ -173,7 +173,7 @@ export default function CheckoutPage() {
             <p className={styles.eyebrow}>Escolha o seu plano</p>
             <h1 className={styles.title}>Eleve a sua operação de criativos</h1>
             <p className={styles.lead}>
-              Seleccione um plano à esquerda. O resumo actualiza em tempo real — pagamento seguro via Stripe.
+              Seleccione um plano à esquerda. O resumo actualiza em tempo real — pagamento seguro online.
             </p>
           </div>
 
@@ -259,7 +259,7 @@ export default function CheckoutPage() {
 
                 <div className={styles.summaryRow}>
                   <span>Cobrança</span>
-                  <span>Mensal · Stripe</span>
+                  <span>Mensal</span>
                 </div>
                 <div className={styles.summaryRow}>
                   <span>Activar</span>

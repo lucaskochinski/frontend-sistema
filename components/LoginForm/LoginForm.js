@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useState } from "react";
 import Skeleton from "@/components/Skeleton/Skeleton";
 import AuthPasswordField from "@/components/AuthPasswordField/AuthPasswordField";
+import { translateApiMessage } from "@/lib/api-messages";
 import { persistSession, getApiBase } from "@/lib/hooko-session";
 
 const USE_MOCK = false;
@@ -36,7 +37,7 @@ async function loginRequest(email, password) {
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    const err = new Error(data.message || "Falha no login.");
+    const err = new Error(translateApiMessage(data.message || data.error, res.status) || "Falha no login.");
     throw err;
   }
   return data;
