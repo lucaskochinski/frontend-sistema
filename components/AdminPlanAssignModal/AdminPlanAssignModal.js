@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import AdminModal from "@/components/AdminModal/AdminModal";
 import { formatPlanPrice } from "@/lib/billing";
 import { apiFetch } from "@/lib/hooko-session";
-import s from "../adminShared.module.css";
+import s from "@/app/(app)/admin/adminShared.module.css";
 import m from "./AdminPlanAssignModal.module.css";
 
 const MODES = [
