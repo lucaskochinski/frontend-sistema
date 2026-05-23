@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 import { apiFetch } from "@/lib/hooko-session";
 import { isAdminUiBypassEnabled } from "@/lib/admin-ui-bypass";
 import { hasPlatformAdminRole } from "@/lib/platform-admin";
+import ThemeToggle from "@/components/Theme/ThemeToggle";
 import styles from "./AppShell.module.css";
 
 const NAV = [
@@ -399,6 +400,9 @@ export default function AppShell({ children }) {
             </span>
           </button>
           <span className={styles.topBarTitle}>Área autenticada</span>
+          <div className={styles.topBarActions}>
+            <ThemeToggle compact />
+          </div>
         </header>
 
         <main className={styles.main}>{children}</main>

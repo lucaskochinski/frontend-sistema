@@ -5,8 +5,8 @@
   height: 100dvh;
   max-height: 100dvh;
   overflow: hidden;
-  background: #09090b;
-  color: #fafafa;
+  background: var(--hooko-bg);
+  color: var(--hooko-text);
 }
 
 .backdrop {
@@ -20,8 +20,8 @@
   max-height: 100dvh;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
-  background: linear-gradient(180deg, #0c0c10 0%, #09090b 40%, #050506 100%);
+  border-right: 1px solid var(--hooko-border);
+  background: var(--hooko-sidebar);
   overflow-y: auto;
   overscroll-behavior: contain;
   transition:
@@ -452,12 +452,20 @@
   .topBar {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 0.75rem;
     padding: 0.75rem 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(9, 9, 11, 0.92);
+    border-bottom: 1px solid var(--hooko-border);
+    background: var(--hooko-surface-elevated);
     backdrop-filter: blur(12px);
     z-index: 100;
+  }
+
+  .topBarActions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .menuBtn {

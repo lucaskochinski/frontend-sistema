@@ -1,5 +1,10 @@
 import AppShell from "@/components/AppShell/AppShell";
+import { ThemeProvider } from "@/components/Theme/ThemeProvider";
 
 export default function AppAreaLayout({ children }) {
-  return <AppShell>{children}</AppShell>;
+  return (
+    <ThemeProvider>
+      <AppShell>{children}</AppShell>
+    </ThemeProvider>
+  );
 }

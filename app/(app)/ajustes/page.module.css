@@ -11,16 +11,9 @@
   border-radius: 16px;
   overflow: hidden;
   margin-bottom: 1.75rem;
-  border: 1px solid rgba(96, 165, 250, 0.14);
-  background:
-    radial-gradient(ellipse 100% 90% at 0% 50%, rgba(59, 130, 246, 0.14), transparent 55%),
-    radial-gradient(ellipse 90% 70% at 92% 18%, rgba(37, 99, 235, 0.1), transparent 48%),
-    radial-gradient(ellipse 120% 80% at 10% 0%, rgba(212, 175, 55, 0.09), transparent 52%),
-    linear-gradient(165deg, #101118 0%, #0a0a0f 52%, #0c0e14 100%);
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.45) inset,
-    0 24px 56px rgba(0, 0, 0, 0.45),
-    0 0 80px rgba(37, 99, 235, 0.07);
+  border: 1px solid var(--hooko-border);
+  background: var(--hooko-header-bg);
+  box-shadow: 0 24px 56px var(--hooko-shadow);
 }
 
 .topHeaderGlow {
@@ -84,14 +77,14 @@
   font-size: clamp(1.2rem, 2.8vw, 1.52rem);
   font-weight: 700;
   letter-spacing: -0.035em;
-  color: #fafafa;
+  color: var(--hooko-text);
 }
 
 .topHint {
   margin: 0;
   font-size: 0.82rem;
   line-height: 1.55;
-  color: rgba(161, 161, 170, 0.96);
+  color: var(--hooko-text-muted);
   max-width: min(40rem, 100%);
 }
 
@@ -111,9 +104,9 @@
   gap: 1rem 1.35rem;
   padding: 1.15rem 1.65rem;
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  background: linear-gradient(168deg, rgba(20, 20, 26, 0.55) 0%, rgba(10, 10, 13, 0.78) 100%);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.32) inset;
+  border: 1px solid var(--hooko-border);
+  background: var(--hooko-card-bg);
+  box-shadow: 0 0 0 1px var(--hooko-shadow) inset;
 }
 
 .rowGrow {
@@ -125,7 +118,7 @@
   margin: 0;
   font-size: 1rem;
   font-weight: 700;
-  color: #fafafa;
+  color: var(--hooko-text);
   letter-spacing: -0.02em;
 }
 
@@ -133,8 +126,59 @@
   margin: 0.25rem 0 0;
   font-size: 0.8rem;
   line-height: 1.52;
-  color: rgba(161, 161, 170, 0.96);
+  color: var(--hooko-text-muted);
   max-width: 36rem;
+}
+
+.rowHint {
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem;
+  color: var(--hooko-text-subtle);
+}
+
+.thumbIcon {
+  flex-shrink: 0;
+  width: 3.35rem;
+  height: 3.35rem;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--hooko-border);
+  background: var(--hooko-surface);
+  color: var(--hooko-gold);
+}
+
+.vturbMark,
+.pagtrustMark {
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.webhookBox {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.65rem;
+}
+
+.webhookCode {
+  flex: 1 1 16rem;
+  font-size: 0.72rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid var(--hooko-border);
+  background: var(--hooko-input-bg);
+  color: var(--hooko-text);
+  word-break: break-all;
+}
+
+.planList {
+  margin: 0.5rem 0 0;
+  padding-left: 1.1rem;
+  font-size: 0.78rem;
+  color: var(--hooko-text-muted);
 }
 
 .thumb {

@@ -16,14 +16,14 @@ import {
   ReferenceLine
 } from "recharts";
 import { apiFetch, getStoredOrganizationId } from "@/lib/hooko-session";
+import { CHART_GRID, CHART_TICK, DASHBOARD_COLORS, chartTooltipStyle } from "@/components/Dashboard/dashboardTheme";
 import styles from "./page.module.css";
 
-// Dados base de segurança para exibição pré-carregamento
 const DEFAULT_PAYMENTS = [
-  { name: "Pix", value: 0, color: "#1d4ed8" },
-  { name: "Cartão", value: 0, color: "#60a5fa" },
-  { name: "Boleto", value: 0, color: "#fbbf24" },
-  { name: "Outros", value: 0, color: "#4b5563" },
+  { name: "Pix", value: 0, color: DASHBOARD_COLORS.pix },
+  { name: "Cartão", value: 0, color: DASHBOARD_COLORS.card },
+  { name: "Boleto", value: 0, color: DASHBOARD_COLORS.billet },
+  { name: "Outros", value: 0, color: DASHBOARD_COLORS.other },
 ];
 
 export default function PlatformDashboard() {
@@ -368,34 +368,28 @@ export default function PlatformDashboard() {
                   data={stats.profitByHour}
                   margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                  <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID} vertical={false} />
                   <XAxis
                     dataKey="hora"
-                    stroke="#64748b"
+                    stroke={CHART_TICK}
                     fontSize={10}
                     tickLine={false}
                     axisLine={false}
                   />
                   <YAxis
-                    stroke="#64748b"
+                    stroke={CHART_TICK}
                     fontSize={10}
                     tickLine={false}
                     axisLine={false}
                     tickFormatter={(val) => `R$ ${val}`}
                   />
                   <Tooltip
-                    cursor={{ fill: "rgba(255,255,255,0.02)" }}
-                    contentStyle={{
-                      background: "#18191a",
-                      borderColor: "rgba(255,255,255,0.08)",
-                      borderRadius: "8px",
-                      fontSize: "0.8rem",
-                      color: "#fff",
-                    }}
+                    cursor={{ fill: "rgba(212, 175, 55, 0.06)" }}
+                    contentStyle={chartTooltipStyle()}
                     formatter={(val) => [`R$ ${parseFloat(val).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`, "Receita"]}
                   />
-                  <ReferenceLine y={0} stroke="rgba(255,255,255,0.2)" />
-                  <Bar dataKey="valor" fill="#2563eb" radius={[4, 4, 0, 0]} />
+                  <ReferenceLine y={0} stroke="rgba(212, 175, 55, 0.25)" />
+                  <Bar dataKey="valor" fill={DASHBOARD_COLORS.accent} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (

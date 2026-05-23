@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import styles from "./page.module.css";
+import { apiFetch, getStoredOrganizationId } from "@/lib/hooko-session";
 
 const CTA_OPTIONS = [
   { value: "SHOP_NOW", label: "Comprar agora" },
@@ -13,7 +15,9 @@ const CTA_OPTIONS = [
 ];
 
 export default function CriadorAnuncioPage() {
-  // Estado para os inputs do criador de anúncio
+  const [productName, setProductName] = useState("");
+  const [baseCreativeId, setBaseCreativeId] = useState("");
+  const [importedAds, setImportedAds] = useState([]);
   const [pageName, setPageName] = useState("Sua Marca / Produto");
   const [primaryText, setPrimaryText] = useState("O criativo perfeito para os seus anúncios está a um clique de distância. Preencha os campos ao lado e visualize em tempo real a estrutura do seu post patrocinado! 🚀🔥");
   const [headline, setHeadline] = useState("Frete Grátis Hoje + 15% OFF");
@@ -22,23 +26,46 @@ export default function CriadorAnuncioPage() {
   const [displayLink, setDisplayLink] = useState("loja.exemplo.com.br");
   const [generating, setGenerating] = useState(false);
 
-  // Mapeamento visual para exibir o texto amigável do CTA no Preview
-  const getCtaLabel = (val) => {
-    const found = CTA_OPTIONS.find((opt) => opt.value === val);
-    return found ? found.label : "Saiba mais";
+  useEffect(() => {
+    async function loadAds() {
+      try {
+        const orgId = getStoredOrganizationId();
+        if (!orgId) return;
+        const res = await apiFetch(`/api/dashboard/insights?organizationId=${orgId}&limit=30`);
+        setImportedAds(Array.isArray(res?.items) ? res.items : []);
+      } catch {
+        setImportedAds([]);
+      }
+    }
+    loadAds();
+  }, []);
+
+  const applyBaseCreative = (adId) => {
+    const ad = importedAds.find((a) => a.adId === adId);
+    if (!ad) return;
+    setBaseCreativeId(adId);
+    if (ad.adName) setPageName(ad.adName.split(" · ")[0] || ad.adName);
+    if (ad.aiAnalysis?.headline) setHeadline(String(ad.aiAnalysis.headline));
+    if (ad.aiAnalysis?.primaryText) setPrimaryText(String(ad.aiAnalysis.primaryText));
   };
 
   // Simulação de geração de cópia com Inteligência Artificial
   const handleGenerateAiCopy = () => {
     setGenerating(true);
     setTimeout(() => {
+      const product = productName.trim() || "seu produto";
       setPrimaryText(
-        "Cansado de gastar rios de dinheiro com criativos que não convertem? 💸\n\nConheça o Hooko e descubra a pontuação e transcrição automática dos seus melhores anúncios do Meta. A ferramenta indispensável para todo afiliado e e-commerce! 👇"
+        `Você ainda está perdendo vendas com criativos genéricos para ${product}? 💸\n\nCom base no criativo selecionado, testamos um gancho direto + prova social + CTA claro. Ajuste o texto e publique no Meta em minutos. 👇`
       );
-      setHeadline("Análise Completa com IA em 60s");
+      setHeadline(`Análise ${product} — resultado em 60s`);
       setCta("LEARN_MORE");
       setGenerating(false);
     }, 1500);
+  };
+
+  const getCtaLabel = (val) => {
+    const found = CTA_OPTIONS.find((opt) => opt.value === val);
+    return found ? found.label : "Saiba mais";
   };
 
   return (
@@ -74,6 +101,40 @@ export default function CriadorAnuncioPage() {
         {/* Editor Form Panel (Esquerda) */}
         <div className={styles.editorPane}>
           <h2 className={styles.sectionTitle}>Configurações do Criativo</h2>
+
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>Produto / Oferta</label>
+            <input
+              type="text"
+              className={styles.input}
+              value={productName}
+              onChange={(e) => setProductName(e.target.value)}
+              placeholder="Ex: Curso Capital Prime, Suplemento X…"
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <label className={styles.label}>Criativo base (importado)</label>
+            <select
+              className={`${styles.input} ${styles.select}`}
+              value={baseCreativeId}
+              onChange={(e) => applyBaseCreative(e.target.value)}
+            >
+              <option value="">Selecione um criativo da biblioteca…</option>
+              {importedAds.map((ad) => (
+                <option key={ad.adId} value={ad.adId}>
+                  {ad.adName}
+                  {ad.campaignName ? ` — ${ad.campaignName}` : ""}
+                </option>
+              ))}
+            </select>
+            {importedAds.length === 0 ? (
+              <p className={styles.fieldHint}>
+                Nenhum criativo importado.{" "}
+                <Link href="/criativo/biblioteca">Importar na biblioteca</Link>
+              </p>
+            ) : null}
+          </div>
 
           {/* Nome da Página */}
           <div className={styles.inputGroup}>

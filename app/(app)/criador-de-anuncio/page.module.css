@@ -119,7 +119,17 @@
 .label {
   font-size: 0.82rem;
   font-weight: 600;
-  color: #94a3b8;
+  color: var(--hooko-text-muted, #94a3b8);
+}
+
+.fieldHint {
+  margin: 0.35rem 0 0;
+  font-size: 0.75rem;
+  color: var(--hooko-text-subtle, #64748b);
+}
+
+.fieldHint a {
+  color: var(--hooko-gold, #d4af37);
 }
 
 .input {

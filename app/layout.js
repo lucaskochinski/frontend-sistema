@@ -1,4 +1,5 @@
 import "./globals.css";
+import ThemeInitScript from "@/components/Theme/ThemeInitScript";
 
 export const metadata = {
   title: "HOOKO — Inteligência para Meta Ads",
@@ -7,7 +8,10 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" data-theme="dark" suppressHydrationWarning>
+      <head>
+        <ThemeInitScript />
+      </head>
       <body>{children}</body>
     </html>
   );

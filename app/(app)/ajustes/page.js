@@ -9,6 +9,7 @@ import {
   getStoredOrganizationId,
   persistSession,
 } from "@/lib/hooko-session";
+import ThemeToggle from "@/components/Theme/ThemeToggle";
 import styles from "./page.module.css";
 
 /**
@@ -37,17 +38,21 @@ function IconSlidersHeader({ className }) {
   );
 }
 
+function copyText(text) {
+  if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(text).catch(() => {});
+  }
+}
+
 export default function AjustesPage() {
   const apiBase = getApiBase();
   const [tokenPresent, setTokenPresent] = useState(false);
-
-  /** @type {MeProfile | null} */
-  const [me, setMe] = useState(null);
-
-  /** @type {string} */
+  const [me, setMe] = useState(/** @type {MeProfile | null} */ (null));
   const [selectedOrgId, setSelectedOrgId] = useState("");
   const [busyMeta, setBusyMeta] = useState(false);
   const [busyDrive, setBusyDrive] = useState(false);
+  const [busyPortal, setBusyPortal] = useState(false);
+  const [plans, setPlans] = useState([]);
 
   const syncTokenFlag = useCallback(() => {
     setTokenPresent(Boolean(getStoredAccessToken()));
@@ -67,7 +72,6 @@ export default function AjustesPage() {
     let cancelled = false;
     (async () => {
       try {
-        /** @type {MeProfile} */
         const data = await apiFetch("/api/auth/me");
         if (!cancelled) setMe(data);
       } catch {
@@ -78,6 +82,22 @@ export default function AjustesPage() {
       cancelled = true;
     };
   }, [apiBase, tokenPresent]);
+
+  useEffect(() => {
+    if (!apiBase) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await apiFetch("/api/plans/public", { headers: {} });
+        if (!cancelled) setPlans(Array.isArray(res?.items) ? res.items : []);
+      } catch {
+        if (!cancelled) setPlans([]);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [apiBase]);
 
   const organizations = useMemo(() => rowsFromProfile(me), [me]);
 
@@ -104,6 +124,16 @@ export default function AjustesPage() {
   const orgReady = Boolean(selectedOrgId && organizations.some((r) => r.organizationId === selectedOrgId));
   const canConnect = Boolean(apiBase && tokenPresent && orgReady);
 
+  const vturbWebhookUrl = useMemo(() => {
+    if (!selectedOrgId) return "";
+    return `${apiBase}/api/webhooks/vturb?organizationId=${selectedOrgId}`;
+  }, [apiBase, selectedOrgId]);
+
+  const pagtrustWebhookUrl = useMemo(() => {
+    if (!selectedOrgId) return "";
+    return `${apiBase}/api/webhooks/pagtrust?organizationId=${selectedOrgId}`;
+  }, [apiBase, selectedOrgId]);
+
   const startOAuth = async (path, setBusy) => {
     if (!canConnect || !selectedOrgId) return;
     setBusy(true);
@@ -115,9 +145,25 @@ export default function AjustesPage() {
         window.location.href = url;
       }
     } catch {
-      /* silencioso — sem mensagens ao utilizador nesta página */
+      /* silencioso */
     } finally {
       setBusy(false);
+    }
+  };
+
+  const openBillingPortal = async () => {
+    if (!canConnect || !selectedOrgId) return;
+    setBusyPortal(true);
+    try {
+      const data = await apiFetch("/api/billing/portal", {
+        method: "POST",
+        body: JSON.stringify({ organizationId: selectedOrgId }),
+      });
+      if (data?.url) window.location.href = data.url;
+    } catch {
+      /* silencioso */
+    } finally {
+      setBusyPortal(false);
     }
   };
 
@@ -133,8 +179,7 @@ export default function AjustesPage() {
             <div className={styles.topTitleBlock}>
               <h1 className={styles.topPageTitle}>Ajustes</h1>
               <p className={styles.topHint}>
-                Liga a Meta Ads para importar criativos e campanhas, e o Google Drive para ler os ficheiros que
-                escolheres.
+                Integrações, aparência, plano e webhooks de vendas (PagTrust, VTurb).
               </p>
             </div>
           </div>
@@ -142,6 +187,24 @@ export default function AjustesPage() {
       </header>
 
       <div className={styles.main}>
+        <section className={styles.row} aria-labelledby="theme-h">
+          <div className={styles.thumbIcon} aria-hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2" strokeLinecap="round" />
+            </svg>
+          </div>
+          <div className={styles.rowGrow}>
+            <h2 id="theme-h" className={styles.rowTitle}>
+              Aparência
+            </h2>
+            <p className={styles.rowText}>Alterne entre tema claro e escuro. A preferência fica guardada neste browser.</p>
+          </div>
+          <div className={styles.rowActions}>
+            <ThemeToggle />
+          </div>
+        </section>
+
         <section className={styles.row} aria-labelledby="meta-h">
           <div className={styles.thumb}>
             <Image src="/imagens/meta.png" alt="" width={120} height={120} />
@@ -182,6 +245,91 @@ export default function AjustesPage() {
               onClick={() => startOAuth("/api/google-drive/oauth/authorize-url", setBusyDrive)}
             >
               {busyDrive ? "A redirecionar…" : "Ligar Drive"}
+            </button>
+          </div>
+        </section>
+
+        <section className={styles.row} aria-labelledby="vturb-h">
+          <div className={styles.thumbIcon} aria-hidden>
+            <span className={styles.vturbMark}>VT</span>
+          </div>
+          <div className={styles.rowGrow}>
+            <h2 id="vturb-h" className={styles.rowTitle}>
+              VTurb / ConverteAI
+            </h2>
+            <p className={styles.rowText}>
+              Integração parcial: webhook de vendas + embed do player no detalhe do criativo. Não há OAuth VTurb —
+              configure o webhook abaixo e ligue o ID do player em cada anúncio.
+            </p>
+            {vturbWebhookUrl ? (
+              <div className={styles.webhookBox}>
+                <code className={styles.webhookCode}>{vturbWebhookUrl}</code>
+                <button type="button" className={styles.btn} onClick={() => copyText(vturbWebhookUrl)}>
+                  Copiar
+                </button>
+              </div>
+            ) : null}
+            <p className={styles.rowHint}>
+              Use <code>utm_term</code> no payload igual ao ID Meta do anúncio para cruzamento de vendas.
+            </p>
+          </div>
+        </section>
+
+        <section className={styles.row} aria-labelledby="pagtrust-h">
+          <div className={styles.thumbIcon} aria-hidden>
+            <span className={styles.pagtrustMark}>PT</span>
+          </div>
+          <div className={styles.rowGrow}>
+            <h2 id="pagtrust-h" className={styles.rowTitle}>
+              PagTrust
+            </h2>
+            <p className={styles.rowText}>Webhook de vendas para alimentar o dashboard de receitas.</p>
+            {pagtrustWebhookUrl ? (
+              <div className={styles.webhookBox}>
+                <code className={styles.webhookCode}>{pagtrustWebhookUrl}</code>
+                <button type="button" className={styles.btn} onClick={() => copyText(pagtrustWebhookUrl)}>
+                  Copiar
+                </button>
+              </div>
+            ) : null}
+          </div>
+        </section>
+
+        <section className={styles.row} aria-labelledby="plan-h">
+          <div className={styles.thumbIcon} aria-hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+              <rect x="3" y="5" width="18" height="14" rx="2" />
+              <path d="M3 10h18" strokeLinecap="round" />
+            </svg>
+          </div>
+          <div className={styles.rowGrow}>
+            <h2 id="plan-h" className={styles.rowTitle}>
+              Plano e faturação
+            </h2>
+            <p className={styles.rowText}>
+              Gerencie assinatura, faturas e cancelamento via portal Stripe.
+            </p>
+            {plans.length > 0 ? (
+              <ul className={styles.planList}>
+                {plans.slice(0, 3).map((plan) => (
+                  <li key={plan.id}>
+                    <strong>{plan.name || plan.key}</strong>
+                    {plan.priceCents != null ? ` — R$ ${(Number(plan.priceCents) / 100).toFixed(2)}/mês` : ""}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className={styles.rowHint}>Planos disponíveis após login.</p>
+            )}
+          </div>
+          <div className={styles.rowActions}>
+            <button
+              type="button"
+              className={`${styles.btn} ${styles.btnPrimary}`}
+              disabled={!canConnect || busyPortal}
+              onClick={openBillingPortal}
+            >
+              {busyPortal ? "A abrir…" : "Portal de faturação"}
             </button>
           </div>
         </section>

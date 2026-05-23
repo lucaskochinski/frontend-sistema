@@ -333,3 +333,50 @@
   border-color: rgba(250, 204, 21, 0.5);
   background: rgba(212, 175, 55, 0.2);
 }
+
+.viewToggle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.templateGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.templateCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 1rem;
+  border-radius: 14px;
+  border: 1px solid var(--hooko-border);
+  background: var(--hooko-card-bg);
+}
+
+.templateHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.templateNum {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--hooko-gold);
+}
+
+.templateMeta {
+  display: flex;
+  gap: 0.65rem;
+  font-size: 0.75rem;
+  color: var(--hooko-text-muted);
+}
+
+.driveLink {
+  color: var(--hooko-gold);
+}
