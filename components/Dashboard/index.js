@@ -18,6 +18,7 @@ export { default as MetaDailySpendChart } from "./MetaDailySpendChart";
 export { default as MetaRankingCard } from "./MetaRankingCard";
 export { default as MetaRankingsGrid } from "./MetaRankingsGrid";
 export { default as MetaRankingsTable } from "./MetaRankingsTable";
+export { default as MetaExtendedSection } from "./MetaExtendedSection";
 export { default as MetaMetricsSection } from "./MetaMetricsSection";
 export { CHART_DATA_SOURCES, DATA_SOURCE, SOURCE_LABELS } from "./metaDataSources";
 export { DASHBOARD_COLORS, HOOKO_GOLD, RANKING_ACCENTS, CHART_GRID, CHART_TICK, CHART_TOOLTIP, DAY_LABELS_PT, chartTooltipStyle } from "./dashboardTheme";

@@ -21,10 +21,64 @@ import {
   MetaDailySpendChart,
   MetaMetricsSection,
   MetaRankingsGrid,
+  MetaExtendedSection,
   FutureFeatureLock,
 } from "@/components/Dashboard";
 
 const GATEWAY_LOCK = { label: "PagTrust / Vturb / Utmify", message: "Integração em breve" };
+
+function GatewayLockedBlock({ overview }) {
+  return (
+    <>
+      <p className={dash.gatewayIntro}>
+        A Meta não substitui estes gráficos: não informa Pix/cartão/boleto, aprovação de pagamento,
+        reembolsos nem faturamento líquido real do checkout — só receita <em>atribuída</em> via pixel
+        (já nos blocos Meta acima).
+      </p>
+
+      <FutureFeatureLock {...GATEWAY_LOCK}>
+        <PagTrustRevenueChart data={[]} dateRange={overview?.dateRange} />
+      </FutureFeatureLock>
+
+      <div className={dash.row2}>
+        <FutureFeatureLock {...GATEWAY_LOCK}>
+          <SalesByPaymentDonut data={[]} totalSales={0} />
+        </FutureFeatureLock>
+        <FutureFeatureLock {...GATEWAY_LOCK}>
+          <CumulativeRevenueSpendChart data={[]} />
+        </FutureFeatureLock>
+      </div>
+
+      <FutureFeatureLock {...GATEWAY_LOCK}>
+        <SecondaryMetricsGrid metrics={{}} />
+      </FutureFeatureLock>
+
+      <FutureFeatureLock {...GATEWAY_LOCK}>
+        <ProfitByHourChart data={[]} />
+      </FutureFeatureLock>
+
+      <div className={dash.row3}>
+        <FutureFeatureLock {...GATEWAY_LOCK}>
+          <SalesByProductList items={[]} />
+        </FutureFeatureLock>
+        <FutureFeatureLock {...GATEWAY_LOCK}>
+          <SalesBySourceList metaItems={[]} />
+        </FutureFeatureLock>
+        <FutureFeatureLock {...GATEWAY_LOCK}>
+          <ApprovalRateChart rates={[]} />
+        </FutureFeatureLock>
+      </div>
+
+      <FutureFeatureLock {...GATEWAY_LOCK}>
+        <SalesByHourChart data={[]} />
+      </FutureFeatureLock>
+
+      <FutureFeatureLock {...GATEWAY_LOCK}>
+        <SalesByDayOfWeekChart data={[]} />
+      </FutureFeatureLock>
+    </>
+  );
+}
 
 export default function DashboardClient() {
   const [loading, setLoading] = useState(true);
@@ -78,7 +132,7 @@ export default function DashboardClient() {
           <p className={styles.kicker}>Principal</p>
           <h1 className={styles.title}>Dashboard</h1>
           <p className={styles.sub}>
-            Métricas activas via Meta Marketing API — integrações de gateway (PagTrust, Vturb, Utmify) em breve.
+            Meta Marketing API — métricas activas primeiro; gateway (PagTrust / Vturb / Utmify) no final.
             {overview?.dateRange ? ` Período: ${overview.dateRange.since} → ${overview.dateRange.until}.` : ""}
           </p>
         </div>
@@ -99,67 +153,36 @@ export default function DashboardClient() {
       </header>
 
       <div className={dash.dashboardGrid}>
+        {/* ——— META (disponível) ——— */}
         <DashboardSection title="Resumo Meta">
           <SummaryKpiCards
             spend={totalSpend}
             metaPurchaseRevenue={metaPurchaseRevenue}
             metaRoas={metaRoas != null ? Number(metaRoas) : null}
           />
-
-          <FutureFeatureLock {...GATEWAY_LOCK}>
-            <PagTrustRevenueChart data={[]} dateRange={overview?.dateRange} />
-          </FutureFeatureLock>
-
-          <div className={dash.row2}>
-            <FutureFeatureLock {...GATEWAY_LOCK}>
-              <SalesByPaymentDonut data={[]} totalSales={0} />
-            </FutureFeatureLock>
-            <FutureFeatureLock {...GATEWAY_LOCK}>
-              <CumulativeRevenueSpendChart data={[]} />
-            </FutureFeatureLock>
-          </div>
-
-          <FutureFeatureLock {...GATEWAY_LOCK}>
-            <SecondaryMetricsGrid metrics={{}} />
-          </FutureFeatureLock>
         </DashboardSection>
 
-        <DashboardSection title="Lucro e faturamento (gateway)">
-          <FutureFeatureLock {...GATEWAY_LOCK}>
-            <ProfitByHourChart data={[]} />
-          </FutureFeatureLock>
-        </DashboardSection>
-
-        <DashboardSection title="Vendas e entrega">
-          <div className={dash.row3}>
-            <FutureFeatureLock {...GATEWAY_LOCK}>
-              <SalesByProductList items={[]} />
-            </FutureFeatureLock>
-            <SalesBySourceList metaItems={overview?.metaTrafficSources} />
-            <FutureFeatureLock {...GATEWAY_LOCK}>
-              <ApprovalRateChart rates={[]} />
-            </FutureFeatureLock>
-          </div>
-
-          <FutureFeatureLock {...GATEWAY_LOCK}>
-            <SalesByHourChart data={[]} />
-          </FutureFeatureLock>
-
-          <div className={dash.row2}>
-            <FutureFeatureLock {...GATEWAY_LOCK}>
-              <SalesByDayOfWeekChart data={[]} />
-            </FutureFeatureLock>
-            <MetaDailySpendChart data={overview?.dailyMeta} />
-          </div>
-        </DashboardSection>
-
-        <DashboardSection title="Funil Meta Ads">
+        <DashboardSection title="Funil & conversão Meta">
           <MetaConversionFunnel funnel={overview?.conversionFunnel || overview?.funnel} />
         </DashboardSection>
 
-        <DashboardSection title="Performance Meta">
+        <DashboardSection title="Performance dos criativos">
           <MetaRankingsGrid items={overview?.rankingItems} />
           <MetaMetricsSection overview={overview} />
+        </DashboardSection>
+
+        <DashboardSection title="Gasto & tráfego Meta">
+          <MetaDailySpendChart data={overview?.dailyMeta} />
+          <SalesBySourceList metaItems={overview?.metaTrafficSources} />
+        </DashboardSection>
+
+        <DashboardSection title="Marketing API Meta (completo)">
+          <MetaExtendedSection metaExtended={overview?.metaExtended} />
+        </DashboardSection>
+
+        {/* ——— GATEWAY (bloqueado — Meta não cobre) ——— */}
+        <DashboardSection title="Gateway PagTrust / Vturb / Utmify">
+          <GatewayLockedBlock overview={overview} />
         </DashboardSection>
       </div>
     </div>
