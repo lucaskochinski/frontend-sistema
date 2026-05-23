@@ -1,0 +1,354 @@
+.section {
+  margin-bottom: 1.5rem;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.85rem;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--hooko-gold-bright, #d4af37);
+}
+
+.sectionHint {
+  margin: 0.25rem 0 0;
+  font-size: 0.78rem;
+  color: var(--hooko-text-muted);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 960px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  border-radius: 18px;
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  background:
+    radial-gradient(120% 80% at 100% 0%, rgba(212, 175, 55, 0.12), transparent 55%),
+    rgba(8, 8, 12, 0.92);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35) inset;
+  padding: 1rem 1.05rem 1.1rem;
+}
+
+.cardTitle {
+  margin: 0 0 0.85rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--hooko-gold-bright, #d4af37);
+}
+
+.pendingBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  border: 1px dashed rgba(212, 175, 55, 0.35);
+  font-size: 0.72rem;
+  color: rgba(212, 175, 55, 0.9);
+}
+
+.winningTop {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.85rem;
+  align-items: center;
+  margin-bottom: 0.9rem;
+}
+
+.thumb {
+  width: 72px;
+  height: 72px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.scoreBlock strong {
+  display: block;
+  font-size: 2.35rem;
+  line-height: 1;
+  color: #fff;
+  font-weight: 800;
+}
+
+.scoreBlock span {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.78rem;
+  color: var(--hooko-text-muted);
+}
+
+.scoreTrend {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.35rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #4ade80;
+}
+
+.metricList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.metricRow {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr 2rem;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+.metricLabel {
+  font-size: 0.74rem;
+  color: rgba(236, 236, 242, 0.88);
+}
+
+.metricTrack {
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.metricFill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #b8860b, #d4af37);
+  transition: width 0.45s ease;
+}
+
+.metricFillMuted {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.metricValue {
+  text-align: right;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.scaleBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.85rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid rgba(74, 222, 128, 0.35);
+  background: rgba(34, 197, 94, 0.12);
+  color: #bbf7d0;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.insightList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.insightRow {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.65rem;
+  align-items: start;
+  padding: 0.55rem 0.6rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.insightIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: rgba(212, 175, 55, 0.12);
+  color: var(--hooko-gold-bright, #d4af37);
+  font-size: 0.85rem;
+}
+
+.insightTitle {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.insightDesc {
+  margin: 0.15rem 0 0;
+  font-size: 0.74rem;
+  line-height: 1.45;
+  color: var(--hooko-text-muted);
+}
+
+.insightScore {
+  font-size: 0.78rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.scoreGood {
+  color: #4ade80;
+}
+
+.scoreMid {
+  color: #facc15;
+}
+
+.scoreLow {
+  color: #f87171;
+}
+
+.scoreMuted {
+  color: rgba(161, 161, 170, 0.9);
+}
+
+.probabilityBox {
+  margin-top: 0.85rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 14px;
+  border: 1px solid rgba(212, 175, 55, 0.28);
+  background: rgba(212, 175, 55, 0.06);
+  text-align: center;
+}
+
+.probabilityLabel {
+  margin: 0 0 0.25rem;
+  font-size: 0.72rem;
+  color: var(--hooko-text-muted);
+}
+
+.probabilityValue {
+  margin: 0;
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--hooko-gold-bright, #d4af37);
+}
+
+.gridWrap {
+  border-radius: 18px;
+  border: 1px solid rgba(212, 175, 55, 0.18);
+  background: rgba(8, 8, 12, 0.92);
+  padding: 1rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+@media (max-width: 720px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.gridItem {
+  text-decoration: none;
+  color: inherit;
+}
+
+.gridThumb {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.gridThumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.playOverlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.28);
+  color: #fff;
+  font-size: 1.1rem;
+}
+
+.gridScore {
+  margin-top: 0.35rem;
+  text-align: center;
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.coachRow {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.85rem;
+  align-items: center;
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 16px;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.coachMascot {
+  width: 72px;
+  height: auto;
+}
+
+.coachBubble {
+  position: relative;
+  padding: 0.75rem 0.9rem;
+  border-radius: 14px;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  background: rgba(212, 175, 55, 0.08);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: rgba(236, 236, 242, 0.94);
+}
+
+.coachLabel {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--hooko-gold-bright, #d4af37);
+}

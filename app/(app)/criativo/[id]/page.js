@@ -23,6 +23,8 @@ import Skeleton from "@/components/Skeleton/Skeleton";
 import MetaMetricsPanel from "@/components/MetaMetrics/MetaMetricsPanel";
 import ExternalImage from "@/components/ExternalMedia/ExternalImage";
 import ExternalVideo from "@/components/ExternalMedia/ExternalVideo";
+import { WinningCreativeCard, AiInsightsPanel, HookoAiCoach } from "@/components/CreativeAi";
+import { normalizeAiCreativeAnalysis } from "@/lib/ai-creative-analysis";
 import styles from "./page.module.css";
 
 /** Liga dados mock até a API estar disponível */
@@ -662,14 +664,26 @@ export default function CreativeDetailPage() {
   }, [data, filteredDaily]);
 
   const radarData = useMemo(() => {
-    const a = data?.ai_analysis;
-    if (!a) return [];
-    const shortRadar = ["Gancho", "Oferta", "Social", "CTA", "Harmonia"];
-    return SCORE_METRICS.map((m, i) => ({
-      metric: shortRadar[i] || m.label,
-      value: Number(a[m.field]) || 0,
-    }));
-  }, [data?.ai_analysis]);
+    const normalized = normalizeAiCreativeAnalysis(data?.ai_analysis, {
+      videoMetrics: data?.video_metrics,
+    });
+    if (normalized.pending) return [];
+    return [
+      { metric: "Gancho", value: normalized.scores.gancho || 0 },
+      { metric: "Oferta", value: normalized.scores.oferta || 0 },
+      { metric: "Prova", value: normalized.scores.prova || 0 },
+      { metric: "CTA", value: normalized.scores.cta || 0 },
+      { metric: "Harmonia", value: normalized.scores.harmonia || normalized.scores.formato || 0 },
+    ];
+  }, [data?.ai_analysis, data?.video_metrics]);
+
+  const aiNormalized = useMemo(
+    () =>
+      normalizeAiCreativeAnalysis(data?.ai_analysis, {
+        videoMetrics: data?.video_metrics,
+      }),
+    [data?.ai_analysis, data?.video_metrics],
+  );
 
   const needsVerMais = useMemo(() => {
     const text = data?.primary_text || "";
@@ -692,6 +706,7 @@ export default function CreativeDetailPage() {
   }
 
   const ai = data.ai_analysis || {};
+  const aiScoresForBars = aiNormalized.scores;
 
   return (
     <div className={styles.page}>
@@ -727,6 +742,19 @@ export default function CreativeDetailPage() {
           <p className={styles.noDataText}>{noDataNotice}</p>
         </div>
       ) : null}
+
+      <section style={{ marginBottom: "1.25rem" }} aria-label="Painéis de análise IA">
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1rem" }}>
+          <WinningCreativeCard
+            title="Criativo vencedor"
+            headline={data.headline}
+            thumbnailUrl={data.thumbnail_url || data.thumbnailUrl}
+            analysis={aiNormalized}
+          />
+          <AiInsightsPanel analysis={aiNormalized} />
+        </div>
+        <HookoAiCoach />
+      </section>
 
       <section className={styles.analyticsBand} aria-label="Performance e período">
         <div className={styles.filterRow}>
@@ -1043,9 +1071,16 @@ export default function CreativeDetailPage() {
             <div className={styles.scoreCard}>
               <h2 className={styles.cardTitle}>Score da IA — barras</h2>
               <div className={styles.scoreList}>
-                {SCORE_METRICS.map((m) => (
-                  <ScoreBarRow key={m.key} label={m.label} value={ai[m.field]} />
-                ))}
+                {SCORE_METRICS.map((m) => {
+                  const fieldMap = {
+                    hook_score: aiScoresForBars.gancho,
+                    offer_score: aiScoresForBars.oferta,
+                    social_proof_score: aiScoresForBars.prova,
+                    cta_score: aiScoresForBars.cta,
+                    harmonia_entre_video_e_texto: aiScoresForBars.harmonia ?? aiScoresForBars.formato,
+                  };
+                  return <ScoreBarRow key={m.key} label={m.label} value={fieldMap[m.field]} />;
+                })}
               </div>
             </div>
           </div>
@@ -1053,11 +1088,17 @@ export default function CreativeDetailPage() {
           <div className={styles.verdictBox}>
             <div className={styles.verdictSection}>
               <h3 className={styles.verdictHeading}>Veredito</h3>
-              <p className={styles.verdictBody}>{ai.feedback}</p>
+              <p className={styles.verdictBody}>{aiNormalized.verdict || ai.feedback || "A IA preenche após analisar o vídeo."}</p>
             </div>
             <div className={styles.verdictSection}>
               <h3 className={styles.verdictHeading}>Sugestões de melhoria</h3>
-              <p className={styles.verdictBody}>{ai.sugestoes}</p>
+              <p className={styles.verdictBody}>
+                {aiNormalized.suggestions.length
+                  ? aiNormalized.suggestions.join(" ")
+                  : typeof ai.sugestoes === "string"
+                    ? ai.sugestoes
+                    : "Importe e aguarde a análise automática."}
+              </p>
             </div>
           </div>
         </aside>

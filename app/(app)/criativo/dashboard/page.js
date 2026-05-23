@@ -11,6 +11,7 @@ import {
   MetaDailySpendChart,
   MetaConversionFunnel,
 } from "@/components/Dashboard";
+import { CreativeAiSection } from "@/components/CreativeAi";
 import dash from "@/components/Dashboard/dashboard.module.css";
 import styles from "./page.module.css";
 
@@ -99,6 +100,8 @@ export default function CriativosDashboardPage() {
           </Link>
         </div>
       </header>
+
+      <CreativeAiSection insights={insights} showCoach />
 
       <section className={styles.aiPanel} aria-labelledby="ai-summary-h">
         <h2 id="ai-summary-h" className={styles.aiTitle}>

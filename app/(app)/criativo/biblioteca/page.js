@@ -6,6 +6,7 @@ import Link from "next/link";
 import styles from "./page.module.css";
 import { apiFetch, getStoredOrganizationId } from "@/lib/hooko-session";
 import ExternalImage from "@/components/ExternalMedia/ExternalImage";
+import { normalizeAiCreativeAnalysis, scoreTone } from "@/lib/ai-creative-analysis";
 
 /** Mock: desliga API real enquanto o backend não está ligado */
 const USE_MOCK = false;
@@ -328,17 +329,22 @@ export default function DashboardCreativesPage() {
       ]);
 
       if (insights && Array.isArray(insights.items)) {
-        const mapped = insights.items.map((item) => ({
-          id: item.adId,
-          ad_id: item.adId,
-          creative_analysis_id: item.creativeAnalysisId,
-          media_id: item.mediaId,
-          name: item.adName || "Anúncio",
-          campaign_name: item.campaignName || "Sem Campanha",
-          headline: item.aiAnalysis?.transcription || item.adName || "Sem título",
-          thumbnail_url: item.thumbnailUrl || "/imagens/meta.png",
-          status: "processed",
-        }));
+        const mapped = insights.items.map((item) => {
+          const ai = normalizeAiCreativeAnalysis(item.aiAnalysis);
+          return {
+            id: item.adId,
+            ad_id: item.adId,
+            creative_analysis_id: item.creativeAnalysisId,
+            media_id: item.mediaId,
+            name: item.adName || "Anúncio",
+            campaign_name: item.campaignName || "Sem Campanha",
+            headline: item.adName || "Sem título",
+            thumbnail_url: item.thumbnailUrl || "/imagens/meta.png",
+            ai_score: ai.performanceScore,
+            ai_pending: ai.pending,
+            status: ai.pending ? "processing" : "processed",
+          };
+        });
         setImportedCreatives(mapped);
       }
       if (statusRes) {
@@ -639,6 +645,12 @@ export default function DashboardCreativesPage() {
                     </div>
                     <div className={styles.creativeStatusFooter}>
                       <span className={statusPillClass(c)}>{statusLabel(c)}</span>
+                      <span
+                        className={`${styles.aiScorePill} ${styles[`aiScore_${scoreTone(c.ai_score)}`] || ""}`}
+                        title="Score IA"
+                      >
+                        {c.ai_pending || c.ai_score == null ? "IA…" : c.ai_score}
+                      </span>
                       <div className={styles.creativeFooterBtns}>
                         <Link
                           href={`/criativo/${c.id}`}
