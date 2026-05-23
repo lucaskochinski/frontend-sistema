@@ -7,74 +7,169 @@
   justify-content: center;
   padding: clamp(1rem, 4vw, 2.5rem);
   overflow-y: auto;
-  background: rgba(0, 0, 0, 0.72);
-  backdrop-filter: blur(6px);
+  background: rgba(0, 0, 0, 0.62);
+  backdrop-filter: blur(var(--hooko-blur-backdrop)) saturate(1.15);
+  -webkit-backdrop-filter: blur(var(--hooko-blur-backdrop)) saturate(1.15);
+}
+
+.backdropIn {
+  animation: backdropIn var(--hooko-duration-base) var(--hooko-ease-out) forwards;
+}
+
+.backdropOut {
+  animation: backdropOut 0.26s var(--hooko-ease-soft) forwards;
 }
 
 .dialog {
+  position: relative;
   width: min(100%, 32rem);
   margin: auto;
-  border-radius: 16px;
-  border: 1px solid rgba(212, 175, 55, 0.22);
+  border-radius: var(--hooko-radius-xl);
+  border: 1px solid rgba(212, 175, 55, 0.18);
   background:
-    radial-gradient(120% 70% at 100% -20%, rgba(212, 175, 55, 0.12), transparent),
-    linear-gradient(168deg, rgba(22, 22, 28, 0.98), rgba(10, 10, 12, 0.99));
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(0, 0, 0, 0.4) inset;
+    radial-gradient(120% 80% at 100% -30%, rgba(212, 175, 55, 0.14), transparent 55%),
+    linear-gradient(168deg, rgba(18, 18, 22, 0.97), rgba(8, 8, 10, 0.99));
+  box-shadow: var(--hooko-shadow-premium);
+  overflow: hidden;
+}
+
+[data-theme="light"] .dialog {
+  background:
+    radial-gradient(120% 80% at 100% -30%, rgba(212, 175, 55, 0.08), transparent 55%),
+    linear-gradient(168deg, #ffffff, #f8f8f9);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.dialogIn {
+  animation: dialogIn var(--hooko-duration-base) var(--hooko-ease-out) forwards;
+}
+
+.dialogOut {
+  animation: dialogOut 0.26s var(--hooko-ease-soft) forwards;
 }
 
 .dialogWide {
-  width: min(100%, 40rem);
+  width: min(100%, 42rem);
+}
+
+.glow {
+  position: absolute;
+  inset: -40% -20% auto;
+  height: 55%;
+  background: radial-gradient(ellipse 60% 80% at 50% 0%, rgba(212, 175, 55, 0.12), transparent 70%);
+  pointer-events: none;
 }
 
 .header {
+  position: relative;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
-  padding: 1rem 1.15rem 0.85rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 1.2rem 1.25rem 1rem;
+  border-bottom: 1px solid var(--hooko-border);
 }
 
 .title {
   margin: 0;
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
   color: var(--hooko-text);
+  line-height: 1.3;
 }
 
 .close {
   flex-shrink: 0;
   appearance: none;
   cursor: pointer;
-  border: none;
+  border: 1px solid var(--hooko-border);
   background: var(--hooko-surface);
-  color: rgba(228, 228, 231, 0.9);
-  width: 2rem;
-  height: 2rem;
-  border-radius: 10px;
-  font-size: 1.25rem;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  color: var(--hooko-text-muted);
+  width: 2.15rem;
+  height: 2.15rem;
+  border-radius: var(--hooko-radius-sm);
+  display: grid;
+  place-items: center;
+  transition:
+    background var(--hooko-duration-fast) var(--hooko-ease-out),
+    color var(--hooko-duration-fast) var(--hooko-ease-out),
+    transform var(--hooko-duration-fast) var(--hooko-ease-out),
+    border-color var(--hooko-duration-fast) var(--hooko-ease-out);
 }
 
 .close:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--hooko-surface-hover);
+  color: var(--hooko-text);
+  border-color: var(--hooko-border-strong);
+  transform: scale(1.04);
+}
+
+.close:focus-visible {
+  outline: 2px solid var(--hooko-gold);
+  outline-offset: 2px;
 }
 
 .body {
-  padding: 1rem 1.15rem 1.15rem;
-  max-height: min(70vh, 32rem);
+  position: relative;
+  padding: 1.15rem 1.25rem 1.25rem;
+  max-height: min(70vh, 34rem);
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212, 175, 55, 0.35) transparent;
 }
 
 .footer {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   gap: 0.55rem;
   justify-content: flex-end;
-  padding: 0.85rem 1.15rem 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 0.95rem 1.25rem 1.15rem;
+  border-top: 1px solid var(--hooko-border);
+  background: rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="light"] .footer {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+@keyframes backdropIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes backdropOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes dialogIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.965);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes dialogOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(10px) scale(0.975);
+  }
 }

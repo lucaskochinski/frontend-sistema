@@ -1,7 +1,7 @@
 .stepBar {
   display: flex;
-  gap: 0.35rem;
-  margin-bottom: 1.15rem;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
   flex-wrap: wrap;
 }
 
@@ -10,13 +10,13 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.4rem;
 }
 
 .stepTrack {
   height: 3px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--hooko-border);
   overflow: hidden;
 }
 
@@ -24,18 +24,19 @@
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(90deg, #6b5818, #d4af37, #f7e8a8);
-  transition: width 0.25s ease;
+  transition: width 0.42s var(--hooko-ease-out);
 }
 
 .stepLabel {
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   font-weight: 600;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--hooko-text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  transition: color 0.28s var(--hooko-ease-out);
 }
 
 .stepLabelActive {
@@ -43,7 +44,7 @@
 }
 
 .stepLabelDone {
-  color: rgba(212, 175, 55, 0.75);
+  color: rgba(212, 175, 55, 0.78);
 }
 
 .reviewGrid {
@@ -55,11 +56,19 @@
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.55rem 0.65rem;
-  border-radius: 10px;
+  padding: 0.62rem 0.72rem;
+  border-radius: var(--hooko-radius-md);
   background: var(--hooko-surface);
   border: 1px solid var(--hooko-border);
   font-size: 0.82rem;
+  transition:
+    border-color var(--hooko-duration-fast) var(--hooko-ease-out),
+    background var(--hooko-duration-fast) var(--hooko-ease-out);
+}
+
+.reviewRow:hover {
+  border-color: rgba(212, 175, 55, 0.22);
+  background: var(--hooko-surface-hover);
 }
 
 .reviewKey {

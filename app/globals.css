@@ -28,6 +28,17 @@
   --hooko-overlay: rgba(0, 0, 0, 0.52);
   --hooko-positive: #34d399;
   --hooko-negative: #f87171;
+  --hooko-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --hooko-ease-soft: cubic-bezier(0.33, 1, 0.68, 1);
+  --hooko-duration-fast: 0.18s;
+  --hooko-duration-base: 0.32s;
+  --hooko-duration-slow: 0.52s;
+  --hooko-radius-sm: 10px;
+  --hooko-radius-md: 14px;
+  --hooko-radius-lg: 20px;
+  --hooko-radius-xl: 24px;
+  --hooko-blur-backdrop: 16px;
+  --hooko-shadow-premium: 0 24px 64px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
 }
 
 [data-theme="light"] {
@@ -59,6 +70,7 @@
   --hooko-overlay: rgba(0, 0, 0, 0.35);
   --hooko-positive: #15803d;
   --hooko-negative: #dc2626;
+  --hooko-shadow-premium: 0 20px 48px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.04) inset;
 }
 
 *,
@@ -78,7 +90,19 @@ body {
   background: var(--hooko-bg-deep);
   color: var(--hooko-text);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color var(--hooko-duration-base) var(--hooko-ease-soft),
+    color var(--hooko-duration-base) var(--hooko-ease-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Formulários herdam tema claro/escuro */

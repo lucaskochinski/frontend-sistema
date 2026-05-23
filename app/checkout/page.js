@@ -76,6 +76,7 @@ export default function CheckoutPage() {
   const [busyPlanId, setBusyPlanId] = useState(null);
   const [err, setErr] = useState("");
   const [hasPlan, setHasPlan] = useState(false);
+  const [ready, setReady] = useState(false);
 
   const selectedPlan = useMemo(
     () => plans.find((p) => p.id === selectedPlanId) || null,
@@ -125,6 +126,15 @@ export default function CheckoutPage() {
     };
   }, [router]);
 
+  useEffect(() => {
+    if (!loading && !hasPlan) {
+      const t = window.requestAnimationFrame(() => setReady(true));
+      return () => window.cancelAnimationFrame(t);
+    }
+    setReady(false);
+    return undefined;
+  }, [loading, hasPlan]);
+
   async function handleContinue() {
     if (!selectedPlanId) return;
     setErr("");
@@ -147,7 +157,11 @@ export default function CheckoutPage() {
     return (
       <main className={styles.page}>
         <div className={styles.loadingState}>
-          <div className={styles.loadingPulse} aria-hidden />
+          <div className={styles.loadingOrb} aria-hidden />
+          <div className={styles.loadingLines}>
+            <span className={styles.loadingLine} />
+            <span className={`${styles.loadingLine} ${styles.loadingLineShort}`} />
+          </div>
           <p>A verificar assinatura…</p>
         </div>
       </main>
@@ -155,8 +169,10 @@ export default function CheckoutPage() {
   }
 
   return (
-    <main className={styles.page}>
+    <main className={`${styles.page} ${ready ? styles.pageReady : ""}`}>
+      <div className={styles.grain} aria-hidden />
       <div className={styles.glowTop} aria-hidden />
+      <div className={styles.glowSide} aria-hidden />
       <header className={styles.topBar}>
         <Link href="/checkout" className={styles.logoLink}>
           <Image src="/imagens/logo/logo-pequena.png" alt="HOOKO" width={36} height={36} className={styles.logo} />
@@ -173,7 +189,7 @@ export default function CheckoutPage() {
             <p className={styles.eyebrow}>Escolha o seu plano</p>
             <h1 className={styles.title}>Eleve a sua operação de criativos</h1>
             <p className={styles.lead}>
-              Seleccione um plano à esquerda. O resumo actualiza em tempo real — pagamento seguro online.
+              Seleccione um plano. O resumo actualiza em tempo real — pagamento seguro online.
             </p>
           </div>
 
@@ -192,7 +208,7 @@ export default function CheckoutPage() {
                 const features = planFeatures(plan);
 
                 return (
-                  <li key={plan.id}>
+                  <li key={plan.id} className={styles.planItem} style={{ "--i": index }}>
                     <button
                       type="button"
                       className={`${styles.planCard} ${selected ? styles.planCardSelected : ""}`}
@@ -231,7 +247,7 @@ export default function CheckoutPage() {
             <h2 className={styles.summaryTitle}>O seu plano</h2>
 
             {selectedPlan ? (
-              <>
+              <div key={selectedPlan.id} className={styles.summaryBody}>
                 <div className={styles.summaryPlanBlock}>
                   <p className={styles.summaryPlanName}>{selectedPlan.displayName}</p>
                   <p className={styles.summaryPlanPitch}>{planPitch(selectedPlan.tierKey)}</p>
@@ -278,7 +294,7 @@ export default function CheckoutPage() {
                 <p className={styles.secureNote}>
                   Pagamento encriptado. Pode cancelar ou alterar plano no portal de facturação.
                 </p>
-              </>
+              </div>
             ) : (
               <p className={styles.summaryEmpty}>Seleccione um plano para ver o resumo.</p>
             )}

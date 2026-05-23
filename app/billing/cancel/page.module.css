@@ -3,13 +3,21 @@
   display: grid;
   place-items: center;
   padding: 2rem;
-  background: linear-gradient(195deg, #09090b 0%, #000 100%);
+  background:
+    radial-gradient(ellipse 80% 55% at 50% -10%, rgba(212, 175, 55, 0.07), transparent 55%),
+    linear-gradient(195deg, var(--hooko-bg) 0%, var(--hooko-bg-deep) 100%);
   color: var(--hooko-text);
 }
 
 .inner {
   max-width: 28rem;
   text-align: center;
+  padding: 2rem 1.75rem;
+  border-radius: var(--hooko-radius-xl);
+  border: 1px solid var(--hooko-border);
+  background: var(--hooko-surface-elevated);
+  box-shadow: var(--hooko-shadow-premium);
+  animation: panelIn 0.52s var(--hooko-ease-out) both;
 }
 
 .eyebrow {
@@ -17,18 +25,21 @@
   font-size: 0.65rem;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: rgba(212, 175, 55, 0.85);
+  font-weight: 700;
+  color: var(--hooko-gold);
 }
 
 .title {
-  margin: 0.65rem 0 0;
-  font-size: 1.5rem;
-  font-weight: 700;
+  margin: 0.7rem 0 0;
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
 }
 
 .sub {
-  margin: 0.75rem 0 0;
+  margin: 0.85rem 0 0;
   color: var(--hooko-text-muted);
+  line-height: 1.6;
 }
 
 .links {
@@ -36,11 +47,31 @@
 }
 
 .link {
-  color: #d4af37;
-  font-weight: 600;
+  display: inline-flex;
+  padding: 0.58rem 1rem;
+  border-radius: var(--hooko-radius-md);
+  color: #14120a;
+  font-weight: 700;
   text-decoration: none;
+  background: linear-gradient(135deg, #ffd700 0%, #d4af37 100%);
+  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.22);
+  transition:
+    transform 0.28s var(--hooko-ease-out),
+    box-shadow 0.28s var(--hooko-ease-out);
 }
 
 .link:hover {
-  color: #ffd700;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(212, 175, 55, 0.3);
+}
+
+@keyframes panelIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }

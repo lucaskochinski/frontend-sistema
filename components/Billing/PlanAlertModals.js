@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { dismissAlert, isAlertDismissed, openBillingPortal, pickPrimaryAlert } from "@/lib/billing";
+import { useModalMotion } from "@/lib/useModalMotion";
 import styles from "./PlanAlertModals.module.css";
 
 function badgeClass(severity) {
@@ -34,7 +35,19 @@ export default function PlanAlertModals({ billingStatus }) {
     return primary;
   }, [billingStatus]);
 
-  if (!alert || hidden) return null;
+  const open = Boolean(alert) && !hidden;
+  const { mounted, closing } = useModalMotion(open);
+
+  useEffect(() => {
+    if (!mounted) return undefined;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [mounted]);
+
+  if (!alert || !mounted) return null;
 
   const planLabel = billingStatus?.subscription?.plan?.displayName;
 
@@ -56,8 +69,17 @@ export default function PlanAlertModals({ billingStatus }) {
     alert.type === "subscription_canceled" || alert.type === "no_subscription";
 
   return (
-    <div className={styles.backdrop} role="presentation">
-      <div className={styles.panel} role="dialog" aria-modal="true" aria-labelledby="plan-alert-title">
+    <div
+      className={`${styles.backdrop} ${closing ? styles.backdropOut : styles.backdropIn}`}
+      role="presentation"
+    >
+      <div
+        className={`${styles.panel} ${closing ? styles.panelOut : styles.panelIn}`}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="plan-alert-title"
+      >
+        <div className={styles.glow} aria-hidden />
         <span className={badgeClass(alert.severity)}>{badgeLabel(alert.severity)}</span>
         <h2 id="plan-alert-title" className={styles.title}>
           {alert.title}
