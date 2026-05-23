@@ -5,7 +5,7 @@ import Link from "next/link";
 import { apiFetch, getStoredOrganizationId } from "@/lib/hooko-session";
 import NotImplementedModal from "@/components/NotImplementedModal/NotImplementedModal";
 import { DashboardSection, MetaRankingsGrid } from "@/components/Dashboard";
-import { CreativeAiSection } from "@/components/CreativeAi";
+import { CreativeAiSection, CreativeRankingsCharts } from "@/components/CreativeAi";
 import dash from "@/components/Dashboard/dashboard.module.css";
 import styles from "./page.module.css";
 
