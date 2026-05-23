@@ -54,12 +54,10 @@ export default function LandingPricing({
 
                   <div className={styles.head}>
                     <h3 className={styles.name}>{plan.displayName}</h3>
-                    {price ? (
-                      <p className={styles.price}>
-                        {price}
-                        <span className={styles.pricePeriod}> / mês</span>
-                      </p>
-                    ) : null}
+                    <p className={styles.price}>
+                      {price ?? "—"}
+                      <span className={styles.pricePeriod}> / mês</span>
+                    </p>
                     <p className={styles.pitch}>{planPitch(plan)}</p>
                   </div>
 

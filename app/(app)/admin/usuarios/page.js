@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { TableSkeleton } from "@/components/Skeleton/Skeleton.js";
 import AdminModal from "@/components/AdminModal/AdminModal.js";
+import AdminPlanAssignModal from "@/components/AdminPlanAssignModal/AdminPlanAssignModal.js";
 import AdminStepModal, { ReviewRow } from "@/components/AdminStepModal/AdminStepModal.js";
 import { apiFetch } from "@/lib/hooko-session";
 import { HOOKO_PLATFORM_ADMIN_ROLE_KEY } from "@/lib/platform-admin";
@@ -13,7 +14,7 @@ import u from "./usuarios.module.css";
 
 const USE_MOCK = false;
 
-/** @typedef {{ id: string, email: string, planLabel: string, subscriptionStatus: string, createdDisplay: string, organizationId?: string }} UiUser */
+/** @typedef {{ id: string, email: string, planLabel: string, subscriptionStatus: string, createdDisplay: string, organizationId?: string, organizationName?: string }} UiUser */
 
 function statusLabel(status) {
   const m = String(status || "").toLowerCase();
@@ -49,13 +50,28 @@ function mockSeed() {
   ];
 }
 
+function subscriptionStatusLabel(status) {
+  const m = String(status || "").toLowerCase();
+  if (m === "active") return "Activo";
+  if (m === "trialing") return "Trial";
+  if (m === "canceled") return "Cancelado";
+  if (m === "past_due") return "Em atraso";
+  if (m === "delinquent") return "Inadimplente";
+  if (m === "paused") return "Pausado";
+  if (m === "invited") return "Convidado";
+  if (m === "suspended") return "Suspenso";
+  return status || "—";
+}
+
 /** @param {unknown} apiUser */
 function mapApiUserToUi(apiUser) {
   /** @type {any} */
   const uRaw = apiUser;
   const memberships = Array.isArray(uRaw.memberships) ? uRaw.memberships : [];
   const primary = memberships[0];
-  const subStatus =
+  const orgSubs = primary?.organization?.subscriptions;
+  const activeSub = Array.isArray(orgSubs) ? orgSubs[0] : null;
+  const membershipStatus =
     memberships.length === 0
       ? "—"
       : memberships.length === 1
@@ -64,10 +80,11 @@ function mapApiUserToUi(apiUser) {
   return {
     id: String(uRaw.id),
     email: uRaw.email ?? "",
-    planLabel: "—",
-    subscriptionStatus: subStatus,
+    planLabel: activeSub?.plan?.displayName || "Sem plano",
+    subscriptionStatus: activeSub?.status || membershipStatus,
     createdDisplay: fmtDateIso(uRaw.createdAt),
     organizationId: primary?.organizationId,
+    organizationName: primary?.organization?.name || "",
   };
 }
 
@@ -93,6 +110,7 @@ function AdminUsuariosPageContent() {
   const [modalCreate, setModalCreate] = useState(false);
   const [modalEdit, setModalEdit] = useState(null);
   const [modalDelete, setModalDelete] = useState(null);
+  const [modalPlan, setModalPlan] = useState(null);
   const [createStep, setCreateStep] = useState(0);
   const [editStep, setEditStep] = useState(0);
 
@@ -608,7 +626,7 @@ function AdminUsuariosPageContent() {
               <tr>
                 <th>E-mail</th>
                 <th>Plano</th>
-                <th>Estado</th>
+                <th>Assinatura</th>
                 <th>Cadastro</th>
                 <th className={u.thActions}>Acções</th>
               </tr>
@@ -632,10 +650,20 @@ function AdminUsuariosPageContent() {
                       <span className={u.badge}>{row.planLabel}</span>
                     </td>
                     <td>
-                      <span className={badgeClassForSubscription(row.subscriptionStatus)}>{statusLabel(row.subscriptionStatus)}</span>
+                      <span className={badgeClassForSubscription(row.subscriptionStatus)}>
+                        {subscriptionStatusLabel(row.subscriptionStatus)}
+                      </span>
                     </td>
                     <td style={{ fontVariantNumeric: "tabular-nums", color: "rgba(161,161,170,0.95)" }}>{row.createdDisplay}</td>
                     <td className={u.tdActions}>
+                      <button
+                        type="button"
+                        className={`${s.btnGhost} ${s.btnSm}`}
+                        disabled={!row.organizationId}
+                        onClick={() => setModalPlan(row)}
+                      >
+                        Plano
+                      </button>
                       <button type="button" className={`${s.btnGhost} ${s.btnSm}`} onClick={() => openEdit(row)}>
                         Editar
                       </button>
@@ -707,6 +735,18 @@ function AdminUsuariosPageContent() {
         }}
         busy={busy}
         submitLabel="Guardar alterações"
+      />
+
+      <AdminPlanAssignModal
+        open={Boolean(modalPlan)}
+        onClose={() => setModalPlan(null)}
+        organizationId={modalPlan?.organizationId || null}
+        organizationName={modalPlan?.organizationName || ""}
+        userEmail={modalPlan?.email || ""}
+        onSuccess={(message) => {
+          setToastOk(message || "Plano actualizado.");
+          loadList();
+        }}
       />
 
       <AdminModal

@@ -20,6 +20,8 @@ export const metadata = {
     "Inteligência Artificial especialista em criativos. Detecte padrões ocultos, analise anúncios e escale com previsibilidade.",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const plans = await fetchPublicPlansServer();
 

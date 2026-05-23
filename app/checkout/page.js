@@ -13,6 +13,7 @@ import {
   isPopularPlan,
   pickDefaultCheckoutPlan,
   planFeatureList,
+  planHasBillablePrice,
   planPitch,
   resolvePreferredPlanId,
   setPendingPlanId,
@@ -318,7 +319,9 @@ function CheckoutPageInner() {
 
                 {!selectedPlan.canCheckout ? (
                   <p className={styles.secureNote}>
-                    Este plano ainda não tem preço activo no Stripe. Peça ao administrador para guardar o plano com valor mensal.
+                    {planHasBillablePrice(selectedPlan)
+                      ? "Pagamento temporariamente indisponível. Verifique se o Stripe está configurado no painel admin."
+                      : "Este plano ainda não tem valor mensal definido. Peça ao administrador para guardar o plano com preço."}
                   </p>
                 ) : isCurrentPlan ? (
                   <p className={styles.secureNote}>
