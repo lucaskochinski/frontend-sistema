@@ -44,9 +44,14 @@ export const CHART_GRID = "rgba(212, 175, 55, 0.12)";
 export const CHART_TICK = "rgba(212, 175, 55, 0.72)";
 
 export function chartTooltipStyle() {
-  if (typeof document === "undefined") return CHART_TOOLTIP_DARK;
-  const theme = document.documentElement.getAttribute("data-theme");
-  return theme === "light" ? CHART_TOOLTIP_LIGHT : CHART_TOOLTIP_DARK;
+  return {
+    backgroundColor: "var(--hooko-chart-tooltip-bg)",
+    border: "1px solid var(--hooko-border)",
+    borderRadius: "8px",
+    fontSize: "12px",
+    color: "var(--hooko-chart-tooltip-text)",
+    boxShadow: "0 8px 24px var(--hooko-shadow)",
+  };
 }
 
 const CHART_TOOLTIP_DARK = {

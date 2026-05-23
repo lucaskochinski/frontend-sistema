@@ -16,7 +16,7 @@
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--hooko-gold-bright, #d4af37);
+  color: var(--hooko-gold-bright, var(--hooko-gold));
 }
 
 .sectionHint {
@@ -39,11 +39,11 @@
 
 .card {
   border-radius: 18px;
-  border: 1px solid rgba(212, 175, 55, 0.22);
+  border: 1px solid var(--hooko-border);
   background:
-    radial-gradient(120% 80% at 100% 0%, rgba(212, 175, 55, 0.12), transparent 55%),
-    rgba(8, 8, 12, 0.92);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35) inset;
+    radial-gradient(120% 80% at 100% 0%, color-mix(in srgb, var(--hooko-gold) 14%, transparent), transparent 55%),
+    var(--hooko-card-bg);
+  box-shadow: var(--hooko-shadow-premium);
   padding: 1rem 1.05rem 1.1rem;
 }
 
@@ -53,7 +53,7 @@
   font-weight: 800;
   letter-spacing: 0.11em;
   text-transform: uppercase;
-  color: var(--hooko-gold-bright, #d4af37);
+  color: var(--hooko-gold-bright, var(--hooko-gold));
 }
 
 .pendingBadge {
@@ -63,9 +63,9 @@
   margin-bottom: 0.75rem;
   padding: 0.35rem 0.6rem;
   border-radius: 999px;
-  border: 1px dashed rgba(212, 175, 55, 0.35);
+  border: 1px dashed color-mix(in srgb, var(--hooko-gold) 40%, transparent);
   font-size: 0.72rem;
-  color: rgba(212, 175, 55, 0.9);
+  color: var(--hooko-gold);
 }
 
 .winningTop {
@@ -81,8 +81,8 @@
   height: 72px;
   border-radius: 12px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--hooko-border);
+  background: var(--hooko-surface);
 }
 
 .thumb img {
@@ -95,7 +95,7 @@
   display: block;
   font-size: 2.35rem;
   line-height: 1;
-  color: #fff;
+  color: var(--hooko-text);
   font-weight: 800;
 }
 
@@ -113,7 +113,7 @@
   margin-top: 0.35rem;
   font-size: 0.76rem;
   font-weight: 700;
-  color: #4ade80;
+  color: var(--hooko-positive);
 }
 
 .metricList {
@@ -131,32 +131,32 @@
 
 .metricLabel {
   font-size: 0.74rem;
-  color: rgba(236, 236, 242, 0.88);
+  color: var(--hooko-text-muted);
 }
 
 .metricTrack {
   height: 7px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--hooko-divider);
   overflow: hidden;
 }
 
 .metricFill {
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #b8860b, #d4af37);
+  background: linear-gradient(90deg, var(--hooko-gold), var(--hooko-gold-bright));
   transition: width 0.45s ease;
 }
 
 .metricFillMuted {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--hooko-border);
 }
 
 .metricValue {
   text-align: right;
   font-size: 0.76rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--hooko-text);
 }
 
 .scaleBadge {
@@ -166,9 +166,9 @@
   margin-top: 0.85rem;
   padding: 0.35rem 0.65rem;
   border-radius: 999px;
-  border: 1px solid rgba(74, 222, 128, 0.35);
-  background: rgba(34, 197, 94, 0.12);
-  color: #bbf7d0;
+  border: 1px solid color-mix(in srgb, var(--hooko-positive) 35%, transparent);
+  background: color-mix(in srgb, var(--hooko-positive) 12%, transparent);
+  color: var(--hooko-positive);
   font-size: 0.72rem;
   font-weight: 700;
 }
@@ -186,8 +186,8 @@
   align-items: start;
   padding: 0.55rem 0.6rem;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--hooko-surface);
+  border: 1px solid var(--hooko-border);
 }
 
 .insightIcon {
@@ -196,8 +196,8 @@
   border-radius: 8px;
   display: grid;
   place-items: center;
-  background: rgba(212, 175, 55, 0.12);
-  color: var(--hooko-gold-bright, #d4af37);
+  background: color-mix(in srgb, var(--hooko-gold) 14%, transparent);
+  color: var(--hooko-gold-bright, var(--hooko-gold));
   font-size: 0.85rem;
 }
 
@@ -205,7 +205,7 @@
   margin: 0;
   font-size: 0.82rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--hooko-text);
 }
 
 .insightDesc {
@@ -222,27 +222,31 @@
 }
 
 .scoreGood {
-  color: #4ade80;
+  color: var(--hooko-positive);
 }
 
 .scoreMid {
-  color: #facc15;
+  color: #ca8a04;
+}
+
+[data-theme="light"] .scoreMid {
+  color: #a16207;
 }
 
 .scoreLow {
-  color: #f87171;
+  color: var(--hooko-negative);
 }
 
 .scoreMuted {
-  color: rgba(161, 161, 170, 0.9);
+  color: var(--hooko-text-subtle);
 }
 
 .probabilityBox {
   margin-top: 0.85rem;
   padding: 0.75rem 0.85rem;
   border-radius: 14px;
-  border: 1px solid rgba(212, 175, 55, 0.28);
-  background: rgba(212, 175, 55, 0.06);
+  border: 1px solid color-mix(in srgb, var(--hooko-gold) 28%, transparent);
+  background: color-mix(in srgb, var(--hooko-gold) 8%, var(--hooko-card-bg));
   text-align: center;
 }
 
@@ -256,13 +260,14 @@
   margin: 0;
   font-size: 1.85rem;
   font-weight: 800;
-  color: var(--hooko-gold-bright, #d4af37);
+  color: var(--hooko-gold-bright, var(--hooko-gold));
 }
 
 .gridWrap {
   border-radius: 18px;
-  border: 1px solid rgba(212, 175, 55, 0.18);
-  background: rgba(8, 8, 12, 0.92);
+  border: 1px solid var(--hooko-border);
+  background: var(--hooko-card-bg);
+  box-shadow: var(--hooko-shadow-premium);
   padding: 1rem;
 }
 
@@ -288,8 +293,8 @@
   aspect-ratio: 1;
   border-radius: 12px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--hooko-border);
+  background: var(--hooko-surface);
 }
 
 .gridThumb img {
@@ -303,7 +308,7 @@
   inset: 0;
   display: grid;
   place-items: center;
-  background: rgba(0, 0, 0, 0.28);
+  background: var(--hooko-overlay);
   color: #fff;
   font-size: 1.1rem;
 }
@@ -313,6 +318,7 @@
   text-align: center;
   font-size: 0.92rem;
   font-weight: 800;
+  color: var(--hooko-text);
 }
 
 .coachRow {
@@ -323,8 +329,8 @@
   margin-top: 1rem;
   padding: 0.85rem 1rem;
   border-radius: 16px;
-  border: 1px solid rgba(212, 175, 55, 0.2);
-  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--hooko-border);
+  background: var(--hooko-surface);
 }
 
 .coachMascot {
@@ -336,11 +342,11 @@
   position: relative;
   padding: 0.75rem 0.9rem;
   border-radius: 14px;
-  border: 1px solid rgba(212, 175, 55, 0.25);
-  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid color-mix(in srgb, var(--hooko-gold) 25%, transparent);
+  background: color-mix(in srgb, var(--hooko-gold) 8%, var(--hooko-card-bg));
   font-size: 0.82rem;
   line-height: 1.5;
-  color: rgba(236, 236, 242, 0.94);
+  color: var(--hooko-text);
 }
 
 .coachLabel {
@@ -350,5 +356,5 @@
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--hooko-gold-bright, #d4af37);
+  color: var(--hooko-gold-bright, var(--hooko-gold));
 }

@@ -4,9 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { apiFetch, getStoredOrganizationId } from "@/lib/hooko-session";
 import NotImplementedModal from "@/components/NotImplementedModal/NotImplementedModal";
-import { DashboardSection, MetaRankingsGrid } from "@/components/Dashboard";
+import { MetaRankingsGrid } from "@/components/Dashboard";
 import { CreativeAiSection, CreativeRankingsCharts } from "@/components/CreativeAi";
-import dash from "@/components/Dashboard/dashboard.module.css";
 import styles from "./page.module.css";
 
 export default function CriativosDashboardPage() {
@@ -96,6 +95,8 @@ export default function CriativosDashboardPage() {
       </header>
 
       <CreativeRankingsCharts charts={overview?.rankingCharts} />
+
+      <MetaRankingsGrid items={overview?.rankingItems} />
 
       <CreativeAiSection insights={insights} showCoach />
 

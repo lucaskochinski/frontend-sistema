@@ -34,8 +34,8 @@
   color: var(--hooko-gold);
   padding: 0.25rem 0.55rem;
   border-radius: 999px;
-  border: 1px solid rgba(212, 175, 55, 0.35);
-  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid color-mix(in srgb, var(--hooko-gold) 35%, transparent);
+  background: color-mix(in srgb, var(--hooko-gold) 10%, var(--hooko-card-bg));
 }
 
 .grid {

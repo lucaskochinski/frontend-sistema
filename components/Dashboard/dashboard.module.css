@@ -518,8 +518,8 @@
   color: var(--hooko-gold);
   padding: 0.15rem 0.35rem;
   border-radius: 999px;
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid color-mix(in srgb, var(--hooko-gold) 35%, transparent);
+  background: color-mix(in srgb, var(--hooko-gold) 10%, var(--hooko-card-bg));
 }
 
 .rankingCardFormula {
