@@ -15,8 +15,8 @@
 }
 
 .wrapHero {
-  --v-base: 0.88;
-  --zoom-base: 1.02;
+  --v-base: 0.92;
+  --zoom-base: 1.04;
   --loop-blend: 1;
   --loop-opacity-fade: 1;
   --loop-blur: 0px;
@@ -31,13 +31,14 @@
 }
 
 .wrapHero .video {
-  object-position: center 42%;
+  object-position: left center;
 }
 
 .wrapHero .loopBridge {
   background:
-    radial-gradient(ellipse 85% 70% at 50% 38%, transparent 18%, rgba(0, 0, 0, 0.18) 62%, rgba(0, 0, 0, 0.42) 100%),
-    linear-gradient(168deg, transparent 0%, rgba(0, 0, 0, 0.12) 100%);
+    radial-gradient(ellipse 90% 75% at 28% 38%, rgba(12, 12, 15, 0.28), transparent 58%),
+    radial-gradient(ellipse 70% 90% at 50% 100%, rgba(0, 0, 0, 0.35), transparent 45%),
+    linear-gradient(168deg, rgba(5, 5, 8, 0.72) 0%, rgba(0, 0, 0, 0.82) 48%, rgba(0, 0, 0, 0.94) 100%);
 }
 
 .video {
@@ -82,12 +83,12 @@
   }
 
   .wrapHero {
-    --v-base: 0.78;
-    --zoom-base: 1.04;
+    --v-base: 0.82;
+    --zoom-base: 1.06;
   }
 
   .wrapHero .video {
-    object-position: center 40%;
+    object-position: left 35%;
   }
 }
 
