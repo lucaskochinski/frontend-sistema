@@ -83,12 +83,12 @@
   }
 
   .wrapHero {
-    --v-base: 0.92;
-    --zoom-base: 0.94;
+    --v-base: 0.94;
+    --zoom-base: 0.88;
   }
 
   .wrapHero .video {
-    object-position: 36% 44%;
+    object-position: 40% 58%;
   }
 }
 

@@ -223,22 +223,25 @@
   .inner {
     width: 100%;
     max-width: none;
-    padding: 1.75rem 1.5rem clamp(0.75rem, 1.5vw, 1rem);
+    padding: 1.35rem 1.5rem clamp(0.75rem, 1.5vw, 1rem);
   }
 
   .visual {
     order: 2;
     position: relative;
+    top: auto;
+    right: auto;
     width: 100%;
-    height: clamp(16rem, 44vh, 26rem);
+    height: clamp(17rem, 52vh, 28rem);
     min-height: 0;
+    margin: 0;
   }
 
   .videoScrim {
     background: linear-gradient(
       180deg,
-      rgba(18, 17, 16, 0.28) 0%,
-      transparent 24%
+      rgba(18, 17, 16, 0.18) 0%,
+      transparent 20%
     );
   }
 }
