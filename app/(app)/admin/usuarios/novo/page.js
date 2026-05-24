@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import s from "../adminShared.module.css";
+import s from "../../adminShared.module.css";
 
 export default function AdminNovoUsuarioRedirectPage() {
   const router = useRouter();
