@@ -16,7 +16,7 @@
 
 .wrapHero {
   --v-base: 1;
-  --zoom-base: 1.12;
+  --zoom-base: 0.96;
   --loop-blend: 1;
   --loop-opacity-fade: 1;
   --loop-blur: 0px;
@@ -32,7 +32,7 @@
 
 .wrapHero .video {
   object-fit: cover;
-  object-position: 42% center;
+  object-position: 38% 46%;
   width: 100%;
   height: 100%;
 }
@@ -84,7 +84,11 @@
 
   .wrapHero {
     --v-base: 0.92;
-    --zoom-base: 1.08;
+    --zoom-base: 0.94;
+  }
+
+  .wrapHero .video {
+    object-position: 36% 44%;
   }
 }
 

@@ -1,15 +1,9 @@
 .header {
   position: sticky;
   top: 0;
-  z-index: 5;
+  z-index: 10;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  background: linear-gradient(
-    90deg,
-    rgba(18, 17, 16, 0.92) 0%,
-    rgba(18, 17, 16, 0.78) 42%,
-    rgba(18, 17, 16, 0.18) 72%,
-    transparent 100%
-  );
+  background: rgba(18, 17, 16, 0.88);
   backdrop-filter: blur(14px);
 }
 

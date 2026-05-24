@@ -18,6 +18,7 @@
   --lp-border-soft: rgba(255, 255, 255, 0.08);
   --lp-max: 76rem;
   --lp-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --lp-header-h: 4.35rem;
 }
 
 .page main :is(section[id]) {

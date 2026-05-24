@@ -188,11 +188,11 @@
 
 .visual {
   position: absolute;
-  top: 0;
+  top: var(--lp-header-h);
   right: 0;
   width: 50vw;
-  height: 100dvh;
-  min-height: 100%;
+  height: calc(100dvh - var(--lp-header-h));
+  min-height: 0;
   overflow: hidden;
   border-radius: 0;
   background: #000;
