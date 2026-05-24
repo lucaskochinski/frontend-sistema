@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { LANDING_ANCHORS } from "../landingLinks";
-import LandingHeroVisual from "./LandingHeroVisual";
 import styles from "./LandingHero.module.css";
 
 const FEATURES = [
@@ -56,8 +55,6 @@ const FEATURES = [
 export default function LandingHero() {
   return (
     <section id="inicio" className={styles.hero} aria-labelledby="landing-hero-title">
-      <div className={styles.glow} aria-hidden="true" />
-
       <div className={styles.inner}>
         <div className={styles.copy}>
           <p className={styles.badge}>
@@ -102,8 +99,6 @@ export default function LandingHero() {
             </Link>
           </div>
         </div>
-
-        <LandingHeroVisual />
       </div>
     </section>
   );

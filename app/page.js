@@ -7,6 +7,7 @@ import {
   LandingFormula,
   LandingHeader,
   LandingHero,
+  LandingHeroVisual,
   LandingMarketTruth,
   LandingPricing,
   LandingProblem,
@@ -27,9 +28,12 @@ export default async function HomePage() {
 
   return (
     <div className={styles.page}>
-      <LandingHeader />
-      <main>
+      <div className={styles.heroShell}>
+        <LandingHeader />
+        <LandingHeroVisual />
         <LandingHero />
+      </div>
+      <main>
         <LandingPricing plans={plans} />
         <LandingFormula />
         <LandingMarketTruth />

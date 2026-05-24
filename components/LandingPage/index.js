@@ -1,5 +1,6 @@
 export { default as LandingHeader } from "./LandingHeader/LandingHeader";
 export { default as LandingHero } from "./LandingHero/LandingHero";
+export { default as LandingHeroVisual } from "./LandingHero/LandingHeroVisual";
 export { default as LandingFormula } from "./LandingFormula/LandingFormula";
 export { default as LandingMarketTruth } from "./LandingMarketTruth/LandingMarketTruth";
 export { default as LandingProblem } from "./LandingProblem/LandingProblem";

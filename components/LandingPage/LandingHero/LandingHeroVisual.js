@@ -5,11 +5,9 @@ import styles from "./LandingHero.module.css";
 
 export default function LandingHeroVisual() {
   return (
-    <div className={styles.visual}>
-      <div className={styles.mascotWrap}>
-        <OctopusLoopVideo variant="hero" />
-        <div className={styles.videoScrim} aria-hidden />
-      </div>
+    <div className={styles.visual} aria-hidden>
+      <OctopusLoopVideo variant="hero" />
+      <div className={styles.videoScrim} />
     </div>
   );
 }

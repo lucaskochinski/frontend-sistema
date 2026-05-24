@@ -23,3 +23,18 @@
 .page main :is(section[id]) {
   scroll-margin-top: 5rem;
 }
+
+.heroShell {
+  position: relative;
+  isolation: isolate;
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+@media (max-width: 960px) {
+  .heroShell {
+    display: flex;
+    flex-direction: column;
+    min-height: auto;
+  }
+}
