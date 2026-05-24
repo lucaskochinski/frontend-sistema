@@ -13,7 +13,7 @@
   font-size: 0.65rem;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: rgba(212, 175, 55, 0.82);
+  color: var(--hooko-profile-kicker);
   font-weight: 600;
 }
 
@@ -48,11 +48,9 @@
 
 .card {
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  background: linear-gradient(168deg, rgba(20, 20, 26, 0.96) 0%, rgba(10, 10, 14, 0.98) 100%);
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.42) inset,
-    0 22px 52px rgba(0, 0, 0, 0.42);
+  border: 1px solid var(--hooko-border);
+  background: var(--hooko-profile-card-bg);
+  box-shadow: var(--hooko-profile-card-shadow);
   padding: 1.35rem 1.4rem 1.45rem;
 }
 
@@ -64,14 +62,9 @@
   position: relative;
   overflow: hidden;
   padding: 0;
-  border-color: rgba(212, 175, 55, 0.14);
-  background:
-    radial-gradient(120% 80% at 100% -20%, rgba(212, 175, 55, 0.12), transparent 52%),
-    linear-gradient(168deg, rgba(22, 22, 30, 0.98) 0%, rgba(10, 10, 14, 0.99) 100%);
-  box-shadow:
-    0 0 0 1px rgba(212, 175, 55, 0.06) inset,
-    0 0 0 1px rgba(0, 0, 0, 0.42) inset,
-    0 26px 56px rgba(0, 0, 0, 0.48);
+  border-color: color-mix(in srgb, var(--hooko-gold) 14%, transparent);
+  background: var(--hooko-profile-plan-bg);
+  box-shadow: var(--hooko-profile-plan-shadow);
 }
 
 .cardHead {
@@ -80,7 +73,7 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(212, 175, 55, 0.78);
+  color: var(--hooko-profile-section-title);
 }
 
 .form {
@@ -105,7 +98,7 @@
   width: 100%;
   box-sizing: border-box;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.11);
+  border: 1px solid var(--hooko-border);
   background: var(--hooko-input-bg);
   color: var(--hooko-text);
   font-family: inherit;
@@ -117,17 +110,17 @@
 }
 
 .input::placeholder {
-  color: rgba(113, 113, 122, 0.82);
+  color: var(--hooko-text-subtle);
 }
 
 .input:hover {
-  border-color: rgba(255, 255, 255, 0.14);
+  border-color: var(--hooko-border-strong);
 }
 
 .input:focus {
   outline: none;
-  border-color: rgba(212, 175, 55, 0.45);
-  background: rgba(0, 0, 0, 0.5);
+  border-color: color-mix(in srgb, var(--hooko-gold) 45%, transparent);
+  background: var(--hooko-profile-input-focus-bg);
 }
 
 .hint {
@@ -154,21 +147,21 @@
   font-weight: 600;
   padding: 0.55rem 1.15rem;
   border-radius: 11px;
-  border: 1px solid rgba(212, 175, 55, 0.42);
-  background: rgba(212, 175, 55, 0.16);
-  color: rgba(251, 245, 216, 0.98);
+  border: 1px solid color-mix(in srgb, var(--hooko-gold) 42%, transparent);
+  background: color-mix(in srgb, var(--hooko-gold) 16%, transparent);
+  color: var(--hooko-profile-btn-primary-text);
   transition:
     background 0.18s ease,
     border-color 0.18s ease;
 }
 
 .btnPrimary:hover:not(:disabled) {
-  background: rgba(212, 175, 55, 0.24);
-  border-color: rgba(212, 175, 55, 0.55);
+  background: color-mix(in srgb, var(--hooko-gold) 24%, transparent);
+  border-color: color-mix(in srgb, var(--hooko-gold) 55%, transparent);
 }
 
 .btnPrimary:focus-visible {
-  outline: 2px solid rgba(212, 175, 55, 0.45);
+  outline: 2px solid color-mix(in srgb, var(--hooko-gold) 45%, transparent);
   outline-offset: 2px;
 }
 
@@ -187,14 +180,14 @@
   border-radius: 11px;
   border: 1px solid var(--hooko-border);
   background: transparent;
-  color: rgba(228, 228, 231, 0.9);
+  color: var(--hooko-profile-btn-ghost-text);
   transition:
     border-color 0.18s ease,
     background 0.18s ease;
 }
 
 .btnGhost:hover:not(:disabled) {
-  background: var(--hooko-surface);
+  background: var(--hooko-surface-hover);
 }
 
 .btnGhost:disabled {
@@ -205,7 +198,7 @@
 .toastSaved {
   font-size: 0.74rem;
   font-weight: 600;
-  color: rgba(74, 222, 128, 0.95);
+  color: var(--hooko-profile-toast-success);
 }
 
 /* ─── Plano ─── */
@@ -217,11 +210,11 @@
   border-radius: 4px;
   background: linear-gradient(
     180deg,
-    rgba(212, 175, 55, 0.95) 0%,
+    color-mix(in srgb, var(--hooko-gold) 95%, transparent) 0%,
     rgba(96, 165, 250, 0.5) 55%,
-    rgba(212, 175, 55, 0.35) 100%
+    color-mix(in srgb, var(--hooko-gold) 35%, transparent) 100%
   );
-  box-shadow: 0 0 18px rgba(212, 175, 55, 0.22);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--hooko-gold) 22%, transparent);
 }
 
 .planWrap {
@@ -246,12 +239,11 @@
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(251, 245, 216, 0.95);
+  color: var(--hooko-profile-badge-text);
   padding: 0.32rem 0.62rem;
   border-radius: 999px;
-  border: 1px solid rgba(74, 222, 128, 0.35);
-  background: rgba(74, 222, 128, 0.12);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset;
+  border: 1px solid var(--hooko-pill-success-border);
+  background: var(--hooko-pill-success-bg);
 }
 
 .planSectionTitle {
@@ -260,7 +252,7 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(212, 175, 55, 0.82);
+  color: var(--hooko-profile-section-title);
 }
 
 .planHero {
@@ -273,8 +265,8 @@
   margin-bottom: 0.85rem;
   border-radius: 14px;
   border: 1px solid var(--hooko-border);
-  background: rgba(0, 0, 0, 0.28);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35) inset;
+  background: var(--hooko-profile-hero-bg);
+  box-shadow: var(--hooko-profile-hero-shadow);
 }
 
 .planHeroMain {
@@ -302,11 +294,15 @@
   flex-shrink: 0;
   font-size: 0.88rem;
   font-weight: 700;
-  color: rgba(253, 230, 138, 0.98);
+  color: var(--hooko-profile-price-text);
   padding: 0.45rem 0.75rem;
   border-radius: 11px;
-  border: 1px solid rgba(212, 175, 55, 0.35);
-  background: linear-gradient(145deg, rgba(212, 175, 55, 0.18), rgba(212, 175, 55, 0.06));
+  border: 1px solid color-mix(in srgb, var(--hooko-gold) 35%, transparent);
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--hooko-gold) 18%, transparent),
+    color-mix(in srgb, var(--hooko-gold) 6%, transparent)
+  );
   white-space: nowrap;
 }
 
@@ -334,8 +330,8 @@
   padding: 0.85rem 0.95rem;
   margin-bottom: 1.1rem;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  background: var(--hooko-surface);
+  border: 1px solid var(--hooko-border);
+  background: var(--hooko-surface-hover);
 }
 
 .usageHead {
@@ -356,7 +352,7 @@
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.02em;
-  color: rgba(228, 228, 231, 0.98);
+  color: var(--hooko-profile-usage-fraction);
 }
 
 .usageOf {
@@ -368,23 +364,23 @@
 .usageBar {
   height: 7px;
   border-radius: 999px;
-  background: var(--hooko-surface-hover);
+  background: var(--hooko-score-track-bg);
   overflow: hidden;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35) inset;
+  box-shadow: var(--hooko-profile-usage-bar-shadow);
 }
 
 .usageFill {
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, rgba(59, 130, 246, 0.9), rgba(212, 175, 55, 0.95));
-  box-shadow: 0 0 12px rgba(212, 175, 55, 0.25);
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.9), color-mix(in srgb, var(--hooko-gold) 95%, transparent));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--hooko-gold) 25%, transparent);
   transition: width 0.35s ease;
 }
 
 .usageFoot {
   margin: 0.4rem 0 0;
   font-size: 0.72rem;
-  color: rgba(113, 113, 122, 0.98);
+  color: var(--hooko-text-muted);
 }
 
 .featureTitle {
@@ -393,7 +389,7 @@
   font-weight: 700;
   letter-spacing: 0.11em;
   text-transform: uppercase;
-  color: rgba(228, 228, 231, 0.78);
+  color: var(--hooko-profile-feature-title);
 }
 
 .featureBoard {
@@ -411,7 +407,7 @@
   align-items: flex-start;
   font-size: 0.82rem;
   line-height: 1.48;
-  color: rgba(212, 212, 218, 0.96);
+  color: var(--hooko-profile-feature-text);
 }
 
 .featureCheck {
@@ -420,11 +416,11 @@
   height: 1.12rem;
   margin-top: 0.1rem;
   border-radius: 5px;
-  background: rgba(74, 222, 128, 0.14);
-  border: 1px solid rgba(74, 222, 128, 0.36);
+  background: var(--hooko-pill-success-bg);
+  border: 1px solid var(--hooko-pill-success-border);
   display: grid;
   place-items: center;
-  color: rgb(167, 243, 208);
+  color: var(--hooko-profile-feature-check);
 }
 
 .featureCheck svg {
@@ -441,7 +437,7 @@
   gap: 0.55rem;
   margin-top: 1.35rem;
   padding-top: 1.15rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-top: 1px solid var(--hooko-divider);
 }
 
 .btnUpgrade {
@@ -455,9 +451,9 @@
   font-weight: 700;
   padding: 0.68rem 1.05rem;
   border-radius: 12px;
-  border: 1px solid rgba(212, 175, 55, 0.52);
-  background: rgba(212, 175, 55, 0.22);
-  color: rgb(251, 245, 216);
+  border: 1px solid color-mix(in srgb, var(--hooko-gold) 52%, transparent);
+  background: color-mix(in srgb, var(--hooko-gold) 22%, transparent);
+  color: var(--hooko-profile-btn-upgrade-text);
   transition:
     background 0.2s ease,
     border-color 0.2s ease,
@@ -465,13 +461,13 @@
 }
 
 .btnUpgrade:hover {
-  background: rgba(212, 175, 55, 0.32);
-  border-color: rgba(212, 175, 55, 0.68);
+  background: color-mix(in srgb, var(--hooko-gold) 32%, transparent);
+  border-color: color-mix(in srgb, var(--hooko-gold) 68%, transparent);
   transform: translateY(-1px);
 }
 
 .btnUpgrade:focus-visible {
-  outline: 2px solid rgba(212, 175, 55, 0.45);
+  outline: 2px solid color-mix(in srgb, var(--hooko-gold) 45%, transparent);
   outline-offset: 2px;
 }
 
@@ -483,17 +479,22 @@
   font-weight: 600;
   padding: 0.55rem 0.95rem;
   border-radius: 11px;
-  border: 1px solid rgba(248, 113, 113, 0.32);
-  background: rgba(239, 68, 68, 0.1);
-  color: rgba(254, 202, 202, 0.95);
+  border: 1px solid var(--hooko-score-low-border);
+  background: var(--hooko-score-low-bg);
+  color: var(--hooko-profile-cancel-text);
   transition:
     border-color 0.18s ease,
     background 0.18s ease;
 }
 
-.btnCancelSub:hover {
-  border-color: rgba(248, 113, 113, 0.48);
-  background: rgba(239, 68, 68, 0.16);
+.btnCancelSub:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--hooko-negative) 48%, transparent);
+  background: color-mix(in srgb, var(--hooko-negative) 16%, transparent);
+}
+
+.btnCancelSub:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .subNote {
@@ -503,7 +504,7 @@
   color: var(--hooko-text-subtle);
 }
 
-/* Modal stubs */
+/* Modal */
 .overlay {
   position: fixed;
   inset: 0;
@@ -516,7 +517,7 @@
 .backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(5, 5, 8, 0.72);
+  background: var(--hooko-overlay);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -528,10 +529,8 @@
   padding: 1.25rem 1.3rem;
   border-radius: 16px;
   border: 1px solid var(--hooko-border);
-  background: rgba(18, 18, 22, 0.96);
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.5) inset,
-    0 24px 60px rgba(0, 0, 0, 0.5);
+  background: var(--hooko-profile-dialog-bg);
+  box-shadow: var(--hooko-profile-dialog-shadow);
 }
 
 .dialogTitle {
@@ -559,14 +558,14 @@
   margin: 0 0 0.85rem;
   font-size: 0.78rem;
   line-height: 1.45;
-  color: rgb(252, 165, 165);
+  color: var(--hooko-admin-error-text);
 }
 
 .dialogSuccess {
   margin: 0 0 0.85rem;
   font-size: 0.78rem;
   line-height: 1.45;
-  color: rgb(134, 239, 172);
+  color: var(--hooko-admin-success-text);
 }
 
 @media (prefers-reduced-motion: reduce) {

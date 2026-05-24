@@ -119,6 +119,29 @@
   --hooko-admin-badge-pub-text: rgba(253, 230, 138, 0.96);
   --hooko-admin-badge-info-text: rgb(191, 219, 254);
   --hooko-admin-chart-head: rgba(228, 228, 231, 0.88);
+  --hooko-profile-card-bg: linear-gradient(168deg, rgba(20, 20, 26, 0.96) 0%, rgba(10, 10, 14, 0.98) 100%);
+  --hooko-profile-card-shadow: 0 0 0 1px rgba(0, 0, 0, 0.42) inset, 0 22px 52px rgba(0, 0, 0, 0.42);
+  --hooko-profile-plan-bg: radial-gradient(120% 80% at 100% -20%, rgba(212, 175, 55, 0.12), transparent 52%), linear-gradient(168deg, rgba(22, 22, 30, 0.98) 0%, rgba(10, 10, 14, 0.99) 100%);
+  --hooko-profile-plan-shadow: 0 0 0 1px rgba(212, 175, 55, 0.06) inset, 0 0 0 1px rgba(0, 0, 0, 0.42) inset, 0 26px 56px rgba(0, 0, 0, 0.48);
+  --hooko-profile-kicker: rgba(212, 175, 55, 0.82);
+  --hooko-profile-section-title: rgba(212, 175, 55, 0.78);
+  --hooko-profile-hero-bg: rgba(0, 0, 0, 0.28);
+  --hooko-profile-hero-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35) inset;
+  --hooko-profile-price-text: rgba(253, 230, 138, 0.98);
+  --hooko-profile-btn-primary-text: rgba(251, 245, 216, 0.98);
+  --hooko-profile-btn-ghost-text: rgba(228, 228, 231, 0.9);
+  --hooko-profile-badge-text: rgba(251, 245, 216, 0.95);
+  --hooko-profile-usage-fraction: rgba(228, 228, 231, 0.98);
+  --hooko-profile-feature-title: rgba(228, 228, 231, 0.78);
+  --hooko-profile-feature-text: rgba(212, 212, 218, 0.96);
+  --hooko-profile-feature-check: rgb(167, 243, 208);
+  --hooko-profile-dialog-bg: rgba(18, 18, 22, 0.96);
+  --hooko-profile-dialog-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5) inset, 0 24px 60px rgba(0, 0, 0, 0.5);
+  --hooko-profile-input-focus-bg: rgba(0, 0, 0, 0.5);
+  --hooko-profile-btn-upgrade-text: rgb(251, 245, 216);
+  --hooko-profile-cancel-text: rgba(254, 202, 202, 0.95);
+  --hooko-profile-toast-success: rgba(74, 222, 128, 0.95);
+  --hooko-profile-usage-bar-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35) inset;
 }
 
 [data-theme="light"] {
@@ -226,6 +249,29 @@
   --hooko-admin-badge-pub-text: #854d0e;
   --hooko-admin-badge-info-text: #1d4ed8;
   --hooko-admin-chart-head: #52525b;
+  --hooko-profile-card-bg: linear-gradient(168deg, #ffffff 0%, #f8f8f9 100%);
+  --hooko-profile-card-shadow: 0 12px 32px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05) inset;
+  --hooko-profile-plan-bg: radial-gradient(120% 80% at 100% -20%, rgba(212, 175, 55, 0.08), transparent 52%), linear-gradient(168deg, #ffffff 0%, #f4f4f5 100%);
+  --hooko-profile-plan-shadow: 0 0 0 1px rgba(212, 175, 55, 0.1) inset, 0 16px 40px rgba(0, 0, 0, 0.08);
+  --hooko-profile-kicker: #b8941f;
+  --hooko-profile-section-title: #b8941f;
+  --hooko-profile-hero-bg: rgba(0, 0, 0, 0.03);
+  --hooko-profile-hero-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06) inset;
+  --hooko-profile-price-text: #854d0e;
+  --hooko-profile-btn-primary-text: #5c4a12;
+  --hooko-profile-btn-ghost-text: #52525b;
+  --hooko-profile-badge-text: #166534;
+  --hooko-profile-usage-fraction: #09090b;
+  --hooko-profile-feature-title: #52525b;
+  --hooko-profile-feature-text: #27272a;
+  --hooko-profile-feature-check: #166534;
+  --hooko-profile-dialog-bg: #ffffff;
+  --hooko-profile-dialog-shadow: 0 20px 48px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.06) inset;
+  --hooko-profile-input-focus-bg: #ffffff;
+  --hooko-profile-btn-upgrade-text: #5c4a12;
+  --hooko-profile-cancel-text: #991b1b;
+  --hooko-profile-toast-success: #166534;
+  --hooko-profile-usage-bar-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08) inset;
 }
 
 *,
