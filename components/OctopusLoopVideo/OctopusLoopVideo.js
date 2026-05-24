@@ -18,6 +18,7 @@ export default function OctopusLoopVideo({
   fadeSeconds = 1.48,
   maxBlurPx = 42,
   maxBridgeAlpha = 0.88,
+  variant = "brand",
 }) {
   const wrapRef = useRef(null);
   const videoRef = useRef(null);
@@ -111,7 +112,11 @@ export default function OctopusLoopVideo({
   }, [fadeSeconds, maxBlurPx, maxBridgeAlpha]);
 
   return (
-    <div ref={wrapRef} className={styles.wrap}>
+    <div
+      ref={wrapRef}
+      className={variant === "hero" ? styles.wrapHero : styles.wrap}
+      data-variant={variant}
+    >
       <video
         ref={videoRef}
         className={styles.video}

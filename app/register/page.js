@@ -51,7 +51,7 @@ function RegisterPageInner() {
   }
 
   return (
-    <main className={`${styles.layout} ${phase === "exit" ? styles.layoutExit : ""}`}>
+    <main className={`authThemeDark ${styles.layout} ${phase === "exit" ? styles.layoutExit : ""}`}>
       <section className={styles.brandPanel} aria-label="Marca">
         <BrandShowcase tagline="Onboarding premium. Sua operação de anúncios, elevada." />
       </section>
@@ -66,7 +66,7 @@ export default function RegisterPage() {
   return (
     <Suspense
       fallback={
-        <main className={styles.layout}>
+        <main className={`authThemeDark ${styles.layout}`}>
           <section className={styles.brandPanel} aria-hidden />
           <section className={styles.formPanel}>
             <p>A carregar…</p>

@@ -211,8 +211,11 @@
 .mascotWrap {
   position: relative;
   width: min(100%, 34rem);
+  aspect-ratio: 1 / 1;
   margin: 0 auto;
   isolation: isolate;
+  overflow: hidden;
+  border-radius: 50%;
 }
 
 .mascotWrap::before {
@@ -249,17 +252,20 @@
   );
   filter: blur(14px);
   pointer-events: none;
-  z-index: 0;
+  z-index: 2;
 }
 
-.mascot {
-  position: relative;
-  z-index: 1;
-  display: block;
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-  filter: drop-shadow(0 28px 64px rgba(0, 0, 0, 0.55));
+.videoScrim {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 88% 78% at 50% 42%,
+    transparent 28%,
+    rgba(0, 0, 0, 0.12) 58%,
+    rgba(0, 0, 0, 0.32) 100%
+  );
 }
 
 @media (max-width: 960px) {

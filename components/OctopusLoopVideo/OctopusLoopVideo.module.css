@@ -14,6 +14,32 @@
   pointer-events: none;
 }
 
+.wrapHero {
+  --v-base: 0.88;
+  --zoom-base: 1.02;
+  --loop-blend: 1;
+  --loop-opacity-fade: 1;
+  --loop-blur: 0px;
+  --loop-brightness: 1;
+  --loop-saturate: 1;
+  --loop-bridge-alpha: 0;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.wrapHero .video {
+  object-position: center 42%;
+}
+
+.wrapHero .loopBridge {
+  background:
+    radial-gradient(ellipse 85% 70% at 50% 38%, transparent 18%, rgba(0, 0, 0, 0.18) 62%, rgba(0, 0, 0, 0.42) 100%),
+    linear-gradient(168deg, transparent 0%, rgba(0, 0, 0, 0.12) 100%);
+}
+
 .video {
   position: relative;
   z-index: 0;
@@ -51,8 +77,17 @@
     --zoom-base: 1.085;
   }
 
-  .video {
+  .wrap .video {
     object-position: left 35%;
+  }
+
+  .wrapHero {
+    --v-base: 0.78;
+    --zoom-base: 1.04;
+  }
+
+  .wrapHero .video {
+    object-position: center 40%;
   }
 }
 

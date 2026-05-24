@@ -306,6 +306,25 @@ body {
   }
 }
 
+/* Login / cadastro — sempre escuro mesmo com tema global claro */
+[data-theme="light"] .authThemeDark {
+  color-scheme: dark;
+  color: #fafafa;
+  --hooko-bg: #09090b;
+  --hooko-bg-deep: #000000;
+  --hooko-surface: rgba(255, 255, 255, 0.04);
+  --hooko-surface-hover: rgba(255, 255, 255, 0.07);
+  --hooko-surface-elevated: #0c0c10;
+  --hooko-border: rgba(255, 255, 255, 0.1);
+  --hooko-border-strong: rgba(255, 255, 255, 0.16);
+  --hooko-text: #fafafa;
+  --hooko-text-muted: #a1a1aa;
+  --hooko-text-subtle: rgba(161, 161, 170, 0.85);
+  --hooko-input-bg: rgba(0, 0, 0, 0.35);
+  --hooko-skeleton-from: rgba(255, 255, 255, 0.04);
+  --hooko-skeleton-mid: rgba(212, 175, 55, 0.14);
+}
+
 /* Formulários herdam tema claro/escuro */
 input,
 textarea,

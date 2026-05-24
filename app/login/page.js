@@ -32,7 +32,7 @@ export default function LoginPage() {
   }
 
   return (
-    <main className={`${styles.layout} ${phase === "exit" ? styles.layoutExit : ""}`}>
+    <main className={`authThemeDark ${styles.layout} ${phase === "exit" ? styles.layoutExit : ""}`}>
       <section className={styles.brandPanel} aria-label="Marca">
         <BrandShowcase />
       </section>

@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { LANDING_ANCHORS } from "../landingLinks";
+import LandingHeroVisual from "./LandingHeroVisual";
 import styles from "./LandingHero.module.css";
 
 const FEATURES = [
@@ -103,19 +103,7 @@ export default function LandingHero() {
           </div>
         </div>
 
-        <div className={styles.visual}>
-          <div className={styles.mascotWrap}>
-            <Image
-              src="/imagens/landing/hooka-mascot.png"
-              alt="Mascote Hooko — IA analisando criativos vencedores"
-              width={1024}
-              height={1024}
-              className={styles.mascot}
-              priority
-              sizes="(max-width: 960px) 90vw, 34rem"
-            />
-          </div>
-        </div>
+        <LandingHeroVisual />
       </div>
     </section>
   );
